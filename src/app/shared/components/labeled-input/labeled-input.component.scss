@@ -1,0 +1,61 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-other";
+@import "utility/mixins/mixins-flex";
+
+.labeled-input{
+  position: relative;
+  text-align: left;
+  font-family: $fontMain;
+
+  &.label-up{
+    & .labeled-input{
+      &__placeholder{
+        transform: translateY(-1.7rem);
+        font-size: 1.4rem;
+        line-height: 1.7rem;
+      }
+    }
+  }
+
+  &__placeholder, &__field{
+    font-size: 1.8rem;
+    line-height: 2.9rem;
+  }
+
+  &__placeholder, &__validation{
+    @include transition;
+  }
+
+  &__placeholder{
+    @include abs(0, 0);
+    @include rect(100%, 4rem);
+    pointer-events: none;
+  }
+
+  &__field{
+    @include rect(40rem, 4rem);
+    padding-bottom: 1rem;
+    color: $main;
+    border-bottom: 1px solid $main;
+  }
+
+  &__validation{
+    @include abs(0, calc(100% + 4px));
+    font-size: 1.4rem;
+    line-height: 1.7rem;
+    opacity: 0;
+    visibility: hidden;
+    @include transition;
+
+    &.open{
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
+
+::ng-deep .labeled-inputs-con{
+  & .labeled-input{
+    margin-bottom: 4.6rem;
+  }
+}

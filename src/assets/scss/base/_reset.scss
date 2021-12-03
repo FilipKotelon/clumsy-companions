@@ -1,0 +1,39 @@
+*, *::before, *::after{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html{
+  scroll-behavior: smooth;
+
+  &.no-scroll{
+    overflow: hidden;
+  }
+}
+
+body{
+  overflow-x: hidden;
+  position: relative;
+  background: $white-dimmed;
+
+  //iphone lul
+  @media (hover: none) {
+    cursor: pointer;
+  }
+}
+
+// main{
+//   position: relative;
+// }
+
+input, textarea, button{
+  background-color: transparent;
+  border: none;
+  font: inherit;
+  cursor: none;
+
+  &:focus{
+    outline: none;
+  }
+}

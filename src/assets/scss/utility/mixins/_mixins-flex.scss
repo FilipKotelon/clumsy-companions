@@ -1,0 +1,551 @@
+@mixin d-flex($ai: false, $jc: false, $dir: false, $wrap: false, $center: false) {
+    display: flex;
+
+    @if $center{
+        align-items: center;
+        justify-content: center;
+    }
+    @if $ai{
+        align-items: $ai;
+    }
+    @if $jc{
+        justify-content: $jc;
+    }
+    @if $dir{
+        flex-direction: $dir;
+    }
+    @if $wrap{
+        flex-wrap: $wrap;
+    }
+}
+
+@mixin flex-fill{
+    flex: 1 0 auto;
+}
+
+@mixin flex-fill-and-space($fill, $margin) {
+    flex: 1 0 $fill;
+    &:not(:last-child){
+        margin-right: $margin;
+    }
+}
+
+@mixin flex-1-and-4($height, $gutter){
+    @include d-flex;
+    height: $height;
+
+    & > *{
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: calc(50% - #{$gutter} / 2);
+        height: 100%;
+    }
+
+    & > :first-child{
+        margin-right: $gutter;
+    }
+
+    & > :nth-child(2){
+        display: flex;
+        flex-wrap: wrap;
+
+        & > div{
+            flex-grow: 0;
+            flex-shrink: 0;
+            flex-basis: calc(50% - #{$gutter} / 2);
+            height: calc(#{$height} / 2 - #{$gutter} / 4);
+
+            &:nth-child(odd){
+                margin-right: $gutter;
+            }
+            
+            &:nth-child(1), &:nth-child(2){
+                margin-bottom: calc(#{$gutter} / 2);
+            }
+        }
+    }
+
+    @include media-breakpoint-down(md){
+        flex-direction: column;
+        
+        & > *{
+            width: 100%;
+        }
+
+        & > :first-child{
+            margin-right: 0;
+            //margin-bottom: $gutter;
+            order: 50;
+            flex-grow: 0;
+            flex-shrink: 0;
+            flex-basis: calc(2 * #{$height} / 5);
+            height: calc(2 * #{$height} / 5);
+        }
+
+        & > :nth-child(2){
+            flex-grow: 0;
+            flex-shrink: 0;
+            flex-basis: calc(3 * #{$height} / 5);
+            & > div{
+                height: calc(1.5 * #{$height} / 5 - #{$gutter} / 4);
+
+                &, &:nth-child(1), &:nth-child(2){
+                    margin-bottom: calc(#{$gutter} / 2);
+                }
+            }
+        }
+    }
+
+    @include media-breakpoint-down(xs){
+        height: calc(#{$height} - #{$gutter});
+
+        & > :first-child{
+            flex-grow: 0;
+            flex-shrink: 0;
+            flex-basis: calc(#{$height} / 5 - #{$gutter});
+            height: calc(#{$height} / 5 - #{$gutter});
+            min-height: calc(#{$height} / 5 - #{$gutter});
+            margin-bottom: 0;
+        }
+
+        & > :nth-child(2){
+            flex-direction: column;
+            flex-wrap: nowrap;
+            height: calc(4 * #{$height} / 5);
+            min-height: calc(4 * #{$height} / 5);
+
+            & > div, & > div:nth-child(1), & > div:nth-child(2){
+                width: 100%;
+                flex-grow: 0;
+                flex-shrink: 0;
+                flex-basis: calc(#{$height} / 5 - #{$gutter});
+                height: calc(#{$height} / 5 - #{$gutter});
+                min-height: calc(#{$height} / 5 - #{$gutter});
+                margin-bottom: $gutter;
+
+                &, &:nth-child(odd){
+                    margin-right: 0;
+                }
+            }
+        }
+    }
+}
+
+@mixin flex-1-and-fill($height, $one, $gutter, $reverse: false, $lfirst: true){
+    @include d-flex;
+    height: $height;
+
+    & > *{
+        height: 100%;
+
+        @if $lfirst == false{
+            &:first-child{
+                flex-grow: 0;
+                flex-shrink: 0;
+                flex-basis: calc(100% - #{$gutter} - #{$one});
+                max-width: calc(100% - #{$gutter} - #{$one});
+                @include IE{
+                    width: calc(100% - #{$gutter} - #{$one});
+                }
+            }
+    
+            &:nth-child(2){
+                flex-grow: 0;
+                flex-shrink: 0;
+                flex-basis: $one;
+                max-width: $one;
+            }
+        }
+        @else{
+            &:first-child{
+                flex-grow: 0;
+                flex-shrink: 0;
+                flex-basis: $one;
+                max-width: $one;
+            }
+    
+            &:nth-child(2){
+                flex-grow: 0;
+                flex-shrink: 0;
+                flex-basis: calc(100% - #{$gutter} - #{$one});
+                max-width: calc(100% - #{$gutter} - #{$one});
+                @include IE{
+                    width: calc(100% - #{$gutter} - #{$one});
+                }
+            }
+        }
+    }
+
+    @if $reverse{
+        flex-direction: row-reverse;
+
+        & > *{
+            &:nth-child(2){
+                margin-right: $gutter;
+            }
+        }
+    }
+    @else{
+        & > *{        
+            &:nth-child(2){
+                margin-left: $gutter;
+            }
+        }
+    }
+}
+
+@mixin flex-1-and-desc-r($h, $w, $one, $gutter){
+    align-self: flex-end;
+    width: $w;
+
+    @include flex-1-and-fill($h, $one, $gutter);
+}
+
+@mixin flex-1-and-desc-l($h, $w, $one, $gutter){
+    align-self: flex-start;
+    width: $w;
+
+    @include flex-1-and-fill($h, $one, $gutter, true);
+}
+
+@mixin container-flex-1-and-desc($h, $w, $one, $gutter, $gutter-2, $vgutter, $reverse: false){
+    @include d-flex($dir: column);
+
+    & > *{
+        margin-bottom: $vgutter;
+    }
+
+    @if $reverse{
+        & > :nth-child(even){
+            @include flex-1-and-desc-r($h, $w, $one, $gutter);
+        }
+    
+        & > :nth-child(odd){
+            @include flex-1-and-desc-l($h, $w, $one, $gutter-2);
+        }
+    }
+    @else{
+        & > :nth-child(odd){
+            @include flex-1-and-desc-r($h, $w, $one, $gutter);
+        }
+    
+        & > :nth-child(even){
+            @include flex-1-and-desc-l($h, $w, $one, $gutter-2);
+        }
+    }
+}
+
+@mixin flex-even{
+    @include d-flex;
+    & > *{
+        flex: 0 0 50%;
+    }
+}
+
+@mixin flex-random-433($gutter){
+    @include d-flex($wrap: wrap);
+
+    & > *{
+        flex: 0 0 28%;
+        margin-right: $gutter;
+        margin-bottom: $gutter;
+
+        &:nth-child(3n){
+            margin-right: 0;
+        }
+
+        &:nth-child(9n+2), &:nth-child(9n+4), &:nth-child(9n+9){
+            flex-grow: 0;
+            flex-shrink: 0;
+            flex-basis: calc(100% - 56% - 2 * #{$gutter});
+        }
+    }
+
+    @include media-breakpoint-down(sm){
+        & > *{
+            flex: 0 0 32%;
+            margin-right: 2%;
+            margin-bottom: 2%;
+    
+            &:nth-child(9n+2), &:nth-child(9n+4), &:nth-child(9n+9){
+                flex: 0 0 32%;
+            }
+        }
+
+        @include media-breakpoint-down(xs){
+           flex-direction: column;
+           flex-wrap: nowrap;
+
+           & > *{
+                flex: initial;
+                margin-right: 0;
+                margin-bottom: $gutter;
+                width: 100%;
+        
+                &:nth-child(9n+2), &:nth-child(9n+4), &:nth-child(9n+9){
+                    flex: initial;
+                }
+            }
+        }
+    }
+}
+
+@mixin flex-row-8($gutter){
+    @include d-flex($wrap: wrap);
+    
+    & > *{
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: calc(100% / 8 - 7 / 8 * #{$gutter});
+        @include IE{
+            flex-basis: calc(100% / 8 - 2.2 * #{$gutter});
+        }
+        margin-bottom: $gutter;
+
+        &:not(:nth-child(8n)){
+            margin-right: $gutter;
+        }
+    }
+}
+
+@mixin flex-row-7($gutter){
+    @include d-flex($wrap: wrap);
+    
+    & > *{
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: calc(100% / 7 - 6 / 7 * #{$gutter});
+        @include IE{
+            flex-basis: calc(100% / 7 - 2.2 * #{$gutter});
+        }
+        margin-bottom: $gutter;
+
+        &:not(:nth-child(7n)){
+            margin-right: $gutter;
+        }
+    }
+}
+
+@mixin flex-row-6($gutter){
+    @include d-flex($wrap: wrap);
+    
+    & > *{
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: calc(100% / 6 - 5 / 6 * #{$gutter});
+        @include IE{
+            flex-basis: calc(100% / 6 - 2.2 * #{$gutter});
+        }
+        margin-bottom: $gutter;
+
+        &:not(:nth-child(6n)){
+            margin-right: $gutter;
+        }
+    }
+}
+
+@mixin flex-row-5($gutter){
+    @include d-flex($wrap: wrap);
+    
+    & > *{
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: calc(100% / 5 - 4 / 5 * #{$gutter});
+        @include IE{
+            flex-basis: calc(100% / 5 - 2.2 * #{$gutter});
+        }
+        margin-bottom: $gutter;
+
+        &:not(:nth-child(5n)){
+            margin-right: $gutter;
+        }
+    }
+}
+
+@mixin flex-row-4($gutter, $bp3: false, $bp2: false, $bp1: false){
+    @include d-flex($wrap: wrap);
+    
+    & > *{
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: calc(100% / 4 - 3 / 4 * #{$gutter});
+        @include IE{
+            flex-basis: calc(100% / 4 - 1.3 * #{$gutter});
+        }
+        margin-bottom: $gutter;
+
+        &:not(:nth-child(4n)){
+            margin-right: $gutter;
+        }
+    }
+
+    @if $bp3{
+        @include media-breakpoint-down($bp3){
+            & > *{
+                &, &:nth-child(4n){
+                    flex-basis: calc(100% / 3 - 2 / 3 * #{$gutter});
+                    @include IE{
+                        flex-basis: calc(100% / 3 - 1.3 * #{$gutter});
+                    }
+                    margin-right: $gutter;
+
+                    &:nth-child(3n){
+                        margin-right: 0;
+                    }
+                }
+            }
+        }
+    }
+
+    @if $bp2{
+        @include media-breakpoint-down($bp2){
+            & > *{
+                &, &:nth-child(4n), &:nth-child(3n){
+                    flex-basis: calc(100% / 2 - 1 / 2 * #{$gutter});
+                    @include IE{
+                        flex-basis: calc(100% / 2 - 1.3 * #{$gutter});
+                    }
+                    margin-right: $gutter;
+
+                    &:nth-child(2n){
+                        margin-right: 0;
+                    }
+                }
+            }
+        }
+    }
+
+    @if $bp1{
+        @include media-breakpoint-down($bp1){
+            & > *{
+                &, &:nth-child(4n), &:nth-child(3n), &:nth-child(2n){
+                    flex-basis: 100%;
+                    @include IE{
+                        flex-basis: 100%;
+                        width: 100%;
+                    }
+                    margin-right: 0;
+                }
+            }
+        }
+    }
+}
+
+@mixin flex-row-3($gutter, $bp2: false, $bp1: false){
+    @include d-flex;
+    flex-wrap: wrap;
+    
+    & > *{
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: calc(100% / 3 - 2 / 3 * #{$gutter});
+        @include IE{
+            flex-basis: calc(100% / 3 - 1.3 * #{$gutter});
+        }
+        margin-bottom: $gutter;
+
+        &:not(:nth-child(3n)){
+            margin-right: $gutter;
+        }
+    }
+
+    @if $bp2{
+        @include media-breakpoint-down($bp2){
+            & > *{
+                flex-basis: calc(100% / 2 - 1 / 2 * #{$gutter});
+                @include IE{
+                    flex-basis: calc(100% / 2 - 1.3 * #{$gutter});
+                }
+                margin-bottom: $gutter;
+
+                &, &:nth-child(3n){
+                    margin-right: $gutter;
+                }
+        
+                &:nth-child(2n){
+                    margin-right: 0;
+                }
+            }
+        }
+    }
+
+    @if $bp1{
+        @include media-breakpoint-down($bp1){
+            & > *{
+                flex-basis: 100%;
+                @include IE{
+                    width: 100%;
+                }
+
+                margin-bottom: $gutter;
+
+                &, &:nth-child(3n), &:nth-child(2){
+                    margin-right: 0;
+                }
+            }
+        }
+    }
+}
+
+@mixin flex-row-2($gutter, $bp: false){
+    @include d-flex;
+    flex-wrap: wrap;
+    
+    & > *{
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: calc(100% / 2 - 1 / 2 * #{$gutter});
+        margin-bottom: $gutter;
+
+        &:not(:nth-child(2n)){
+            margin-right: $gutter;
+        }
+    }
+
+    @if $bp{
+        @include media-breakpoint-down($bp){
+            flex-direction: column;
+        
+            & > *{
+                flex: initial;
+                width: 100%;
+    
+                &:not(:nth-child(2n)){
+                    margin-right: 0;
+                }
+            }
+        }
+    }
+}
+
+@mixin flex-1-and-fill-col($height, $one, $gutter){
+    @include d-flex($dir: column);
+    height: $height;
+
+    & > *{
+        width: 100%;
+        flex-grow: 0;
+        flex-shrink: 0;
+
+        &:first-child{
+            flex-basis: $one;
+            height: $one;
+            @include IE{
+                width: calc(100% - #{$gutter} - #{$one});
+            }
+        }
+
+        &:nth-child(2){
+            flex-basis: calc(100% - #{$gutter} - #{$one});
+            height: calc(100% - #{$gutter} - #{$one});
+            margin-top: $gutter;
+        }
+    }
+}
+
+@mixin poly-flex($grow, $shrink, $basis){
+    flex: $grow $shrink $basis;
+    flex-grow: $grow;
+    flex-shrink: $shrink;
+    flex-basis: $basis;
+}

@@ -1,0 +1,47 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-other";
+@import "utility/mixins/mixins-flex";
+
+.page-button, .admin-button{
+  @include d-flex($center: true);
+  text-align: center;
+  color: $white;
+}
+
+.page-button{
+  height: 4.8rem;
+  padding: 0 2.2rem;
+  border-radius: .3rem;
+  background: $main;
+}
+
+.admin-button{
+  height: 4.2rem;
+  padding: 0 2rem;
+  font-size: 1.8rem;
+  cursor: pointer;
+  @include transition;
+
+  &.smaller{
+    font-size: 1.4rem;
+    height: 3.4rem;
+  }
+
+  &.green{
+    background-color: $green;
+  }
+
+  &.black{
+    background-color: $black;
+  }
+
+  &.brown{
+    background-color: $main;
+  }
+
+  @media(hover: hover){
+    &:hover{
+      opacity: .8;
+    }
+  }
+}

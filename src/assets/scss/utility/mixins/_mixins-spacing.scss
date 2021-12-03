@@ -1,0 +1,13 @@
+@mixin m-not-last($margin, $dir) {
+    @if $dir == r{
+            & > :not(:last-child){
+            margin-right: $margin;
+        }
+    }
+    
+    @else if $dir == b{
+            & > :not(:last-child){
+            margin-bottom: $margin;
+        }
+    }
+}

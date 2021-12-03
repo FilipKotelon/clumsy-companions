@@ -1,0 +1,6 @@
+@import "utility/mixins/mixins-flex";
+
+.welcome-page{
+  @include d-flex($center: true, $dir: column);
+  height: 100vh;
+}

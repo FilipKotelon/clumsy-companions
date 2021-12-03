@@ -1,0 +1,290 @@
+@mixin default-after {
+    content: "";
+    display: block;
+    position: absolute;
+}
+
+@mixin assign-position($l: false, $t: false, $r: false, $b: false){
+    @if $l{
+        left: $l;
+    }
+    @if $t{
+        top: $t;
+    }
+    @if $r{
+        right: $r;
+    }
+    @if $b{
+        bottom: $b;
+    }
+}
+
+@mixin abs($l: false, $t: false, $r: false, $b: false){
+    position: absolute;
+    @include assign-position($l, $t, $r, $b);
+}
+
+@mixin abs-center-y{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+@mixin abs-center-x{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+@mixin abs-center{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    bottom: initial;
+    right: initial;
+    transform: translate(-50%, -50%);
+}
+
+@mixin fix($l: false, $t: false, $r: false, $b: false){
+    position: fixed;
+    @include assign-position($l, $t, $r, $b);
+}
+
+@mixin fix-center-y{
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+@mixin fix-center-x{
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+@mixin fix-center{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    bottom: initial;
+    right: initial;
+    transform: translate(-50%, -50%);
+}
+
+@mixin rounded($radius, $hide: true){
+    border-radius: $radius;
+
+    @if $hide{
+        overflow: hidden;
+    }
+}
+
+@mixin transition {
+    transition: all .6s ease;
+}
+
+@mixin square($l){
+    width: $l;
+    height: $l;
+}
+
+@mixin max-square($l){
+    max-width: $l;
+    max-height: $l;
+}
+
+@mixin circle($l){
+    @include square($l);
+    border-radius: 50%;
+    @include d-flex($center: true);
+}
+
+@mixin rect($w, $h){
+    width: $w;
+    height: $h;
+}
+
+@mixin max-rect($w, $h){
+    max-width: $w;
+    max-height: $h;
+}
+
+@mixin autofill($bg, $color) {
+    &:-webkit-autofill{
+        &, &:hover, &:focus{
+            -webkit-text-fill-color: $color;
+            -webkit-box-shadow: 0 0 0px 1000px $bg inset;
+        }
+    }
+}
+
+@mixin img-cover{
+    @include square(100%);
+    object-fit: cover;
+}
+
+@mixin img-contain{
+    @include square(100%);
+    object-fit: contain;
+}
+
+@mixin max-read{
+    max-width: 540px;
+}
+
+@mixin to-read{
+    @include max-read;
+    text-align: justify;
+}
+
+@mixin hover-after-under($w, $h, $top, $color: currentColor){
+    position: relative;
+    &::after{
+        @include default-after;
+        top: $top;
+        left: 0;
+        @include rect($w, $h);
+        background-color: $color;
+        opacity: 0;
+        @include transition;
+    }
+
+    &:hover{
+        &::after{
+            opacity: 1;
+        }
+    }
+}
+
+@mixin after-under($w, $h, $top, $color: currentColor){
+    @include default-after;
+    top: $top;
+    left: 0;
+    @include rect($w, $h);
+    background-color: $color;
+    opacity: 0;
+    @include transition;
+}
+
+@mixin hide($bp) {
+    @if $bp == lg{
+        @include media-breakpoint-down(lg){
+            display: none;
+        }
+    }
+    @else if $bp == md{
+        @include media-breakpoint-down(md){
+            display: none;
+        }
+    }
+    @else if $bp == sm{
+        @include media-breakpoint-down(sm){
+            display: none;
+        }
+    }
+    @else if $bp == xs{
+        @include media-breakpoint-down(xs){
+            display: none;
+        }
+    }
+}
+
+@mixin show($bp) {
+    @if $bp == lg{
+        display: flex;
+        @include media-breakpoint-up(xl){
+            display: none;
+        }
+    }
+    @else if $bp == md{
+        display: flex;
+        @include media-breakpoint-up(lg){
+            display: none;
+        }
+    }
+    @else if $bp == sm{
+        display: flex;
+        @include media-breakpoint-up(md){
+            display: none;
+        }
+    }
+    @else if $bp == xs{
+        display: flex;
+        @include media-breakpoint-up(sm){
+            display: none;
+        }
+    }
+}
+
+@mixin scrollbar($color, $bg, $w, $rounded, $allBg: #f5f5f5){
+    &::-webkit-scrollbar-track{
+        //-webkit-box-shadow: inset 0 0 6px rgba(223, 223, 222, 0.5);
+        background-color: $bg;
+    }
+
+    &::-webkit-scrollbar{
+        width: $w;
+        background-color: $allBg;
+    }
+
+    &::-webkit-scrollbar-thumb{
+        background-color: $color;
+        @if $rounded == true{
+            border-radius: 10px;
+        }
+    }
+}
+
+@mixin cover{
+    @include abs(0, 0);
+    @include square(100%);
+    z-index: 50;
+}
+
+@mixin overlay{
+    @include cover;
+    opacity: 0;
+    background-color: rgba(0, 0, 0, 0.65);
+    @include transition;
+}
+
+@mixin img-grayscale-con{
+    & img{
+        @include transition;
+        filter: grayscale(1);
+    }
+
+    &:hover{
+        & img{
+            filter: grayscale(0);
+        }
+    }
+}
+
+@mixin bootstrap-carousel-fit{
+    & .carousel-inner{
+        @include square(100%);
+
+        & .carousel-item{
+            @include square(100%);
+
+            & img{
+                @include img-cover;
+            }
+        }
+    }
+}
+
+@mixin hover-underline-animation($h, $top, $bg, $w: 100%, $dir: right){
+    background-image: linear-gradient(to $dir, $bg, $bg);
+    background-size: 0% $h;
+    background-position: 0 $top;
+    background-repeat: no-repeat;
+    transition: all .3s;
+
+    @media(hover: hover){
+        &:hover{
+            background-size: 100% $h;
+        }
+    }
+}

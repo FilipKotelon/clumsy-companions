@@ -1,1 +1,10 @@
-/* You can add global styles to this file, and also import other style files */
+@import "./assets/scss/utility/variables";
+@import "./assets/scss/utility/mixins/mixins-basic";
+@import "./assets/scss/utility/mixins/mixins-flex";
+@import "./assets/scss/utility/mixins/mixins-other";
+@import "./assets/scss/utility/mixins/mixins-spacing";
+
+@import "./assets/scss/base/reset";
+@import "./assets/scss/base/typography";
+
+@import "./assets/scss/components/buttons";

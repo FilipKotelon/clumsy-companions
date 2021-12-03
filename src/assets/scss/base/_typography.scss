@@ -1,0 +1,77 @@
+@import "utility/mixins/mixins-other";
+
+html{
+  font-size: 62.5%;
+}
+
+body{
+  font-size: 1.6rem;
+  font-family: $fontMain, cursive;
+  color: $coffee;
+}
+
+a{
+  // cursor: pointer;
+
+  &, &:hover{
+    color: $white;
+  }
+
+  &, &:hover{
+    text-decoration: none;
+  }
+}
+
+::selection{
+  background-color: $main;
+  color: $white;
+}
+
+p, ul, ol {
+  font-size: 1.8rem;
+  line-height: 170%;
+  margin-bottom: 1em;
+
+  @media(max-width: 992px){
+    font-size: 1.6rem;
+  }
+}
+
+h1, h2, h3, h4, h5, h6{
+  font-weight: normal;
+  margin-bottom: 1em;
+}
+
+.big-title{
+  font-size: 7.2rem;
+  line-height: 8.4rem;
+}
+
+.medium-title{
+  font-size: 4.8rem;
+  line-height: 5.6rem;
+}
+
+.huge-text{
+  font-size: 3.6rem;
+}
+
+.big-text{
+  font-size: 3.2rem;
+}
+
+.medium-text{
+  font-size: 2.4rem;
+}
+
+//handle size from parent 
+.logo-above-i{
+  position: relative;
+  display: inline;
+
+  & img{
+    @include abs-center-x;
+    @include square(1.5rem);
+    top: 1.6rem;
+  }
+}

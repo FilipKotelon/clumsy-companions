@@ -1,0 +1,21 @@
+.flexible-display{
+  &-con{
+    @include d-flex();
+
+    &, &.slide-section{
+      flex-direction: row;
+    }
+
+    &.slide-section{
+      padding: 0;
+    }
+  }
+
+  flex: 1 0 0;
+  height: 100%;
+
+  &.centered{
+    @include d-flex($center: true);
+    text-align: center;
+  }
+}

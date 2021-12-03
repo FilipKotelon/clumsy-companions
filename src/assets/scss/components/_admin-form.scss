@@ -1,0 +1,30 @@
+
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+@import "utility/mixins/mixins-spacing";
+
+.admin-form{
+  @include d-flex($ai: flex-start, $jc: space-between, $wrap: wrap);
+
+  &__main{
+    @include d-flex($dir: column, $ai: flex-start);
+    width: 50%;
+
+    & > *{
+      width: 100%;
+    }
+  }
+
+  &__actions{
+    @include d-flex($ai: center);
+    @include m-not-last(2.4rem, r);
+    width: 100%;
+    margin-top: 2.4rem
+  }
+
+  &__image-con{
+    @include rect(42%, 46rem);
+    background: $grey-300;
+  }
+}

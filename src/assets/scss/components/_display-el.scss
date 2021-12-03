@@ -1,0 +1,43 @@
+.display-el{
+  position: relative;
+
+  &__bg, &__bg-cover{
+    @include abs(0, 0);
+    @include square(100%);
+  }
+
+  &__bg{
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  &__bg-cover{
+    z-index: 1;
+  }
+
+  &__content{
+    @include d-flex($dir: column, $ai: flex-start);
+    position: relative;
+    z-index: 2;
+  }
+
+  &.hoverable{
+    overflow: hidden;
+
+    & .display-el{
+      &__bg{
+        @include transition;
+      }
+    }
+
+    @media(hover: hover){
+      &:hover{
+        & .display-el{
+          &__bg{
+            transform: scale(1.03);
+          }
+        }
+      }
+    }
+  }
+}

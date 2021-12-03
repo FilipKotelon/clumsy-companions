@@ -1,0 +1,30 @@
+<div 
+  class="labeled-input"
+  [ngClass]="{
+    'label-up': labelUp
+  }"
+>
+  <div class="labeled-input__placeholder">{{ label }}</div>
+  <input 
+    class="labeled-input__field"
+    
+    appHoverEnlargeCursor
+    hoverMessage="Fill"
+  
+    #input
+    [value]="value"
+    [type]="type"
+
+    (focus)="onFocus()"
+    (focusout)="onFocusOut()"
+    (input)="onChange($event, input.value)"
+  >
+  <div
+    class="labeled-input__validation"
+    [ngClass]="{
+      'open': !control.valid && control.dirty
+    }"
+  >
+    {{ validationMessage }}
+  </div>
+</div>
