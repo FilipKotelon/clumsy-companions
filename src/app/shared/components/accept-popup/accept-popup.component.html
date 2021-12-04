@@ -1,0 +1,16 @@
+<div 
+  *ngIf="open"
+  [@fadeInOut]
+  class="popup-message"
+>
+  <div class="popup-message__bg close-disabled"></div>
+  <div class="popup-message__content">
+    <div class="popup-message__msg">
+      {{ msg }}
+    </div>
+    <div class="popup-message__actions">
+      <button class="shop-button green" (click)="onAccept()" appHoverEnlargeCursor>{{acceptMsg}}</button>
+      <button class="shop-button brown" (click)="onDecline()" appHoverEnlargeCursor>{{declineMsg}}</button>
+    </div>
+  </div>
+</div>

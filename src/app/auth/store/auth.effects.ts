@@ -44,7 +44,17 @@ export class AuthEffects {
                 {
                   id: userCred.user.uid,
                   username: signUpAction.payload.username,
-                  role: UserRole.Client,
+                  role: UserRole.Player,
+                  currentAvatarId: [],
+                  currentDeckId: -1,
+                  decks: [],
+                  ownedAvatars: [],
+                  ownedPacks: [],
+                  ownedCards: [],
+                  ownedSleeves: [],
+                  coins: 0,
+                  winCount: 0,
+                  lossCount: 0
                 }
               )
             ).pipe(
@@ -65,10 +75,10 @@ export class AuthEffects {
                             email: userCred.user.email,
                             userId: userCred.user.uid,
                             token: tokenRes.token,
-                            role: UserRole.Client,
+                            role: UserRole.Player,
                             expirationDate: new Date(tokenRes.expirationTime),
                           },
-                          redirectTo: '/profile/dashboard'
+                          redirectTo: '/hub'
                         })
                       })
                     )
@@ -114,7 +124,7 @@ export class AuthEffects {
                   userCred.user.getIdTokenResult()
                 ).pipe(
                   map(tokenRes => {
-                    const dbUserRole = dbUser ? dbUser.get('role') as UserRole : UserRole.Client;
+                    const dbUserRole = dbUser ? dbUser.get('role') as UserRole : UserRole.Player;
                     const theUser = <DbUser>dbUser.data();
                     
                     return handleAuthSuccess({
@@ -126,7 +136,7 @@ export class AuthEffects {
                         role: dbUserRole,
                         expirationDate: new Date(tokenRes.expirationTime)
                       },
-                      redirectTo: dbUserRole === UserRole.Admin ? '/admin' : '/profile/dashboard'
+                      redirectTo: dbUserRole === UserRole.Admin ? '/admin' : '/hub'
                     })
                   }),
                   catchError((error) => {
@@ -152,7 +162,8 @@ export class AuthEffects {
       ofType(AuthActions.AUTH_SUCCESS),
       tap((authSuccessAction: AuthActions.AuthSuccess) => {
         const expiresIn = authSuccessAction.payload.user.expirationDate.getTime() - new Date().getTime();
-        this.authService.setLogOutTimer(expiresIn);
+
+        this.authService.setRefreshTimer(expiresIn - 10000);
 
         if(authSuccessAction.payload.redirectTo){
           this.router.navigate([authSuccessAction.payload.redirectTo])
@@ -207,7 +218,7 @@ export class AuthEffects {
             map(
               dbUser => {
                 //Protect from cheeky users editing localStorage to give themselves admin rights
-                const dbUserRole = dbUser ? dbUser.get('role') as UserRole : UserRole.Client;
+                const dbUserRole = dbUser ? dbUser.get('role') as UserRole : UserRole.Player;
                 const theUser = <DbUser>dbUser.data();
                     
                 return handleAuthSuccess({
@@ -232,10 +243,9 @@ export class AuthEffects {
     () => this.actions$.pipe(
       ofType(AuthActions.LOGOUT),
       map(() => {
-        this.authService.clearLogOutTimer();
+        this.authService.clearRefreshTimer();
         localStorage.removeItem('loggedInUser');
         this.router.navigate(['/']);
-        //TODO: show message that user has been logged out
         return new AppMsgActions.AppInfo('You\'ve been logged out.');
       })
     )

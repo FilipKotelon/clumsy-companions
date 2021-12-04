@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store'
 import { Injectable } from '@angular/core'
 import { Router } from '@angular/router'
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore'
-import { of } from 'rxjs'
+import { of, Observable } from 'rxjs'
 import { catchError, map, take, switchMap, tap } from 'rxjs/operators'
 
 import * as fromApp from '@app/store/app.reducer'
@@ -22,7 +22,7 @@ export abstract class AuthBaseGuard {
     this.usersCollection = this.fireStore.collection<DbUser>('users');
   }
 
-  protected checkUser = () => {
+  protected checkUser = (): Observable<User> => {
     return this.store.select(AuthSelectors.selectUser).pipe(
       take(1),
       map(
@@ -54,7 +54,7 @@ export abstract class AuthBaseGuard {
                   })
                 }),
                 map(dbUser => {
-                  const dbUserRole = dbUser ? dbUser.get('role') as UserRole : UserRole.Client;
+                  const dbUserRole = dbUser ? dbUser.get('role') as UserRole : UserRole.Player;
       
                   if(dbUserRole === finalUser.user.role){
                     //Check if user was not logged in already by the app component

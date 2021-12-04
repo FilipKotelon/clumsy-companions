@@ -1,1 +1,5 @@
-<router-outlet></router-outlet>
+<div class="wrapper" [@routeAnimations]="prepareRoute(outlet)">
+  <router-outlet #outlet="outlet"></router-outlet>
+</div>
+<app-error-message></app-error-message>
+<app-info-message></app-info-message>

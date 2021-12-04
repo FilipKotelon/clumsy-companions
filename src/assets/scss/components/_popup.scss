@@ -1,74 +1,62 @@
-// .popup-message{
-//   @include fix(0, 0);
-//   @include square(100%);
-//   @include d-flex($center: true);
-//   z-index: 20000;
-//   pointer-events: all;
-//   cursor: none;
-//   font-family: $fontMain;
-//   color: $white;
+.popup-message{
+  @include fix(0, 0);
+  @include square(100%);
+  @include d-flex($center: true);
+  z-index: 20000;
+  pointer-events: all;
+  font-family: $fontMain;
 
-//   &.in-admin{
-//     cursor: default;
+  &.in-admin{
+    & .popup-message{
+      &__bg, &__close{
+        cursor: pointer;
+      }
+    }
+  }
 
-//     & .popup-message{
-//       &__bg, &__close{
-//         cursor: pointer;
-//       }
-//     }
+  &.error{
+    // & .popup-message{
+    //   &__bg{
+    //     background: rgba(117, 56, 29, 0.6);
+    //   }
 
-//     & button{
-//       cursor: pointer;
-//     }
-//   }
+    //   &__content{
+    //     background-color: $main;
+    //   }
+    // }
+  }
 
-//   &.error{
-//     & .popup-message{
-//       &__bg{
-//         background: rgba(117, 56, 29, 0.6);
-//       }
+  &__bg{
+    @include abs(0, 0);
+    @include square(100%);
+    background: rgba(248, 249, 251, .5);
+    z-index: 0;
+  }
 
-//       &__content{
-//         background-color: $brown;
-//       }
-//     }
-//   }
+  &__content{
+    @include d-flex($dir: column, $ai: center);
+    position: relative;
+    z-index: 1;
+    max-width: 540px;
+    background-color: $white;
+    border: 1px solid $main;
+    padding: 3.6rem 3rem;
+  }
 
-//   &__bg{
-//     @include abs(0, 0);
-//     @include square(100%);
-//     background: rgba(0, 0, 0, 0.6);
-//     z-index: 0;
+  &__close{
+    @include abs($r: .9rem, $t: .9rem);
+    @include square(1.8rem);
+    cursor: pointer;
+  }
 
-//     &.close-disabled{
-//       cursor: default;
-//     }
-//   }
+  &__msg{
+    font-size: 2.4rem;
+    text-align: center;
+  }
 
-//   &__content{
-//     @include d-flex($dir: column, $ai: center);
-//     position: relative;
-//     z-index: 1;
-//     max-width: 540px;
-//     background-color: $main;
-//     border: 1px solid $white;
-//     padding: 3.6rem 3rem;
-//   }
-
-//   &__close{
-//     @include abs($r: .9rem, $t: .9rem);
-//     width: 1.6rem;
-//     height: 1.6rem;
-//   }
-
-//   &__msg{
-//     font-size: 2.4rem;
-//     text-align: center;
-//   }
-
-//   &__actions{
-//     @include d-flex($ai: center);
-//     @include m-not-last(2.4rem, r);
-//     margin-top: 2.4rem;
-//   }
-// }
+  &__actions{
+    @include d-flex($ai: center);
+    @include m-not-last(2.4rem, r);
+    margin-top: 2.4rem;
+  }
+}

@@ -1,0 +1,33 @@
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+.auth-page{
+  @include d-flex();
+
+  &__content{
+    @include d-flex($dir: column);
+    @include rect(50rem, 100%);
+    padding: 4.5rem 3rem 7.5rem;
+
+    &__main{
+      margin-bottom: auto;
+    }
+
+    &__options{
+      @include d-flex($dir: column, $ai: flex-start);
+      margin-top: 3rem;
+    }
+  }
+
+  &__img-con{
+    @include rect(calc(100% - 50rem), 100%);
+
+    & img{
+      @include img-cover;
+    }
+  }
+}
+
+.auth-form{
+  margin-top: 3rem;
+}

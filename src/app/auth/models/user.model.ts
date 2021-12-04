@@ -1,6 +1,6 @@
 export enum UserRole {
   Admin = 'admin',
-  Client = 'client'
+  Player = 'player'
 }
 
 export class User {
@@ -10,13 +10,13 @@ export class User {
     public role: UserRole,
     private _token: string,
     private _tokenExpirationDate: Date,
-    public currentAvatarId: number,
-    public currentDeckId: number,
-    public decks: number[],
-    public ownedAvatars: number[],
-    public ownedPacks: number[],
-    public ownedCards: number[],
-    public ownedSleeves: number[],
+    public currentAvatarId: string,
+    public currentDeckId: string,
+    public decks: string[],
+    public ownedAvatars: string[],
+    public ownedPacks: string[],
+    public ownedCards: string[],
+    public ownedSleeves: string[],
     public coins: number,
     public winCount: number,
     public lossCount: number,

@@ -1,12 +1,17 @@
+import { HubRoutingModule } from './hub-routing.module'
 import { SharedModule } from '@shared/shared.module'
 import { NgModule } from '@angular/core';
+import { HubComponent } from './hub.component';
 
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    HubComponent
+  ],
   imports: [
-    SharedModule
+    SharedModule,
+    HubRoutingModule
   ]
 })
 export class HubModule { }

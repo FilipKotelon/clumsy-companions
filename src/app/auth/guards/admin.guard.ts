@@ -22,7 +22,7 @@ export class AdminGuard extends AuthBaseGuard implements CanActivate {
       take(1),
       map((user: User) => {
         if(!user){
-          return this.router.createUrlTree(['/profile/log-in'])
+          return this.router.createUrlTree(['/auth/log-in'])
         }
 
         const isAdmin = user.role === UserRole.Admin;
@@ -31,7 +31,7 @@ export class AdminGuard extends AuthBaseGuard implements CanActivate {
           return true;
         }
         
-        return this.router.createUrlTree(['/profile/log-in'])
+        return this.router.createUrlTree(['/auth/log-in'])
       })
     )
   }

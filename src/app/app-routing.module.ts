@@ -1,5 +1,8 @@
+import { LoggedInGuard } from './auth/guards/logged-in.guard'
+import { NotLoggedInGuard } from './auth/guards/not-logged-in.guard'
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
+import { AdminGuard } from "@auth/guards/admin.guard";
 
 let routes: Routes = [
   {
@@ -9,23 +12,18 @@ let routes: Routes = [
   },
   {
     path: 'admin',
-    loadChildren: () => import('@admin/admin.module').then(m => m.AdminModule)
+    loadChildren: () => import('@admin/admin.module').then(m => m.AdminModule),
+    canActivate: [AdminGuard]
   },
   {
     path: 'auth',
-    loadChildren: () => import('@auth/auth.module').then(m => m.AuthModule)
-  },
-  {
-    path: 'core',
-    loadChildren: () => import('@core/core.module').then(m => m.CoreModule)
-  },
-  {
-    path: 'decks',
-    loadChildren: () => import('@decks/decks.module').then(m => m.DecksModule)
+    loadChildren: () => import('@auth/auth.module').then(m => m.AuthModule),
+    canActivate: [NotLoggedInGuard]
   },
   {
     path: 'hub',
-    loadChildren: () => import('@hub/hub.module').then(m => m.HubModule)
+    loadChildren: () => import('@hub/hub.module').then(m => m.HubModule),
+    canActivate: [LoggedInGuard]
   }
 ];
 

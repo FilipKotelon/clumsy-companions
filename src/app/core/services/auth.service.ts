@@ -1,3 +1,4 @@
+import { AngularFireAuth } from '@angular/fire/compat/auth'
 import { Store } from '@ngrx/store'
 import { Injectable } from "@angular/core";
 
@@ -8,19 +9,23 @@ import * as AuthActions from '@auth/store/auth.actions'
   providedIn: 'root'
 })
 export class AuthService{
-  private logOutTimer: any;
+  private refreshTimer: any;
 
-  constructor(private store: Store<fromApp.AppState>) {}
+  constructor(private fireAuth: AngularFireAuth, private store: Store<fromApp.AppState>) {}
 
-  setLogOutTimer = (expiresIn: number) => {
-    this.logOutTimer = setTimeout(() => {
-      this.store.dispatch(new AuthActions.Logout());
+  setRefreshTimer = (expiresIn: number) => {
+    this.refreshTimer = setTimeout(() => {
+      this.fireAuth.currentUser.then(user => {
+        console.log('Refresh timer');
+        console.log(user);
+        user.getIdToken(true);
+      })
     }, expiresIn)
   }
 
-  clearLogOutTimer = () => {
-    if(this.logOutTimer){
-      clearTimeout(this.logOutTimer);
+  clearRefreshTimer = () => {
+    if(this.refreshTimer){
+      clearTimeout(this.refreshTimer);
     }
   }
 }
