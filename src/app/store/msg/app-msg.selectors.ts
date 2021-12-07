@@ -1,5 +1,5 @@
 import { createSelector } from '@ngrx/store';
-import * as fromApp from './app.reducer'
+import * as fromApp from '../app.reducer'
 import * as fromAppMsg from './app-msg.reducer'
 
 export type SelectorType = typeof selectError;

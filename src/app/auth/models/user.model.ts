@@ -10,16 +10,6 @@ export class User {
     public role: UserRole,
     private _token: string,
     private _tokenExpirationDate: Date,
-    public currentAvatarId: string,
-    public currentDeckId: string,
-    public decks: string[],
-    public ownedAvatars: string[],
-    public ownedPacks: string[],
-    public ownedCards: string[],
-    public ownedSleeves: string[],
-    public coins: number,
-    public winCount: number,
-    public lossCount: number,
   ) {}
 
   get token() {

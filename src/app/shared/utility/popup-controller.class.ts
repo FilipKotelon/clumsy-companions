@@ -3,8 +3,8 @@ import { Store } from '@ngrx/store'
 import { Directive, OnInit, OnDestroy } from '@angular/core'
 
 import * as fromApp from '@app/store/app.reducer'
-import * as fromAppMsgSelectors from '@app/store/app-msg.selectors'
-import * as AppMsgActions from '@app/store/app-msg.actions'
+import * as fromAppMsgSelectors from '@app/store/msg/app-msg.selectors'
+import * as AppMsgActions from '@app/store/msg/app-msg.actions'
 
 @Directive()
 export abstract class PopupController implements OnInit, OnDestroy {
@@ -14,7 +14,7 @@ export abstract class PopupController implements OnInit, OnDestroy {
   
   constructor(protected store: Store<fromApp.AppState>, protected msgSelector: fromAppMsgSelectors.SelectorType, protected clearMsgAction: AppMsgActions.AppMsgClearActions) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.storeSub = this.store.select(this.msgSelector).subscribe(msg => {
       if(msg){
         this.isOpen = true;

@@ -29,7 +29,7 @@
   &__bg{
     @include abs(0, 0);
     @include square(100%);
-    background: rgba(248, 249, 251, .5);
+    background: $white-dimmed-transparent;
     z-index: 0;
   }
 

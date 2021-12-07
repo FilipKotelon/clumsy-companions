@@ -1,9 +1,10 @@
+import { Store } from '@ngrx/store'
 import { Injectable } from '@angular/core'
 import { AngularFireAuth } from '@angular/fire/compat/auth'
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore'
 import { Router } from '@angular/router'
 import { Actions, createEffect, ofType } from '@ngrx/effects'
-import { tap, map, catchError, switchMap } from 'rxjs/operators'
+import { tap, map, catchError, switchMap, mergeMap } from 'rxjs/operators'
 import { from, Observable, of } from 'rxjs'
 
 import { AuthService } from '@core/services/auth.service'
@@ -12,8 +13,10 @@ import { handleAuthSuccess, handleError, getLocalStorageUser } from './auth.help
 import { DbUser } from '../models/db-user.model'
 import { UserRole } from '../models/user.model'
 
+import * as fromApp from '@app/store/app.reducer';
 import * as AuthActions from '@auth/store/auth.actions'
-import * as AppMsgActions from '@app/store/app-msg.actions'
+import * as AppMsgActions from '@app/store/msg/app-msg.actions'
+import * as AppLoadingActions from '@app/store/loading/app-loading.actions'
 
 @Injectable()
 export class AuthEffects {
@@ -24,7 +27,8 @@ export class AuthEffects {
     private fireAuth: AngularFireAuth, 
     private fireStore: AngularFirestore,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private store: Store<fromApp.AppState>
   ){
     this.usersCollection = this.fireStore.collection<DbUser>('users');
   }
@@ -33,6 +37,10 @@ export class AuthEffects {
     () => this.actions$.pipe(
       ofType(AuthActions.SIGNUP_START),
       switchMap((signUpAction: AuthActions.SignUpStart) => {
+        this.store.dispatch(
+          new AppLoadingActions.AppLoadingAdd('AUTH_PROCESS')
+        );
+        
         return from(
           this.fireAuth.createUserWithEmailAndPassword(
             signUpAction.payload.email,
@@ -66,14 +74,13 @@ export class AuthEffects {
                     return from(
                       dbUser.get()
                     ).pipe(
-                      map(dbUser => {
+                      mergeMap(dbUser => {
                         const theUser = <DbUser>dbUser.data();
 
                         return handleAuthSuccess({
                           user: {
                             ...theUser,
                             email: userCred.user.email,
-                            userId: userCred.user.uid,
                             token: tokenRes.token,
                             role: UserRole.Player,
                             expirationDate: new Date(tokenRes.expirationTime),
@@ -84,17 +91,17 @@ export class AuthEffects {
                     )
                   }),
                   catchError((error) => {
-                    return handleError(error);
+                    return handleError(error, this.store);
                   })
                 )
               }),
               catchError((error) => {
-                return handleError(error);
+                return handleError(error, this.store);
               })
             )
           }),
           catchError((error) => {
-            return handleError(error);
+            return handleError(error, this.store);
           })
         )
       })
@@ -105,6 +112,10 @@ export class AuthEffects {
     () => this.actions$.pipe(
       ofType(AuthActions.LOGIN_START),
       switchMap((logInAction: AuthActions.LoginStart) => {
+        this.store.dispatch(
+          new AppLoadingActions.AppLoadingAdd('AUTH_PROCESS')
+        );
+
         return from(
           this.fireAuth.signInWithEmailAndPassword(
             logInAction.payload.email,
@@ -123,7 +134,7 @@ export class AuthEffects {
                 return from(
                   userCred.user.getIdTokenResult()
                 ).pipe(
-                  map(tokenRes => {
+                  mergeMap(tokenRes => {
                     const dbUserRole = dbUser ? dbUser.get('role') as UserRole : UserRole.Player;
                     const theUser = <DbUser>dbUser.data();
                     
@@ -131,26 +142,25 @@ export class AuthEffects {
                       user: {
                         ...theUser,
                         email: userCred.user.email,
-                        userId: userCred.user.uid,
                         token: tokenRes.token,
-                        role: dbUserRole,
-                        expirationDate: new Date(tokenRes.expirationTime)
+                        role: UserRole.Player,
+                        expirationDate: new Date(tokenRes.expirationTime),
                       },
                       redirectTo: dbUserRole === UserRole.Admin ? '/admin' : '/hub'
                     })
                   }),
                   catchError((error) => {
-                    return handleError(error);
+                    return handleError(error, this.store);
                   })
                 )
               }),
               catchError((error) => {
-                return handleError(error);
+                return handleError(error, this.store);
               })
             )
           }),
           catchError((error) => {
-            return handleError(error);
+            return handleError(error, this.store);
           })
         )
       })
@@ -161,13 +171,17 @@ export class AuthEffects {
     () => this.actions$.pipe(
       ofType(AuthActions.AUTH_SUCCESS),
       tap((authSuccessAction: AuthActions.AuthSuccess) => {
-        const expiresIn = authSuccessAction.payload.user.expirationDate.getTime() - new Date().getTime();
+        const expiresIn = authSuccessAction.payload.user.tokenExpirationDate.getTime() - new Date().getTime();
 
         this.authService.setRefreshTimer(expiresIn - 10000);
 
         if(authSuccessAction.payload.redirectTo){
           this.router.navigate([authSuccessAction.payload.redirectTo])
         }
+
+        this.store.dispatch(
+          new AppLoadingActions.AppLoadingRemove('AUTH_PROCESS')
+        );
       })
     ),
     {
@@ -179,20 +193,26 @@ export class AuthEffects {
     () => this.actions$.pipe(
       ofType(AuthActions.AUTO_LOGIN),
       switchMap((autoLoginAction: AuthActions.AutoLogin) => {
+        this.store.dispatch(
+          new AppLoadingActions.AppLoadingAdd('AUTH_PROCESS')
+        );
+
         //TODO: eventually refresh token
         //If the action got a verified user in the payload, don't run the verification twice
         if(autoLoginAction.payload){
           const user = autoLoginAction.payload;
 
-          return of(
-            handleAuthSuccess({
-              user: {
-                ...user,
-                token: user.token,
-                userId: user.id,
-                expirationDate: user.tokenExpirationDate
-              },
-              redirectTo: null
+          //kinda dirty but works, TODO: better solution
+          return of('').pipe(
+            mergeMap(() => {
+              return handleAuthSuccess({
+                user: {
+                  ...user,
+                  token: user.token,
+                  expirationDate: user.expirationDate
+                },
+                redirectTo: null
+              })
             })
           )
         }
@@ -201,6 +221,10 @@ export class AuthEffects {
 
         //Don't log in if no user
         if(!user){
+          this.store.dispatch(
+            new AppLoadingActions.AppLoadingRemove('AUTH_PROCESS')
+          );
+
           return new Observable().pipe(
             map(action => {
               return {type: 'DUMMY'}
@@ -215,25 +239,22 @@ export class AuthEffects {
                 return dbUser.get('id') === user.id;
               })
             }),
-            map(
-              dbUser => {
-                //Protect from cheeky users editing localStorage to give themselves admin rights
-                const dbUserRole = dbUser ? dbUser.get('role') as UserRole : UserRole.Player;
-                const theUser = <DbUser>dbUser.data();
-                    
-                return handleAuthSuccess({
-                  user: {
-                    ...theUser,
-                    email: user.email,
-                    userId: user.id,
-                    token: user.token,
-                    role: dbUserRole,
-                    expirationDate: user.tokenExpirationDate
-                  },
-                  redirectTo: null
-                })
-              }
-            )
+            mergeMap(dbUser => {
+              //Protect from cheeky users editing localStorage to give themselves admin rights
+              const dbUserRole = dbUser ? dbUser.get('role') as UserRole : UserRole.Player;
+              const theUser = <DbUser>dbUser.data();
+                  
+              return handleAuthSuccess({
+                user: {
+                  ...theUser,
+                  email: user.email,
+                  token: user.token,
+                  role: UserRole.Player,
+                  expirationDate: new Date(user.tokenExpirationDate),
+                },
+                redirectTo: null
+              })
+            })
           )
       })
     )

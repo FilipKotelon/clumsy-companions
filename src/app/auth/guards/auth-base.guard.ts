@@ -63,9 +63,15 @@ export abstract class AuthBaseGuard {
                       map(user => user)
                     ).subscribe( user => {
                       if(!user){
+                        const theUser = <DbUser>dbUser.data();
                         // Log the user in in the background
                         this.store.dispatch(
-                          new AuthActions.AutoLogin(finalUser.user)
+                          new AuthActions.AutoLogin({
+                            ...finalUser.user,
+                            ...theUser,
+                            token: finalUser.user.token,
+                            expirationDate: finalUser.user.tokenExpirationDate
+                          })
                         )
                       }
                     }).unsubscribe();

@@ -1,0 +1,39 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+.loading-modal{
+  @include abs(0, 0);
+  @include square(100%);
+  @include d-flex($center: true);
+  background: $white-dimmed-transparent;
+  z-index: 100;
+
+  &.global{
+    position: fixed;
+    z-index: 10000;
+
+    & .loading-modal{
+      &__icon{
+        @include square(6rem);
+      }
+    }
+  }
+
+  &__icon{
+    @include square(3rem);
+    animation: loading 1.5s ease-out infinite;
+  }
+}
+
+@keyframes loading {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

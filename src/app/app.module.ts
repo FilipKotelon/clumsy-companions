@@ -8,6 +8,7 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage'
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { CoreModule } from '@core/core.module';
 import { SharedModule } from '@shared/shared.module'
@@ -35,7 +36,11 @@ import { AuthEffects } from '@auth/store/auth.effects';
     AngularFireStorageModule,
     AppRoutingModule,
     StoreModule.forRoot(fromApp.appReducer),
-    EffectsModule.forRoot([AuthEffects])
+    EffectsModule.forRoot([AuthEffects]),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25,
+      autoPause: true
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]

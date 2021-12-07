@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { fadeInOut } from '@shared/animations/component-animations'
 import * as AuthActions from '@auth/store/auth.actions'
-import * as AppMsgActions from '@app/store/app-msg.actions'
+import * as AppMsgActions from '@app/store/msg/app-msg.actions'
 import * as fromApp from '@app/store/app.reducer'
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, map, take } from 'rxjs/operators';
@@ -47,7 +47,7 @@ export class AuthComponent implements OnInit {
     private fireStore: AngularFirestore
   ) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
     if(this.router.url.includes('log-in')){
       this.curAuthType = AuthType.LogIn;
     } else {

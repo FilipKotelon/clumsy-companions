@@ -1,12 +1,17 @@
+import { Player } from '@hub/models/player.model'
+import { Store, Action } from '@ngrx/store'
 import { User } from './../models/user.model'
-import { AuthSuccessData } from './auth.actions'
+import { AuthSuccessFullData } from './auth.actions'
 import { of } from "rxjs";
 
 import { UserRole } from '../models/user.model'
-import * as AuthActions from '@auth/store/auth.actions'
-import * as AppMsgActions from '@app/store/app-msg.actions'
 
-export const handleError = (error) => {
+import * as AuthActions from '@auth/store/auth.actions'
+import * as AppMsgActions from '@app/store/msg/app-msg.actions'
+import * as AppLoadingActions from '@app/store/loading/app-loading.actions'
+import * as PlayerActions from '@hub/store/player/player.actions';
+
+export const handleError = (error, store: Store) => {
   let msg = 'An error occurred. Try again later.';
   console.log(error);
 
@@ -35,16 +40,24 @@ export const handleError = (error) => {
       break;
   }
 
+  store.dispatch(
+    new AppLoadingActions.AppLoadingRemove('AUTH_PROCESS')
+  );
+
   return of(new AppMsgActions.AppError(msg))
 }
 
-export const handleAuthSuccess = (data: AuthSuccessData) => {
+export const handleAuthSuccess = (data: AuthSuccessFullData): Action[] => {
   const user = new User(
     data.user.email,
-    data.user.userId,
+    data.user.id,
     data.user.role,
     data.user.token,
-    data.user.expirationDate,
+    data.user.expirationDate
+  );
+
+  const player = new Player(
+    data.user.username,
     data.user.currentAvatarId,
     data.user.currentDeckId,
     data.user.decks,
@@ -55,16 +68,17 @@ export const handleAuthSuccess = (data: AuthSuccessData) => {
     data.user.coins,
     data.user.winCount,
     data.user.lossCount
-  );
+  )
 
-  localStorage.setItem('loggedInUser', JSON.stringify(user));
+  localStorage.setItem('loggedInUser', JSON.stringify(data.user));
 
-  return new AuthActions.AuthSuccess({
-    user: {
-      ...data.user
-    },
-    redirectTo: data.redirectTo
-  })
+  return [
+    new AuthActions.AuthSuccess({
+      user,
+      redirectTo: data.redirectTo
+    }),
+    new PlayerActions.PlayerSet(player)
+  ]
 }
 
 export const getLocalStorageUser = (): User => {
@@ -79,17 +93,7 @@ export const getLocalStorageUser = (): User => {
     id: string,
     role: UserRole,
     _token: string,
-    _tokenExpirationDate: string,
-    currentAvatarId: string,
-    currentDeckId: string,
-    decks: string[],
-    ownedAvatars: string[],
-    ownedPacks: string[],
-    ownedCards: string[],
-    ownedSleeves: string[],
-    coins: number,
-    winCount: number,
-    lossCount: number
+    _tokenExpirationDate: string
   } = JSON.parse(savedUser);
 
   const user = new User(
@@ -97,17 +101,7 @@ export const getLocalStorageUser = (): User => {
     userData.id,
     userData.role,
     userData._token,
-    new Date(userData._tokenExpirationDate),
-    userData.currentAvatarId,
-    userData.currentDeckId,
-    userData.decks,
-    userData.ownedAvatars,
-    userData.ownedPacks,
-    userData.ownedCards,
-    userData.ownedSleeves,
-    userData.coins,
-    userData.winCount,
-    userData.lossCount
+    new Date(userData._tokenExpirationDate)
   )
 
   //Token will return null if the token expired

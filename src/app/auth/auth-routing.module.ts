@@ -10,11 +10,17 @@ let routes: Routes = [
   },
   {
     path: 'log-in',
-    component: AuthComponent
+    component: AuthComponent,
+    data: {
+      anmimation: '1'
+    }
   },
   {
     path: 'sign-up',
-    component: AuthComponent
+    component: AuthComponent,
+    data: {
+      anmimation: '2'
+    }
   },
 ];
 

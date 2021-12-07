@@ -16,24 +16,32 @@ export interface UserRegisterData extends UserLoginData {
   username: string;
 }
 
+export interface UserFullData {
+  id: string;
+  username: string;
+  email: string;
+  token: string;
+  role: UserRole;
+  expirationDate: Date;
+  currentAvatarId: string;
+  currentDeckId: string;
+  decks: string[];
+  ownedAvatars: string[];
+  ownedPacks: string[];
+  ownedCards: string[];
+  ownedSleeves: string[];
+  coins: number;
+  winCount: number;
+  lossCount: number;
+}
+
+export interface AuthSuccessFullData {
+  user: UserFullData;
+  redirectTo?: string;
+}
+
 export interface AuthSuccessData {
-  user: {
-    email: string;
-    userId: string;
-    token: string;
-    role: UserRole;
-    expirationDate: Date;
-    currentAvatarId: string;
-    currentDeckId: string;
-    decks: string[];
-    ownedAvatars: string[];
-    ownedPacks: string[];
-    ownedCards: string[];
-    ownedSleeves: string[];
-    coins: number;
-    winCount: number;
-    lossCount: number;
-  }
+  user: User;
   redirectTo?: string;
 }
 
@@ -60,7 +68,7 @@ export class AuthSuccess implements Action {
 export class AutoLogin implements Action {
   readonly type = AUTO_LOGIN;
 
-  constructor(public payload?: User) {}
+  constructor(public payload?: UserFullData) {}
 }
 
 export class Logout implements Action {

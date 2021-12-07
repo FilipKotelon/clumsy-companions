@@ -10,7 +10,7 @@ const initState: State = {
   info: ''
 }
 
-export function appMsgReducer ( state = initState , action: AppMsgActions.AppMsgActions ) {
+export function appMsgReducer ( state = initState , action: AppMsgActions.AppMsgActions ): State {
   switch(action.type){
     case AppMsgActions.APP_ERROR :
       return {

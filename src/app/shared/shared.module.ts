@@ -6,6 +6,7 @@ import { LabeledInputComponent } from './components/labeled-input/labeled-input.
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { LoadingModalComponent } from './loading-modal/loading-modal.component';
 
 
 
@@ -15,7 +16,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     PopupMessageComponent,
     AcceptPopupComponent,
     ErrorMessageComponent,
-    InfoMessageComponent
+    InfoMessageComponent,
+    LoadingModalComponent,
   ],
   imports: [
     CommonModule,
@@ -28,7 +30,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     PopupMessageComponent,
     AcceptPopupComponent,
     ErrorMessageComponent,
-    InfoMessageComponent
+    InfoMessageComponent,
+    LoadingModalComponent,
   ]
 })
 export class SharedModule { }

@@ -1,0 +1,9 @@
+<div 
+  *ngIf="open"
+  class="loading-modal"
+  [@fadeInOut]
+  [ngClass]="{
+    'global': global
+  }">
+  <img src="assets/img/icons/paw-brown-light.svg" alt="Loading" class="loading-modal__icon">
+</div>
