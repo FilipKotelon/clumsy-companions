@@ -23,17 +23,17 @@ export class LabeledInputComponent extends InputComponent {
     super()
   }
 
-  onFocus = () => {
+  onFocus = (): void => {
     this.labelUp = true;
   }
 
-  onFocusOut = () => {
+  onFocusOut = (): void => {
     if(!this.value){
       this.labelUp = false;
     }
   }
 
-  override writeValue(value: any) {
+  override writeValue(value: any): void {
     this.innerValue = value;
 
     if(this.value){

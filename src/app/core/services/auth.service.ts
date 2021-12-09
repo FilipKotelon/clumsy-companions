@@ -11,19 +11,27 @@ import * as AuthActions from '@auth/store/auth.actions'
 export class AuthService{
   private refreshTimer: any;
 
-  constructor(private fireAuth: AngularFireAuth, private store: Store<fromApp.AppState>) {}
+  constructor(
+    private fireAuth: AngularFireAuth,
+    private store: Store<fromApp.AppState>
+  ) {}
 
-  setRefreshTimer = (expiresIn: number) => {
+  setRefreshTimer = (expiresIn: number): void => {
     this.refreshTimer = setTimeout(() => {
       this.fireAuth.currentUser.then(user => {
-        console.log('Refresh timer');
-        console.log(user);
-        user.getIdToken(true);
+        user.getIdTokenResult(true).then(tokenRes => {
+          this.store.dispatch(
+            new AuthActions.RefreshToken({
+              token: tokenRes.token,
+              expirationTime: new Date(tokenRes.expirationTime)
+            })
+          )
+        })
       })
     }, expiresIn)
   }
 
-  clearRefreshTimer = () => {
+  clearRefreshTimer = (): void => {
     if(this.refreshTimer){
       clearTimeout(this.refreshTimer);
     }

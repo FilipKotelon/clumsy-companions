@@ -31,6 +31,7 @@
     @include square(100%);
     background: $white-dimmed-transparent;
     z-index: 0;
+    cursor: pointer;
   }
 
   &__content{

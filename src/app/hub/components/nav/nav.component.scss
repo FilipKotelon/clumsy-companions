@@ -1,0 +1,88 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+$links-space: 1.5rem;
+
+.hub-nav{
+  &-placeholder{
+    height: 6rem;
+  }
+
+  @include d-flex($jc: space-between);
+  height: 6rem;
+  font-size: 2.2rem;
+
+  &__play, &__group, &__links, &__links > *{
+    @include d-flex($ai: center);
+    height: 100%;
+  }
+
+  &__play{
+    background: $main;
+    padding: 0 2.2rem;
+    cursor: pointer;
+
+    & img{
+      filter: brightness(0) invert(1);
+      width: 3rem;
+      margin-right: 1.2rem;
+      margin-bottom: .2rem;
+    }
+
+    & span{
+      text-transform: uppercase;
+      font-weight: 400;
+      color: $white;
+      margin-top: .2rem;
+    }
+  }
+
+  &__links{
+    @include d-flex();
+    padding-left: $links-space;
+
+    & > *{
+      position: relative;
+      padding: 0 $links-space;
+
+      &::after{
+        @include default-after;
+        bottom: 0;
+        left: .2rem;
+        @include rect(calc(100% - .4rem), .4rem);
+        background: $main;
+        opacity: 0;
+        @include transition;
+      }
+
+      &.active{
+        &::after{
+          opacity: 1;
+        }
+      }
+
+      &:hover{
+        &::after{
+          opacity: .8;
+        }
+      }
+    }
+  }
+  
+  &__item{
+    @include d-flex($ai: center);
+    margin-right: 3rem;
+
+    & .hub-nav__icon{
+      margin-right: 1.2rem;
+      cursor: inherit;
+    }
+  }
+
+  &__icon{
+    height: 4rem;
+    margin-right: 1.8rem;
+    cursor: pointer;
+  }
+}

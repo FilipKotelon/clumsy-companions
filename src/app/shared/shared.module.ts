@@ -7,6 +7,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoadingModalComponent } from './loading-modal/loading-modal.component';
+import { BigNumberPipe } from './pipes/big-number.pipe';
 
 
 
@@ -18,6 +19,7 @@ import { LoadingModalComponent } from './loading-modal/loading-modal.component';
     ErrorMessageComponent,
     InfoMessageComponent,
     LoadingModalComponent,
+    BigNumberPipe,
   ],
   imports: [
     CommonModule,
@@ -32,6 +34,7 @@ import { LoadingModalComponent } from './loading-modal/loading-modal.component';
     ErrorMessageComponent,
     InfoMessageComponent,
     LoadingModalComponent,
+    BigNumberPipe,
   ]
 })
 export class SharedModule { }

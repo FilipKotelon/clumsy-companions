@@ -24,6 +24,20 @@ export function authReducer ( state = initState, action: AuthActions.AuthActions
         user: null
       }
 
+    case AuthActions.REFRESH_TOKEN :
+      const user = new User(
+        state.user.email,
+        state.user.id,
+        state.user.role,
+        action.payload.token,
+        action.payload.expirationTime
+      );
+
+      return {
+        ...state,
+        user
+      }
+
     default:
       return state;
       

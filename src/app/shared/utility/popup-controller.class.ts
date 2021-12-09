@@ -14,7 +14,7 @@ export abstract class PopupController implements OnInit, OnDestroy {
   
   constructor(protected store: Store<fromApp.AppState>, protected msgSelector: fromAppMsgSelectors.SelectorType, protected clearMsgAction: AppMsgActions.AppMsgClearActions) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.storeSub = this.store.select(this.msgSelector).subscribe(msg => {
       if(msg){
         this.isOpen = true;
@@ -26,13 +26,13 @@ export abstract class PopupController implements OnInit, OnDestroy {
     })
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if(this.storeSub){
       this.storeSub.unsubscribe();
     }
   }
 
-  closePopup = () => {
+  closePopup = (): void => {
     this.store.dispatch(
       new this.clearMsgAction()
     )

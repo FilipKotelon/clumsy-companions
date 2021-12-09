@@ -20,11 +20,11 @@ export class AcceptPopupComponent {
   @Output() declined = new EventEmitter<void>()
   @Output() accepted = new EventEmitter<void>()
   
-  onDecline = () => {
+  onDecline = (): void => {
     this.declined.emit();
   }
 
-  onAccept = () => {
+  onAccept = (): void => {
     this.accepted.emit();
   }
 }

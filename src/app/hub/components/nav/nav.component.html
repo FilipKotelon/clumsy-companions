@@ -1,1 +1,32 @@
-<p>nav works!</p>
+<nav class="hub-nav">
+
+  <div class="hub-nav__group">
+    <button class="hub-nav__play">
+      <img src="assets/img/icons/paw-green.svg" alt="Play">
+      <span>Play</span>
+    </button>
+    <div class="hub-nav__links">
+      <a routerLink="/hub" routerLinkActive="active">Home</a>
+      <a routerLink="/hub/profile" routerLinkActive="active">Profile</a>
+      <a routerLink="/hub/decks" routerLinkActive="active">Decks</a>
+      <a routerLink="/hub/store" routerLinkActive="active">Store</a>
+      <a routerLink="/hub/collection" routerLinkActive="active">Collection</a>
+    </div>
+  </div>
+
+  <div class="hub-nav__group">
+    <div class="hub-nav__item">
+      <img src="assets/img/icons/coin-gold.svg" alt="Coins" class="hub-nav__icon">
+      <span>{{ coins | bigNumber }}</span>
+    </div>
+    <a routerLink="/hub/packs" class="hub-nav__item">
+      <img src="assets/img/icons/card-green.svg" alt="Packs" class="hub-nav__icon">
+      <span>{{ packsAmount | bigNumber }}</span>
+    </a>
+    <img src="assets/img/icons/help.svg" alt="Help" class="hub-nav__icon">
+    <img src="assets/img/icons/turn-off.svg" alt="Log out" class="hub-nav__icon" (click)="logOut()">
+  </div>
+
+</nav>
+
+<div class="hub-nav-placeholder"></div>

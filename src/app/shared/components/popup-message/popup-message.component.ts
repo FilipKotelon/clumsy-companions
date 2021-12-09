@@ -17,7 +17,7 @@ export class PopupMessageComponent {
 
   @Output() onClose = new EventEmitter<void>();
   
-  closePopup = () => {
+  closePopup = (): void => {
     this.onClose.emit();
   }
 }

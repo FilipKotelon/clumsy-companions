@@ -6,6 +6,7 @@ export const SIGNUP_START = '[Auth] Signup Start';
 export const AUTH_SUCCESS = '[Auth] Auth Success';
 export const AUTO_LOGIN = '[Auth] Auto Login';
 export const LOGOUT = '[Auth] Logout';
+export const REFRESH_TOKEN = '[Auth] Refresh Token';
 
 export interface UserLoginData {
   email: string;
@@ -45,7 +46,12 @@ export interface AuthSuccessData {
   redirectTo?: string;
 }
 
-export type AuthActions = LoginStart | SignUpStart | AuthSuccess | AutoLogin | Logout;
+export interface RefreshTokenData {
+  token: string;
+  expirationTime: Date;
+}
+
+export type AuthActions = LoginStart | SignUpStart | AuthSuccess | AutoLogin | Logout | RefreshToken;
 
 export class LoginStart implements Action {
   readonly type = LOGIN_START;
@@ -73,4 +79,10 @@ export class AutoLogin implements Action {
 
 export class Logout implements Action {
   readonly type = LOGOUT;
+}
+
+export class RefreshToken implements Action {
+  readonly type = REFRESH_TOKEN;
+
+  constructor(public payload: RefreshTokenData) {}
 }

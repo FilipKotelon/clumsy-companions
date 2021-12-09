@@ -13,9 +13,9 @@ export abstract class InputComponent implements ControlValueAccessor, OnChanges,
 
   constructor() { }
 
-  ngOnChanges(){ }
+  ngOnChanges(): void { }
 
-  ngAfterViewInit(){ 
+  ngAfterViewInit(): void { 
     // RESET the custom input form control UI when the form control is RESET
     this.control.valueChanges.subscribe(
       () => {
@@ -41,7 +41,7 @@ export abstract class InputComponent implements ControlValueAccessor, OnChanges,
   }
 
   // event fired when input value is changed . later propagated up to the form control using the custom value accessor interface
-  onChange(e:Event, value:any){
+  onChange(e:Event, value:any): void {
     //set changed value
     this.innerValue = value;
     // propagate value into form control using control value accessor interface
@@ -49,21 +49,19 @@ export abstract class InputComponent implements ControlValueAccessor, OnChanges,
   }
 
   //propagate changes into the custom form control
-  propagateChange = (_: any) => { }
+  propagateChange = (_: any): void => { }
 
   //From ControlValueAccessor interface
-  writeValue(value: any) {
+  writeValue(value: any): void {
     this.innerValue = value;
   }
 
   //From ControlValueAccessor interface
-  registerOnChange(fn: any) {
+  registerOnChange(fn: any): void {
     this.propagateChange = fn;
   }
 
   //From ControlValueAccessor interface
-  registerOnTouched(fn: any) {
-
-  }
+  registerOnTouched(fn: any): void { }
 
 }

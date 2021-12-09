@@ -11,16 +11,14 @@ let routes: Routes = [
   {
     path: 'log-in',
     component: AuthComponent,
-    data: {
-      anmimation: '1'
-    }
   },
   {
     path: 'sign-up',
     component: AuthComponent,
-    data: {
-      anmimation: '2'
-    }
+  },
+  {
+    path: 'reset-password',
+    component: AuthComponent,
   },
 ];
 

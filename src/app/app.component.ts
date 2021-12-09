@@ -27,7 +27,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(private store: Store<fromApp.AppState>){}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.storeLoadingSub = this.store.select(AppLoadingSelectors.selectLoadingTasks).subscribe(tasks => {
       this.tasks = tasks;
       this.isLoading = tasks.length > 0;
@@ -45,7 +45,7 @@ export class AppComponent implements OnInit, OnDestroy {
     })
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.storeLoadingSub.unsubscribe();
     this.storeAuthSub.unsubscribe();
   }

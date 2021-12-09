@@ -1,10 +1,10 @@
 import { Store } from '@ngrx/store'
 import { Injectable } from '@angular/core'
 import { AngularFireAuth } from '@angular/fire/compat/auth'
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore'
+import { AngularFirestore, AngularFirestoreCollection, CollectionReference, Query } from '@angular/fire/compat/firestore'
 import { Router } from '@angular/router'
 import { Actions, createEffect, ofType } from '@ngrx/effects'
-import { tap, map, catchError, switchMap, mergeMap } from 'rxjs/operators'
+import { tap, map, catchError, switchMap, mergeMap, take } from 'rxjs/operators'
 import { from, Observable, of } from 'rxjs'
 
 import { AuthService } from '@core/services/auth.service'
@@ -14,9 +14,10 @@ import { DbUser } from '../models/db-user.model'
 import { UserRole } from '../models/user.model'
 
 import * as fromApp from '@app/store/app.reducer';
-import * as AuthActions from '@auth/store/auth.actions'
 import * as AppMsgActions from '@app/store/msg/app-msg.actions'
 import * as AppLoadingActions from '@app/store/loading/app-loading.actions'
+import * as AuthActions from './auth.actions'
+import * as AuthSelectors from './auth.selectors';
 
 @Injectable()
 export class AuthEffects {
@@ -123,27 +124,26 @@ export class AuthEffects {
           )
         ).pipe(
           switchMap(userCred => {
-            return this.usersCollection.get()
-            .pipe(
-              map(dbUsers => {
-                return dbUsers.docs.find(dbUser => {
-                  return dbUser.get('id') === userCred.user.uid;
-                })
-              }),
+            return this.fireStore.collection<DbUser>('users', ref => {
+              let query: CollectionReference | Query = ref;
+              query = query.where('id', '==', userCred.user.uid);
+
+              return query;
+            }).get().pipe(
               switchMap((dbUser) => {
                 return from(
                   userCred.user.getIdTokenResult()
                 ).pipe(
                   mergeMap(tokenRes => {
-                    const dbUserRole = dbUser ? dbUser.get('role') as UserRole : UserRole.Player;
-                    const theUser = <DbUser>dbUser.data();
+                    const theUser = <DbUser>dbUser.docs[0].data();
+                    const dbUserRole = dbUser ? theUser.role : UserRole.Player;
                     
                     return handleAuthSuccess({
                       user: {
                         ...theUser,
                         email: userCred.user.email,
                         token: tokenRes.token,
-                        role: UserRole.Player,
+                        role: dbUserRole,
                         expirationDate: new Date(tokenRes.expirationTime),
                       },
                       redirectTo: dbUserRole === UserRole.Admin ? '/admin' : '/hub'
@@ -171,9 +171,12 @@ export class AuthEffects {
     () => this.actions$.pipe(
       ofType(AuthActions.AUTH_SUCCESS),
       tap((authSuccessAction: AuthActions.AuthSuccess) => {
-        const expiresIn = authSuccessAction.payload.user.tokenExpirationDate.getTime() - new Date().getTime();
+        // const expiresIn = authSuccessAction.payload.user.tokenExpirationDate.getTime() - new Date().getTime();
+        const expiresIn = 3600 * 1000;
 
-        this.authService.setRefreshTimer(expiresIn - 10000);
+        //Refresh instantly and set a refresh timer for an hour minus 30 seconds, so it refreshes before it expires in firebase
+        this.authService.setRefreshTimer(0);
+        this.authService.setRefreshTimer(expiresIn - 30000);
 
         if(authSuccessAction.payload.redirectTo){
           this.router.navigate([authSuccessAction.payload.redirectTo])
@@ -232,28 +235,30 @@ export class AuthEffects {
           )
         }
 
-        return this.usersCollection.get()
-          .pipe(
-            map(dbUsers => {
-              return dbUsers.docs.find(dbUser => {
-                return dbUser.get('id') === user.id;
-              })
-            }),
+        return this.fireStore.collection<DbUser>('users', ref => {
+            let query: CollectionReference | Query = ref;
+            query = query.where('id', '==', user.id);
+
+            return query;
+          }).get().pipe(
             mergeMap(dbUser => {
+              const theUser = <DbUser>dbUser.docs[0].data();
               //Protect from cheeky users editing localStorage to give themselves admin rights
-              const dbUserRole = dbUser ? dbUser.get('role') as UserRole : UserRole.Player;
-              const theUser = <DbUser>dbUser.data();
+              const dbUserRole = theUser ? theUser.role as UserRole : UserRole.Player;
                   
               return handleAuthSuccess({
                 user: {
                   ...theUser,
                   email: user.email,
                   token: user.token,
-                  role: UserRole.Player,
+                  role: dbUserRole,
                   expirationDate: new Date(user.tokenExpirationDate),
                 },
                 redirectTo: null
               })
+            }),
+            catchError((error) => {
+              return handleError(error, this.store);
             })
           )
       })
@@ -264,11 +269,34 @@ export class AuthEffects {
     () => this.actions$.pipe(
       ofType(AuthActions.LOGOUT),
       map(() => {
+        this.fireAuth.signOut();
         this.authService.clearRefreshTimer();
         localStorage.removeItem('loggedInUser');
         this.router.navigate(['/']);
         return new AppMsgActions.AppInfo('You\'ve been logged out.');
+      }),
+      catchError((error) => {
+        return handleError(error, this.store);
       })
     )
+  )
+
+  authRefreshToken = createEffect(
+    () => this.actions$.pipe(
+      ofType(AuthActions.REFRESH_TOKEN),
+      tap(() => {
+        this.store.select(AuthSelectors.selectUser).pipe(
+          take(1)
+        ).subscribe(user => {
+          localStorage.setItem('loggedInUser', JSON.stringify(user));
+        })
+      }),
+      catchError((error) => {
+        return handleError(error, this.store);
+      })
+    ),
+    {
+      dispatch: false
+    }
   )
 }

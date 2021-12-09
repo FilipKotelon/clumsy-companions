@@ -4,7 +4,7 @@ import { User, UserRole } from '../models/user.model'
 import { Store } from '@ngrx/store'
 import { Injectable } from '@angular/core'
 import { Router } from '@angular/router'
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore'
+import { AngularFirestore, AngularFirestoreCollection, CollectionReference, Query } from '@angular/fire/compat/firestore'
 import { of, Observable } from 'rxjs'
 import { catchError, map, take, switchMap, tap } from 'rxjs/operators'
 
@@ -15,12 +15,8 @@ import * as AuthActions from '@auth/store/auth.actions'
 @Injectable({
   providedIn: 'root'
 })
-export abstract class AuthBaseGuard {
-  usersCollection: AngularFirestoreCollection;
-  
-  constructor(protected store: Store<fromApp.AppState>, protected router: Router, protected fireStore: AngularFirestore){
-    this.usersCollection = this.fireStore.collection<DbUser>('users');
-  }
+export abstract class AuthBaseGuard {  
+  constructor(protected store: Store<fromApp.AppState>, protected router: Router, protected fireStore: AngularFirestore){ }
 
   protected checkUser = (): Observable<User> => {
     return this.store.select(AuthSelectors.selectUser).pipe(
@@ -47,38 +43,42 @@ export abstract class AuthBaseGuard {
             if(!finalUser.fromStorage){
               return of(finalUser.user);
             } else {
-              return this.usersCollection.get().pipe(
-                map(dbUsers => {
-                  return dbUsers.docs.find(dbUser => {
-                    return dbUser.get('id') === finalUser.user.id;
-                  })
-                }),
+              return this.fireStore.collection<DbUser>('users', ref => {
+                let query: CollectionReference | Query = ref;
+                query = query.where('id', '==', finalUser.user.id);
+
+                return query;
+              }).get().pipe(
                 map(dbUser => {
-                  const dbUserRole = dbUser ? dbUser.get('role') as UserRole : UserRole.Player;
-      
-                  if(dbUserRole === finalUser.user.role){
-                    //Check if user was not logged in already by the app component
-                    this.store.select(AuthSelectors.selectUser).pipe(
-                      take(1),
-                      map(user => user)
-                    ).subscribe( user => {
-                      if(!user){
-                        const theUser = <DbUser>dbUser.data();
-                        // Log the user in in the background
-                        this.store.dispatch(
-                          new AuthActions.AutoLogin({
-                            ...finalUser.user,
-                            ...theUser,
-                            token: finalUser.user.token,
-                            expirationDate: finalUser.user.tokenExpirationDate
-                          })
-                        )
-                      }
-                    }).unsubscribe();
-      
-                    return finalUser.user;
+                  if(dbUser.docs.length){
+                    const theUser = <DbUser>dbUser.docs[0].data();
+                    const dbUserRole = dbUser ? theUser.role : UserRole.Player;
+        
+                    if(dbUserRole === finalUser.user.role){
+                      //Check if user was not logged in already by the app component
+                      this.store.select(AuthSelectors.selectUser).pipe(
+                        take(1),
+                        map(user => user)
+                      ).subscribe( user => {
+                        if(!user){
+                          // Log the user in in the background
+                          this.store.dispatch(
+                            new AuthActions.AutoLogin({
+                              ...finalUser.user,
+                              ...theUser,
+                              token: finalUser.user.token,
+                              expirationDate: finalUser.user.tokenExpirationDate
+                            })
+                          )
+                        }
+                      });
+        
+                      return finalUser.user;
+                    } else {
+                      return null
+                    }
                   } else {
-                    return null
+                    return null;
                   }
                 }),
                 catchError(error => {

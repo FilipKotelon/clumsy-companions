@@ -9,14 +9,14 @@ body{
   line-height: 170%;
   font-family: $fontMain, cursive;
   font-weight: 300;
-  color: $coffee;
+  color: $black;
 }
 
 a{
   cursor: pointer;
 
   &, &:hover{
-    color: $coffee;
+    color: $black;
   }
 
   &, &:hover{

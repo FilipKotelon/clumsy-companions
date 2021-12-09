@@ -3,10 +3,13 @@
     <div class="auth-page__content__main">
 
       <h1 class="medium-title">
-        Clumsy Compan<span class="logo-above-i"><span>i</span><img src="assets/img/icons/paw-brown.svg" alt="Paw"></span>ons
+        Clumsy Compan<span class="logo-above-i"><span>i</span><img src="assets/img/icons/paw-green.svg" alt="Paw"></span>ons
       </h1>
-      <p>
+      <p *ngIf="curAuthType !== allAuthTypes.ResetPassword">
         Welcome to the world of cozy and fluffy creatures! <br/> Sign in or create an account to play!
+      </p>
+      <p *ngIf="curAuthType === allAuthTypes.ResetPassword">
+        Forgot your password? Give us your email so you can get a link to reset your password.
       </p>
       <form 
         [formGroup]="authForm"
@@ -31,6 +34,7 @@
         ></app-labeled-input>
   
         <app-labeled-input
+          *ngIf="curAuthType !== allAuthTypes.ResetPassword"
           label="Password"
           validationMessage="Your password should be at least 6 characters long."
           formControlName="password"
@@ -42,7 +46,9 @@
           type="submit"
           class="page-button"
         > 
-          <span>{{ curAuthType === allAuthTypes.LogIn ? 'Log in' : 'Sign up' }}</span>
+          <span *ngIf="curAuthType === allAuthTypes.LogIn">Log In</span>
+          <span *ngIf="curAuthType === allAuthTypes.SignUp">Sign Up</span>
+          <span *ngIf="curAuthType === allAuthTypes.ResetPassword">Reset Password</span>
         </button>
   
       </form>
@@ -66,7 +72,7 @@
       <a 
         *ngIf="curAuthType !== allAuthTypes.ResetPassword"
         [@fadeInOut]
-        routerLink="/auth/sign-up" 
+        routerLink="/auth/reset-password" 
       >
         Forgot your password?
       </a>
@@ -84,6 +90,12 @@
       [@fadeInOut]
       src="assets/img/photos/sign-up-screen.png"
       alt="Sign up"
+      class="auth-page__img">
+    <img 
+      *ngIf="curAuthType === allAuthTypes.ResetPassword"
+      [@fadeInOut]
+      src="assets/img/photos/reset-password-screen.png"
+      alt="Reset password"
       class="auth-page__img">
   </div>
 </main>
