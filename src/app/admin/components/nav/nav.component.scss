@@ -1,0 +1,27 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+@import "utility/mixins/mixins-spacing";
+
+.admin-nav{
+  @include d-flex($ai: center, $jc: space-between);
+  @include square(100%);
+  padding: 0 1.5rem;
+  background: $main;
+  color: $white;
+
+  &__title{
+    font-size: 2.2rem;
+    margin-top: .3rem;
+  }
+
+  &__actions{
+    @include d-flex($ai: center);
+    @include m-not-last(1.8rem, r);
+  }
+
+  &__item{
+    height: 3.4rem;
+    cursor: pointer;
+  }
+}

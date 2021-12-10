@@ -17,23 +17,41 @@ export class AuthService{
   ) {}
 
   setRefreshTimer = (expiresIn: number): void => {
-    this.refreshTimer = setTimeout(() => {
-      this.fireAuth.currentUser.then(user => {
-        user.getIdTokenResult(true).then(tokenRes => {
-          this.store.dispatch(
-            new AuthActions.RefreshToken({
-              token: tokenRes.token,
-              expirationTime: new Date(tokenRes.expirationTime)
-            })
-          )
-        })
-      })
+    this.refreshToken();
+    
+    this.refreshTimer = setInterval(() => {
+      this.refreshToken();
     }, expiresIn)
+  }
+
+  refreshToken = (): void => {
+    this.fireAuth.currentUser
+      .then(user => {
+        user.getIdTokenResult(true)
+          .then(tokenRes => {
+            console.log('refresh');
+            
+            this.store.dispatch(
+              new AuthActions.RefreshToken({
+                token: tokenRes.token,
+                expirationTime: new Date(tokenRes.expirationTime)
+              })
+            )
+          })
+          .catch(e => {
+            console.log(e);
+            this.clearRefreshTimer();
+          })
+      })
+      .catch(e => {
+        console.log(e);
+        this.clearRefreshTimer();
+      })
   }
 
   clearRefreshTimer = (): void => {
     if(this.refreshTimer){
-      clearTimeout(this.refreshTimer);
+      clearInterval(this.refreshTimer);
     }
   }
 }

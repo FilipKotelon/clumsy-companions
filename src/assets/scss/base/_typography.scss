@@ -5,7 +5,7 @@ html{
 }
 
 body{
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   line-height: 170%;
   font-family: $fontMain, cursive;
   font-weight: 300;
@@ -30,7 +30,7 @@ a{
 }
 
 p, ul, ol {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   line-height: 170%;
   margin-bottom: 1em;
 }
@@ -53,7 +53,7 @@ h1, h2, h3, h4, h5, h6{
   & .logo-above-i{
     & img{
       @include square(1.4rem);
-      top: .3rem;
+      top: .1rem;
     }
   }
 }
@@ -78,6 +78,24 @@ h1, h2, h3, h4, h5, h6{
   & img{
     @include abs-center-x;
     @include square(1.7rem);
-    top: .7rem;
+    top: .4rem;
+  }
+}
+
+.color-main{
+  color: $main;
+}
+
+a.color-main:hover{
+  color: $main;
+}
+
+.icon-link{
+  @include d-flex($ai: center);
+  @include hover-underline-animation($h: .1rem, $top: calc(100% - .1rem), $bg: $main, $w: 100%, $dir: right);
+
+  & img{
+    width: 1.8rem;
+    margin-right: 1.4rem;
   }
 }

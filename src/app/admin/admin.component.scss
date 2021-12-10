@@ -1,0 +1,31 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+.admin-wrapper{
+  @include d-flex($wrap: wrap);
+
+  & app-nav{
+    @include rect(100%, 4.6rem);
+  }
+
+  & app-sidebar{
+    @include rect(26rem, calc(100vh - 4.6rem));
+  }
+
+  &__outlet{
+    @include rect(calc(100% - 26rem), calc(100vh - 4.6rem));
+    padding: 1.5rem;
+  }
+}
+
+::ng-deep{
+  .admin-wrapper{
+    &__outlet{  
+      & > .admin-wrapper > *{
+        width: calc(100% - 29rem);
+        height: calc(100vh - 7.6rem);
+      }
+    }
+  }
+}

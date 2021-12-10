@@ -1,0 +1,12 @@
+<div class="admin-wrapper">
+
+  <app-nav></app-nav>
+
+  <app-sidebar></app-sidebar>
+  <div class="admin-wrapper__outlet" [@routeAnimations]="prepareRoute(outlet)">
+    <ng-scrollbar class="admin-scrollbar">
+      <router-outlet #outlet="outlet"></router-outlet>
+    </ng-scrollbar>
+  </div>
+  
+</div>

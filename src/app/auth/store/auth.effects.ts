@@ -175,7 +175,6 @@ export class AuthEffects {
         const expiresIn = 3600 * 1000;
 
         //Refresh instantly and set a refresh timer for an hour minus 30 seconds, so it refreshes before it expires in firebase
-        this.authService.setRefreshTimer(0);
         this.authService.setRefreshTimer(expiresIn - 30000);
 
         if(authSuccessAction.payload.redirectTo){

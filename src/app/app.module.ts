@@ -40,7 +40,7 @@ import { AuthEffects } from '@auth/store/auth.effects';
     StoreDevtoolsModule.instrument({
       maxAge: 25,
       autoPause: true
-    })
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent]
