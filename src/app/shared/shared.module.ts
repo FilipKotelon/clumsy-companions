@@ -8,6 +8,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoadingModalComponent } from './loading-modal/loading-modal.component';
 import { BigNumberPipe } from './pipes/big-number.pipe';
+import { CardComponent } from './components/card/card.component';
+import { CardFrontComponent } from './components/card/card-front/card-front.component';
 
 
 
@@ -20,6 +22,8 @@ import { BigNumberPipe } from './pipes/big-number.pipe';
     InfoMessageComponent,
     LoadingModalComponent,
     BigNumberPipe,
+    CardComponent,
+    CardFrontComponent,
   ],
   imports: [
     CommonModule,

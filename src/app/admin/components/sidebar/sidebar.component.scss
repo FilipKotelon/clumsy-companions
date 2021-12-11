@@ -8,4 +8,23 @@
   @include square(100%);
   background: $white;
   padding: 2.4rem 1.5rem;
+
+  &__main, &__links{
+    @include d-flex($dir: column, $ai: flex-start);
+    @include m-not-last(1.4rem, b);
+  }
+
+  &__main{
+    margin-bottom: 3rem;
+  }
+
+  &__links{
+    & a{
+      @include transition;
+      
+      &:hover, &.active{
+        color: $main;
+      }
+    }
+  }
 }

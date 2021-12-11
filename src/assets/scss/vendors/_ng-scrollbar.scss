@@ -1,8 +1,14 @@
-ng-scrollbar.admin-scrollbar {
-  --scrollbar-size: 6px;
-  --scrollbar-thumb-color: #4DAA80;
-  --scrollbar-hover-size: 12px;
-  --scrollbar-track-color: rgba(0, 0, 0, 0.05);
-  --scrollbar-border-radius: 0;
-  height: 100%;
+ng-scrollbar{
+  &.admin-scrollbar {
+    --scrollbar-size: 6px;
+    --scrollbar-thumb-color: #4DAA80;
+    --scrollbar-hover-size: 12px;
+    --scrollbar-track-color: rgba(0, 0, 0, 0.05);
+    --scrollbar-border-radius: 0;
+    height: 100%;
+  }
+
+  & .ng-scroll-content{
+    display: block;
+  }
 }
