@@ -1,0 +1,8 @@
+.item-grid{
+  @include d-flex($jc: flex-start, $wrap: wrap);
+  
+  & > *{
+    margin-right: 3rem;
+    margin-bottom: 3rem;
+  }
+}

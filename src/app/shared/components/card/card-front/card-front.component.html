@@ -1,1 +1,75 @@
-<p>card-front works!</p>
+<div 
+  class="card-front size-{{ size }}"
+  [ngClass]="{
+    'show-name': permShowName
+  }"
+>
+
+  <img 
+    [src]="card.imgUrl" 
+    [alt]="card.name" 
+    class="card-front__img">
+
+  <div class="card-front__info-con">
+
+    <!-- COMPANION CARD START -->
+    <div class="card-front__info" *ngIf="card.type === allCardTypes.Companion">
+      <div class="card-front__info__left">
+        <div class="card-front__strength">
+          <div class="card-front__strength__bg"></div>
+          <span>{{ card.strength }}</span>
+        </div>
+      </div>
+      <div class="card-front__info__right">
+        <div class="card-front__cost">
+          {{ card.cost }}
+        </div>
+  
+        <app-card-effect
+          *ngFor="let cardEffect of cardEffects"
+          [effect]="cardEffect.effect"
+          [open]="cardEffect.open"
+        ></app-card-effect>
+  
+        <div class="card-front__energy">
+          {{ card.energy }}
+        </div>
+      </div>
+    </div>
+    <!-- COMPANION CARD END -->
+
+    <!-- CHARM AND TRICK CARD START -->
+    <div class="card-front__info" *ngIf="card.type === allCardTypes.Charm || card.type === allCardTypes.Trick">
+      <div class="card-front__info__right to-top">
+        <div class="card-front__cost">
+          {{ card.cost }}
+        </div>
+
+        <app-card-effect
+          [effect]="cardEffects[0].effect"
+          [open]="cardEffects[0].open"
+          [cardType]="card.type"
+        ></app-card-effect>
+      </div>
+    </div>
+    <!-- CHARM AND TRICK CARD END -->
+
+    <!-- FOOD CARD START -->
+    <div class="card-front__info" *ngIf="card.type === allCardTypes.Food">
+      <div class="card-front__info__right to-top">
+        <div class="card-effect">
+          <img 
+            src="assets/img/icons/effect-types/food.svg" 
+            alt="Food Card"
+          >
+        </div>
+      </div>
+    </div>
+    <!-- FOOD CARD END -->
+  
+    <div class="card-front__name">
+      {{ card.name }}
+    </div>
+  </div>
+
+</div>

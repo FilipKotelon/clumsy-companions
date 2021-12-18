@@ -1,0 +1,25 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+@import "utility/mixins/mixins-spacing";
+
+.admin-item-wrapper{
+  position: relative;
+
+  &__overlay{
+    @include cover;
+    @include d-flex($center: true, $dir: column);
+    @include m-not-last(1.8rem, b);
+    background: $white-dimmed-transparent;
+    opacity: 0;
+    @include transition;
+  }
+
+  &:hover{
+    & .admin-item-wrapper{
+      &__overlay{
+        opacity: 1;
+      }
+    }
+  }
+}

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AdminCardComponent } from './admin-card.component';
+import { AdminItemWrapperComponent } from './admin-item-wrapper.component';
 
-describe('AdminCardComponent', () => {
-  let component: AdminCardComponent;
-  let fixture: ComponentFixture<AdminCardComponent>;
+describe('AdminItemWrapperComponent', () => {
+  let component: AdminItemWrapperComponent;
+  let fixture: ComponentFixture<AdminItemWrapperComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AdminCardComponent ]
+      declarations: [ AdminItemWrapperComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AdminCardComponent);
+    fixture = TestBed.createComponent(AdminItemWrapperComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

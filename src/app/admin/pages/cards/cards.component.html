@@ -1,1 +1,18 @@
-<p>cards works!</p>
+<div class="admin-title-con">
+  <h1 class="medium-title color-main">Cards</h1>
+  <a routerLink="/admin/cards/new" class="admin-button set green">Add new</a>
+</div>
+
+<div class="item-grid">
+  <app-admin-item-wrapper
+    *ngFor="let card of cards"
+    (deleted)="onDelete(card.id)"
+    editLink="/admin/cards/edit/{{ card.id }}"
+  >
+    <app-card-front
+      [card]="card"
+      [permShowName]="true"
+      [size]="cardSize"
+    ></app-card-front>
+  </app-admin-item-wrapper>
+</div>

@@ -7,7 +7,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects'
 import { tap, map, catchError, switchMap, mergeMap, take } from 'rxjs/operators'
 import { from, Observable, of } from 'rxjs'
 
-import { AuthService } from '@core/services/auth.service'
+import { AuthService } from '@core/services/auth/auth.service'
 
 import { handleAuthSuccess, handleError, getLocalStorageUser } from './auth.helpers'
 import { DbUser } from '../models/db-user.model'

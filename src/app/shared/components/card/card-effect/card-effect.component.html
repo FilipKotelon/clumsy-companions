@@ -1,0 +1,28 @@
+<div class="card-front__effect">
+
+  <img 
+    src="assets/img/icons/effect-types/{{ effectIcon }}.svg" 
+    [alt]="effect.name"
+  >
+
+  <div
+    *ngIf="open"
+    [@fadeInOut]
+    class="card-front__effect__modal" 
+  >
+    <img class="card-front__effect__modal__close" src="assets/img/icons/close.svg" alt="Close">
+    <div class="card-front__effect">
+      <img 
+        src="assets/img/icons/effect-types/{{ effectIcon }}.svg" 
+        [alt]="effect.name"
+      >
+    </div>
+    <div class="card-front__effect__modal__name">
+      {{ effect.name }}
+    </div>
+    <div class="card-front__effect__modal__desc">
+      {{ effect.description }}
+    </div>
+  </div>
+
+</div>

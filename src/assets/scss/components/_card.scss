@@ -1,0 +1,140 @@
+$name-size-md: 3.4rem;
+$info-size-md: 5rem;
+$info-font-size-md: 2.2rem;
+
+.card-front{
+  position: relative;
+  overflow: hidden;
+  border-radius: .3rem;
+
+  &.size{
+    &-small{
+
+    }
+
+    &-medium{
+      @include rect(32rem, 48rem);
+    }
+
+    &-big{
+
+    }
+  }
+
+  &__img{
+    @include abs(0, 0);
+    @include square(100%);
+    z-index: 0;
+    @include img-cover;
+  }
+
+  &__info-con{
+    @include d-flex($dir: column);
+    @include rect(100%, calc(100% + #{$name-size-md}));
+    position: relative;
+    z-index: 1;
+  }
+
+  &__info{
+    @include d-flex($jc: space-between);
+    height: calc(100% - #{$name-size-md});
+    padding: 1.2rem;
+    @include transition;
+
+    &__left, &__right{
+      @include d-flex($dir: column, $jc: flex-end);
+
+      &.to-top{
+        justify-content: flex-start;
+
+        & .card-front{
+          &__cost{
+            margin-bottom: 1.2rem;
+          }
+        }
+      }
+    }
+  }
+
+  &__name{
+    @include d-flex($center: true);
+    @include rect(100%, #{$name-size-md});
+    text-align: center;
+    background-color: $white;
+  }
+
+  &__cost, &__effect, &__energy{
+    @include circle($info-size-md);
+  }
+
+  &__cost, &__effect{
+    background-color: $white;
+  }
+
+  &__cost, &__strength, &__energy{
+    font-size: $info-font-size-md;
+  }
+
+  &__energy, &__strength{
+    color: $white;
+  }
+
+  &__cost{
+    margin-bottom: auto;
+  }
+
+  &__effect{
+    & img{
+      @include square(calc(#{$info-size-md} * 0.68));
+    }
+  }
+
+  &__energy{
+    background-color: $blue;
+  }
+
+  &__strength{
+    @include d-flex($center: true);
+    @include square($info-size-md);
+    position: relative;
+
+    & span{
+      position: relative;
+      z-index: 1;
+    }
+
+    &__bg{
+      @include abs(0, 0);
+      @include square(100%);
+
+      &::before{
+        @include default-after;
+        @include square(0);
+        border: calc(#{$info-size-md} / 2) solid transparent;
+        border-bottom-color: $red;
+        top: calc(-#{$info-size-md} / 2);
+      }
+
+      &::after{
+        @include default-after;
+        @include square(0);
+        left: 0;
+        top: calc(#{$info-size-md} / 2);
+        border: calc(#{$info-size-md} / 2) solid transparent;
+        border-top-color: $red;
+      }
+    }
+  }
+
+  &__effect{
+    margin-bottom: 1.2rem;
+  }
+
+  &:hover, &.show-name{
+    & .card-front{
+      &__info{
+        height: calc(100% - 2 *#{$name-size-md});
+      }
+    }
+  }
+}

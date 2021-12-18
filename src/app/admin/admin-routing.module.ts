@@ -1,3 +1,4 @@
+import { CardsEditComponent } from './pages/cards/cards-edit/cards-edit.component';
 import { AiOpponentsComponent } from './pages/ai-opponents/ai-opponents.component'
 import { PlayersComponent } from './pages/players/players.component'
 import { SleevesComponent } from './pages/sleeves/sleeves.component'
@@ -24,10 +25,32 @@ let routes: Routes = [
       },
       {
         path: 'cards',
-        component: CardsComponent,
         data: {
           anmimation: '2'
-        }
+        },
+        children: [
+          {
+            path: '',
+            component: CardsComponent,
+            data: {
+              animation: '21'
+            }
+          },
+          {
+            path: 'new',
+            component: CardsEditComponent,
+            data: {
+              animation: '22'
+            }
+          },
+          {
+            path: 'edit/:id',
+            component: CardsEditComponent,
+            data: {
+              animation: '23'
+            }
+          }
+        ]
       },
       {
         path: 'sets',

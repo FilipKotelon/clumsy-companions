@@ -1,0 +1,19 @@
+<div class="admin-item-wrapper">
+  <div class="admin-item-wrapper__overlay">
+    <a 
+      [routerLink]="editLink" 
+      class="admin-button set blue"
+    >
+      Edit
+    </a>
+    <div 
+      (click)="onDelete()" 
+      class="admin-button set red"
+    >
+      Delete
+    </div>
+  </div>
+  <div class="admin-item-wrapper__content">
+    <ng-content></ng-content>
+  </div>
+</div>

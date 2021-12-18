@@ -8,10 +8,9 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoadingModalComponent } from './loading-modal/loading-modal.component';
 import { BigNumberPipe } from './pipes/big-number.pipe';
-import { CardComponent } from './components/card/card.component';
-import { CardFrontComponent } from './components/card/card-front/card-front.component';
-
-
+import { CardFrontComponent } from './components/card/card-front/card-front.component'
+import { CardSleeveComponent } from './components/card/card-sleeve/card-sleeve.component';
+import { CardEffectComponent } from './components/card/card-effect/card-effect.component';
 
 @NgModule({
   declarations: [
@@ -22,8 +21,9 @@ import { CardFrontComponent } from './components/card/card-front/card-front.comp
     InfoMessageComponent,
     LoadingModalComponent,
     BigNumberPipe,
-    CardComponent,
     CardFrontComponent,
+    CardSleeveComponent,
+    CardEffectComponent,
   ],
   imports: [
     CommonModule,
@@ -39,6 +39,9 @@ import { CardFrontComponent } from './components/card/card-front/card-front.comp
     InfoMessageComponent,
     LoadingModalComponent,
     BigNumberPipe,
+    CardFrontComponent,
+    CardSleeveComponent,
+    CardEffectComponent,
   ]
 })
 export class SharedModule { }
