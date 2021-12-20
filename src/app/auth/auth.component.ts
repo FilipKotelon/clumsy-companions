@@ -1,26 +1,11 @@
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore, CollectionReference, Query } from '@angular/fire/compat/firestore';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { Store } from '@ngrx/store';
 import { NavigationEnd, Router } from '@angular/router';
-import { filter, map, take } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { filter} from 'rxjs/operators';
 
-import { DbUser } from '@core/auth/auth.types';
+import { AuthService } from '@core/auth/auth.service';
+import { AuthType } from '@core/auth/auth.types';
 import { fadeInOut } from '@shared/animations/component-animations';
-
-import * as fromStore from '@core/store/reducer';
-import * as AuthActions from '@core/auth/store/auth.actions';
-import * as MessageActions from '@core/message/store/message.actions';
-import * as LoadingActions from '@core/loading/store/loading.actions';
-import * as AuthHelpers from '@core/auth/store/auth.helpers';
-
-export enum AuthType {
-  LogIn,
-  SignUp,
-  ResetPassword
-}
 
 @Component({
   selector: 'app-auth',
@@ -46,10 +31,8 @@ export class AuthComponent implements OnInit {
   // passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
 
   constructor(
-    private router: Router, 
-    private store: Store<fromStore.AppState>,
-    private fireStore: AngularFirestore,
-    private fireAuth: AngularFireAuth
+    private router: Router,
+    private authSvc: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -108,94 +91,24 @@ export class AuthComponent implements OnInit {
     }
   }
 
+  handleLogin = (email: string, password: string): void => {
+    this.authSvc.logIn(email, password);
+  }
+
+  handleSignUp = (username: string, email: string, password: string): void => {
+    this.authSvc.signUp(username, email, password);
+  }
+
+  handleResetPassword = (email: string): void => {
+    this.authSvc.resetPassword(email);
+  }
+
   handleValidationError = (): void => {
     const email = this.authForm.get('email')?.value;
     const password = this.authForm.get('password')?.value;
     const username = this.authForm.get('username')?.value;
 
-    if(this.curAuthType === AuthType.LogIn){
-      if(!email || !password){
-        this.store.dispatch(
-          new MessageActions.Error('Please provide your email and password.')
-        )
-      } else {
-        this.store.dispatch(
-          new MessageActions.Error('Please check if you provided the correct email and password.')
-        )
-      }
-    } else if(this.curAuthType === AuthType.SignUp){
-      if(!email || !password || !username){
-        this.store.dispatch(
-          new MessageActions.Error('Please provide your username, email and password.')
-        )
-      } else {
-        this.store.dispatch(
-          new MessageActions.Error('Please check if you provided a correct username, email and password.')
-        )
-      }
-    } else if(this.curAuthType === AuthType.ResetPassword) {
-      if(!email){
-        this.store.dispatch(
-          new MessageActions.Error('Please provide your email.')
-        )
-      } else {
-        this.store.dispatch(
-          new MessageActions.Error('Please check if you provided the correct email.')
-        )
-      }
-    }
-  }
-
-  handleLogin = (email: string, password: string): void => {
-    if(email && password){
-      this.store.dispatch(
-        new AuthActions.LoginStart({ email, password })
-      )
-    } else {
-      this.store.dispatch(
-        new MessageActions.Error('Email, password or both were not provided.')
-      )
-    }
-  }
-
-  handleSignUp = (username: string, email: string, password: string): void => {
-    if(username && email && password) {
-      this.checkForSameUsername(username).subscribe(canCreate => {
-        if(canCreate){
-          this.store.dispatch(
-            new AuthActions.SignUpStart({ email, password, username })
-          )
-        } else {
-          this.store.dispatch(
-            new MessageActions.Error('This username is already in use :c Sorry if u spent an hour making up a cool username.')
-          )
-        }
-      });
-    } else {
-      this.store.dispatch(
-        new MessageActions.Error('Email, password, username or all of the above were not provided.')
-      )
-    }
-  }
-
-  handleResetPassword = (email: string): void => {
-    this.store.dispatch(
-      new LoadingActions.AppLoadingAdd('AUTH_PASSWORD_RESET_REQUEST')
-    );
-
-    this.fireAuth.sendPasswordResetEmail(email)
-      .then(() => {
-        this.store.dispatch(
-          new LoadingActions.AppLoadingRemove('AUTH_PASSWORD_RESET_REQUEST')
-        );
-
-        this.store.dispatch(
-          new MessageActions.Info('Password reset link has been sent to the email you provided.')
-        );
-      })
-      .catch(e => {
-        AuthHelpers.handleError(e, this.store, 'AUTH_PASSWORD_RESET_REQUEST', true);
-      })
+    this.authSvc.handleValidationError(email, password, username, this.curAuthType);
   }
 
   initForm = (): void => {
@@ -215,25 +128,6 @@ export class AuthComponent implements OnInit {
         'email': new FormControl(null, [Validators.required, Validators.email]),
       })
     }
-  }
-
-  checkForSameUsername = (username: string): Observable<boolean> => {
-    return this.fireStore.collection<DbUser>('users', ref => {
-      let query: CollectionReference | Query = ref;
-      query = query.where('username', '==', username);
-
-      return query;
-    }).get().pipe(
-      take(1),
-      map(users => {
-        const theUsers = users.docs;
-
-        if(theUsers.length){
-          return false;
-        }
-        return true;
-      })
-    )
   }
 
   validatePassword = (control: FormControl): ValidationErrors => {

@@ -3,6 +3,12 @@ export enum UserRole {
   Player = 'player'
 }
 
+export enum AuthType {
+  LogIn,
+  SignUp,
+  ResetPassword
+}
+
 export interface DbUser {
   id: string;
   username: string;
