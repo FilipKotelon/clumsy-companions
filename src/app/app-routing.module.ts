@@ -1,8 +1,8 @@
-import { LoggedInGuard } from './auth/guards/logged-in.guard'
-import { NotLoggedInGuard } from './auth/guards/not-logged-in.guard'
-import { NgModule } from "@angular/core";
-import { RouterModule, Routes } from "@angular/router";
-import { AdminGuard } from "@auth/guards/admin.guard";
+import { LoggedInGuard } from '@core/auth/guards/logged-in.guard';
+import { NotLoggedInGuard } from '@core/auth/guards/not-logged-in.guard';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { AdminGuard } from '@core/auth/guards/admin.guard';
 
 let routes: Routes = [
   {

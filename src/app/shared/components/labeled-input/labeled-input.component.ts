@@ -1,6 +1,6 @@
-import { NG_VALUE_ACCESSOR } from '@angular/forms'
+import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Component, forwardRef, Input } from '@angular/core';
-import { InputComponent } from '../../utility/input-component.class';
+import { InputComponent } from '@shared/utility/input-component.class';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,

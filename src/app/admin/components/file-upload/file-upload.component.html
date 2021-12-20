@@ -1,0 +1,29 @@
+<div class="file-upload">
+  <input 
+    #input
+    id="file-upload-input"
+    type="file"
+    (change)="uploadImg($event)"
+    accept="image/png, image/jpeg"
+  >
+  <img
+    *ngIf="imgUrl"
+    [src]="imgUrl"
+    [@fadeInOut]
+    class="file-upload__img"
+  >
+  <div class="file-upload__content">
+    <div class="small-title" *ngIf="!imgUrl">
+      {{ displayText }}
+    </div>
+    <label for="file-upload-input" class="file-upload__button admin-button set green">
+      {{ imgUrl ? 'Replace' : 'Upload' }}
+    </label>
+  </div>
+  <div 
+    *ngIf="uploading"
+    [@fadeInOut]
+    class="file-upload__progress" >
+    <div class="file-upload__progress__bar" [style]="'width: '+ uploadPercentage +'%;'"></div>
+  </div>
+</div>

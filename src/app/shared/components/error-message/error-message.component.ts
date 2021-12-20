@@ -1,10 +1,10 @@
-import { Store } from '@ngrx/store'
-import { Component } from '@angular/core'
+import { Store } from '@ngrx/store';
+import { Component } from '@angular/core';
 
-import * as fromApp from '@app/store/app.reducer'
-import * as AppMsgActions from '@app/store/msg/app-msg.actions'
-import * as AppMsgSelectors from '@app/store/msg/app-msg.selectors'
-import { PopupController } from '../../utility/popup-controller.class'
+import * as fromStore from '@core/store/reducer';
+import * as MessageActions from '@core/message/store/message.actions';
+import * as MessageSelectors from '@core/message/store/message.selectors';
+import { PopupController } from '@shared/utility/popup-controller.class';
 
 @Component({
   selector: 'app-error-message',
@@ -12,7 +12,7 @@ import { PopupController } from '../../utility/popup-controller.class'
   styleUrls: ['./error-message.component.scss']
 })
 export class ErrorMessageComponent extends PopupController {
-  constructor(protected store: Store<fromApp.AppState>) {
-    super(store, AppMsgSelectors.selectError, AppMsgActions.AppErrorClear);
+  constructor(protected store: Store<fromStore.AppState>) {
+    super(store, MessageSelectors.selectError, new MessageActions.ErrorClear());
   }
 }

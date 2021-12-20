@@ -1,15 +1,16 @@
+import { SetsEditComponent } from './pages/sets/sets-edit/sets-edit.component';
 import { CardsEditComponent } from './pages/cards/cards-edit/cards-edit.component';
-import { AiOpponentsComponent } from './pages/ai-opponents/ai-opponents.component'
-import { PlayersComponent } from './pages/players/players.component'
-import { SleevesComponent } from './pages/sleeves/sleeves.component'
-import { AvatarsComponent } from './pages/avatars/avatars.component'
-import { PacksComponent } from './pages/packs/packs.component'
-import { SetsComponent } from './pages/sets/sets.component'
-import { CardsComponent } from './pages/cards/cards.component'
-import { WelcomeComponent } from './pages/welcome/welcome.component'
-import { AdminComponent } from './admin.component'
-import { NgModule } from "@angular/core";
-import { RouterModule, Routes } from "@angular/router";
+import { AiOpponentsComponent } from './pages/ai-opponents/ai-opponents.component';
+import { PlayersComponent } from './pages/players/players.component';
+import { SleevesComponent } from './pages/sleeves/sleeves.component';
+import { AvatarsComponent } from './pages/avatars/avatars.component';
+import { PacksComponent } from './pages/packs/packs.component';
+import { SetsComponent } from './pages/sets/sets.component';
+import { CardsComponent } from './pages/cards/cards.component';
+import { WelcomeComponent } from './pages/welcome/welcome.component';
+import { AdminComponent } from './admin.component';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
 
 let routes: Routes = [
   {
@@ -31,6 +32,7 @@ let routes: Routes = [
         children: [
           {
             path: '',
+            pathMatch: 'full',
             component: CardsComponent,
             data: {
               animation: '21'
@@ -54,10 +56,33 @@ let routes: Routes = [
       },
       {
         path: 'sets',
-        component: SetsComponent,
         data: {
           anmimation: '3'
-        }
+        },
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            component: SetsComponent,
+            data: {
+              animation: '31'
+            }
+          },
+          {
+            path: 'new',
+            component: SetsEditComponent,
+            data: {
+              animation: '32'
+            }
+          },
+          {
+            path: 'edit/:id',
+            component: SetsEditComponent,
+            data: {
+              animation: '33'
+            }
+          },
+        ]
       },
       {
         path: 'packs',

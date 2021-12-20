@@ -1,10 +1,10 @@
-import { Subscription } from 'rxjs'
-import { Store } from '@ngrx/store'
-import { Directive, OnInit, OnDestroy } from '@angular/core'
+import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { Directive, OnInit, OnDestroy } from '@angular/core';
 
-import * as fromApp from '@app/store/app.reducer'
-import * as fromAppMsgSelectors from '@app/store/msg/app-msg.selectors'
-import * as AppMsgActions from '@app/store/msg/app-msg.actions'
+import * as fromStore from '@core/store/reducer';
+import * as fromMessageSelectors from '@core/message/store/message.selectors';
+import * as MessageActions from '@core/message/store/message.actions';
 
 @Directive()
 export abstract class PopupController implements OnInit, OnDestroy {
@@ -12,7 +12,7 @@ export abstract class PopupController implements OnInit, OnDestroy {
   msg = '';
   isOpen = false;
   
-  constructor(protected store: Store<fromApp.AppState>, protected msgSelector: fromAppMsgSelectors.SelectorType, protected clearMsgAction: AppMsgActions.AppMsgClearActions) {}
+  constructor(protected store: Store<fromStore.AppState>, protected msgSelector: fromMessageSelectors.SelectorType, protected clearMsgAction: MessageActions.MessageClearActions) {}
 
   ngOnInit(): void {
     this.storeSub = this.store.select(this.msgSelector).subscribe(msg => {
@@ -33,8 +33,6 @@ export abstract class PopupController implements OnInit, OnDestroy {
   }
 
   closePopup = (): void => {
-    this.store.dispatch(
-      new this.clearMsgAction()
-    )
+    this.store.dispatch(this.clearMsgAction);
   }
 }

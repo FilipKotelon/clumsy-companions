@@ -1,5 +1,5 @@
-import { AdminRoutingModule } from './admin-routing.module'
-import { SharedModule } from '@shared/shared.module'
+import { AdminRoutingModule } from './admin-routing.module';
+import { SharedModule } from '@shared/shared.module';
 import { NgModule } from '@angular/core';
 import { AdminComponent } from './admin.component';
 import { NavComponent } from './components/nav/nav.component';
@@ -16,6 +16,8 @@ import { AiOpponentsComponent } from './pages/ai-opponents/ai-opponents.componen
 import { AiDecksComponent } from './pages/ai-decks/ai-decks.component';
 import { AdminItemWrapperComponent } from './components/admin-item-wrapper/admin-item-wrapper.component';
 import { CardsEditComponent } from './pages/cards/cards-edit/cards-edit.component';
+import { FileUploadComponent } from './components/file-upload/file-upload.component';
+import { SetsEditComponent } from './pages/sets/sets-edit/sets-edit.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +35,8 @@ import { CardsEditComponent } from './pages/cards/cards-edit/cards-edit.componen
     AiDecksComponent,
     AdminItemWrapperComponent,
     CardsEditComponent,
+    FileUploadComponent,
+    SetsEditComponent,
   ],
   imports: [
     SharedModule,

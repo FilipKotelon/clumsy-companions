@@ -1,9 +1,9 @@
-import { CardSize } from './../../../shared/components/card/models/card.model';
+import { CardSize } from '@core/cards/cards.types';
 import { Component, OnInit } from '@angular/core';
 
-import { CardsService } from '@core/services/cards/cards.service';
+import { CardsService } from '@core/cards/cards.service';
 
-import { Card } from '@shared/components/card/models/card.model';
+import { Card } from '@core/cards/cards.types';
 
 @Component({
   selector: 'app-cards',

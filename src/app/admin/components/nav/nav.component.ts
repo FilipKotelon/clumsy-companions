@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 
-import * as fromApp from '@app/store/app.reducer';
-import * as AuthActions from '@auth/store/auth.actions';
+import * as fromStore from '@core/store/reducer';
+import * as AuthActions from '@core/auth/store/auth.actions';
 
 @Component({
   selector: 'app-nav',
@@ -11,7 +11,7 @@ import * as AuthActions from '@auth/store/auth.actions';
 })
 export class NavComponent {
   constructor(
-    private store: Store<fromApp.AppState>
+    private store: Store<fromStore.AppState>
   ) { }
 
   logOut = (): void => {

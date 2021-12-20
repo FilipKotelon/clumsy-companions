@@ -1,7 +1,5 @@
-import { NavigationEnd, Router } from '@angular/router'
-import { fadeInOut } from './../../animations/component-animations'
-import { Component, Input, Output, EventEmitter } from '@angular/core'
-import { filter } from 'rxjs/operators';
+import { fadeInOut } from '@shared/animations/component-animations';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-accept-popup',

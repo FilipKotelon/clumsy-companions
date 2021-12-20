@@ -1,5 +1,5 @@
-import { OnChanges, AfterViewInit, Input, ElementRef, ViewChild, Directive } from '@angular/core'
-import { ControlValueAccessor, FormControl } from '@angular/forms'
+import { OnChanges, AfterViewInit, Input, ElementRef, ViewChild, Directive } from '@angular/core';
+import { ControlValueAccessor, FormControl } from '@angular/forms';
 
 @Directive()
 export abstract class InputComponent implements ControlValueAccessor, OnChanges, AfterViewInit {

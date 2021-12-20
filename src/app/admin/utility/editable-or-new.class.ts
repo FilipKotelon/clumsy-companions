@@ -1,9 +1,11 @@
-import { OnInit, Directive } from '@angular/core'
-import { ActivatedRoute, Params } from "@angular/router";
+import { FormGroup } from '@angular/forms';
+import { OnInit, Directive } from '@angular/core';
+import { ActivatedRoute, Params } from '@angular/router';
 
 @Directive()
 export abstract class EditableOrNew implements OnInit {
   protected id: string = null;
+  abstract form: FormGroup;
   editMode = false;
 
   constructor(protected route: ActivatedRoute) {}

@@ -1,9 +1,9 @@
-import { fadeInOut } from '@shared/animations/component-animations'
-import { CardType } from '@shared/components/card/models/card.model'
+import { fadeInOut } from '@shared/animations/component-animations';
+import { CardType } from '@core/cards/cards.types';
 import { Component, Input, OnInit } from '@angular/core';
-import { CardEffect, CardEffectType } from '@shared/components/card/models/card-effect.model';
+import { CardEffect, CardEffectType } from '@core/cards/cards.types';
 
-import * as GameEffectActions from '@game/store/game.effect.actions';
+import * as GameEffectActions from '@core/game/store/game.effect.actions';
 
 @Component({
   selector: 'app-card-effect',

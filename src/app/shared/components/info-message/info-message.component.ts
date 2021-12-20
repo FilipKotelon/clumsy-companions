@@ -1,12 +1,10 @@
+import { Store } from '@ngrx/store';
+import { Component } from '@angular/core';
 
-import { Subscription } from 'rxjs'
-import { Store } from '@ngrx/store'
-import { Component, OnInit, OnDestroy } from '@angular/core'
-
-import * as fromApp from '@app/store/app.reducer'
-import * as AppMsgActions from '@app/store/msg/app-msg.actions'
-import * as AppMsgSelectors from '@app/store/msg/app-msg.selectors'
-import { PopupController } from '../../utility/popup-controller.class'
+import * as fromStore from '@core/store/reducer';
+import * as MessageActions from '@core/message/store/message.actions';
+import * as MessageSelectors from '@core/message/store/message.selectors';
+import { PopupController } from '../../utility/popup-controller.class';
 
 @Component({
   selector: 'app-info-message',
@@ -14,7 +12,7 @@ import { PopupController } from '../../utility/popup-controller.class'
   styleUrls: ['./info-message.component.scss']
 })
 export class InfoMessageComponent extends PopupController {
-  constructor(protected store: Store<fromApp.AppState>) {
-    super(store, AppMsgSelectors.selectInfo, AppMsgActions.AppInfoClear);
+  constructor(protected store: Store<fromStore.AppState>) {
+    super(store, MessageSelectors.selectInfo, new MessageActions.InfoClear());
   }
 }

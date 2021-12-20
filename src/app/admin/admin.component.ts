@@ -1,4 +1,4 @@
-import { fader } from '@shared/animations/route-animations'
+import { fader } from '@shared/animations/route-animations';
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 

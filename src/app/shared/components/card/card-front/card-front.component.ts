@@ -1,6 +1,4 @@
-import { CardSize } from './../models/card.model';
-import { OpenableCardEffect } from './../models/card-effect.model'
-import { Card, CardType } from '@shared/components/card/models/card.model'
+import { Card, CardSize, CardType, OpenableCardEffect } from '@core/cards/cards.types';
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({

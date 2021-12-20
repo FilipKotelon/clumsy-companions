@@ -1,6 +1,5 @@
-import { Router } from '@angular/router'
-import { fadeInOut } from '@shared/animations/component-animations'
-import { Component, Input, Output, EventEmitter } from '@angular/core'
+import { fadeInOut } from '@shared/animations/component-animations';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-popup-message',

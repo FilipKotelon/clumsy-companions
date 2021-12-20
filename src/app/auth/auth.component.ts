@@ -1,5 +1,5 @@
-import { AngularFireAuth } from '@angular/fire/compat/auth'
-import { AngularFirestore, CollectionReference, Query } from '@angular/fire/compat/firestore'
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { AngularFirestore, CollectionReference, Query } from '@angular/fire/compat/firestore';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
@@ -7,14 +7,14 @@ import { NavigationEnd, Router } from '@angular/router';
 import { filter, map, take } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
-import { DbUser } from './models/db-user.model';
-import { fadeInOut } from '@shared/animations/component-animations'
+import { DbUser } from '@core/auth/auth.types';
+import { fadeInOut } from '@shared/animations/component-animations';
 
-import * as fromApp from '@app/store/app.reducer'
-import * as AuthActions from '@auth/store/auth.actions'
-import * as AppMsgActions from '@app/store/msg/app-msg.actions'
-import * as AppLoadingActions from '@app/store/loading/app-loading.actions';
-import * as AuthHelpers from '@auth/store/auth.helpers';
+import * as fromStore from '@core/store/reducer';
+import * as AuthActions from '@core/auth/store/auth.actions';
+import * as MessageActions from '@core/message/store/message.actions';
+import * as LoadingActions from '@core/loading/store/loading.actions';
+import * as AuthHelpers from '@core/auth/store/auth.helpers';
 
 export enum AuthType {
   LogIn,
@@ -47,7 +47,7 @@ export class AuthComponent implements OnInit {
 
   constructor(
     private router: Router, 
-    private store: Store<fromApp.AppState>,
+    private store: Store<fromStore.AppState>,
     private fireStore: AngularFirestore,
     private fireAuth: AngularFireAuth
   ) { }
@@ -116,31 +116,31 @@ export class AuthComponent implements OnInit {
     if(this.curAuthType === AuthType.LogIn){
       if(!email || !password){
         this.store.dispatch(
-          new AppMsgActions.AppError('Please provide your email and password.')
+          new MessageActions.Error('Please provide your email and password.')
         )
       } else {
         this.store.dispatch(
-          new AppMsgActions.AppError('Please check if you provided the correct email and password.')
+          new MessageActions.Error('Please check if you provided the correct email and password.')
         )
       }
     } else if(this.curAuthType === AuthType.SignUp){
       if(!email || !password || !username){
         this.store.dispatch(
-          new AppMsgActions.AppError('Please provide your username, email and password.')
+          new MessageActions.Error('Please provide your username, email and password.')
         )
       } else {
         this.store.dispatch(
-          new AppMsgActions.AppError('Please check if you provided a correct username, email and password.')
+          new MessageActions.Error('Please check if you provided a correct username, email and password.')
         )
       }
     } else if(this.curAuthType === AuthType.ResetPassword) {
       if(!email){
         this.store.dispatch(
-          new AppMsgActions.AppError('Please provide your email.')
+          new MessageActions.Error('Please provide your email.')
         )
       } else {
         this.store.dispatch(
-          new AppMsgActions.AppError('Please check if you provided the correct email.')
+          new MessageActions.Error('Please check if you provided the correct email.')
         )
       }
     }
@@ -153,7 +153,7 @@ export class AuthComponent implements OnInit {
       )
     } else {
       this.store.dispatch(
-        new AppMsgActions.AppError('Email, password or both were not provided.')
+        new MessageActions.Error('Email, password or both were not provided.')
       )
     }
   }
@@ -167,30 +167,30 @@ export class AuthComponent implements OnInit {
           )
         } else {
           this.store.dispatch(
-            new AppMsgActions.AppError('This username is already in use :c Sorry if u spent an hour making up a cool username.')
+            new MessageActions.Error('This username is already in use :c Sorry if u spent an hour making up a cool username.')
           )
         }
       });
     } else {
       this.store.dispatch(
-        new AppMsgActions.AppError('Email, password, username or all of the above were not provided.')
+        new MessageActions.Error('Email, password, username or all of the above were not provided.')
       )
     }
   }
 
   handleResetPassword = (email: string): void => {
     this.store.dispatch(
-      new AppLoadingActions.AppLoadingAdd('AUTH_PASSWORD_RESET_REQUEST')
+      new LoadingActions.AppLoadingAdd('AUTH_PASSWORD_RESET_REQUEST')
     );
 
     this.fireAuth.sendPasswordResetEmail(email)
       .then(() => {
         this.store.dispatch(
-          new AppLoadingActions.AppLoadingRemove('AUTH_PASSWORD_RESET_REQUEST')
+          new LoadingActions.AppLoadingRemove('AUTH_PASSWORD_RESET_REQUEST')
         );
 
         this.store.dispatch(
-          new AppMsgActions.AppInfo('Password reset link has been sent to the email you provided.')
+          new MessageActions.Info('Password reset link has been sent to the email you provided.')
         );
       })
       .catch(e => {

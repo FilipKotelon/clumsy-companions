@@ -1,10 +1,10 @@
-import { Subscription } from 'rxjs'
+import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 
-import * as fromApp from '@app/store/app.reducer';
-import * as PlayerSelectors from '@hub/store/player/player.selectors';
-import * as AuthActions from '@auth/store/auth.actions';
+import * as fromStore from '@core/store/reducer';
+import * as PlayerSelectors from '@core/player/store/player.selectors';
+import * as AuthActions from '@core/auth/store/auth.actions';
 
 @Component({
   selector: 'app-nav',
@@ -18,7 +18,7 @@ export class NavComponent implements OnInit, OnDestroy {
   packsAmount: number;
 
   constructor(
-    private store: Store<fromApp.AppState>
+    private store: Store<fromStore.AppState>
   ) { }
 
   ngOnInit(): void {
