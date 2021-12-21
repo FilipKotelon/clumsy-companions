@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { fader } from '@app/shared/animations/route-animations';
+import { fader } from '@shared/animations/route-animations';
 
 @Component({
   selector: 'app-home',

@@ -2,7 +2,7 @@ import { CardEffect } from '@core/cards/cards.types';
 import { Component } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { EditableOrNew } from '@app/admin/utility/editable-or-new.class';
+import { EditableOrNew } from '@admin/utility/editable-or-new.class';
 
 @Component({
   selector: 'app-cards-edit',
