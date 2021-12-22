@@ -24,7 +24,7 @@ export class CardsComponent implements OnInit {
     })
   }
 
-  onDelete = (id: string) => {
+  onDelete = (id: string): void => {
     console.log(id, 'delete');
   }
 }

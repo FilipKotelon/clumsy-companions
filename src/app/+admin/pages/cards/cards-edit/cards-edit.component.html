@@ -2,7 +2,7 @@
   <div class="admin-form">
     <div class="admin-form__display">
 
-      <div class="admin-form__display__img-upload">
+      <div class="admin-form__display__upload">
         <app-file-upload
           displayText="Upload the card's image!"
           path="images/cards"
@@ -10,15 +10,6 @@
           [control]="form.controls.imgUrl"
           [imgUrl]="form.controls.imgUrl.value"
         ></app-file-upload>
-        <div class="card-front">
-          <img src="" alt="" class="card-front__img">
-        </div>
-        <div class="admin-form__display__img-overlay">
-          <div class="small-title"></div>
-          <button type="button" class="admin-button set green">
-            Upload
-          </button>
-        </div>
       </div>
 
     </div>

@@ -1,1 +1,46 @@
-<p>sets-edit works!</p>
+<div class="admin-edit-page">
+  <form  
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    class="admin-form"
+  >
+    <div class="admin-form__display">
+
+      <div class="admin-form__display__upload">
+        <app-file-upload
+          displayText="Upload the set's image!"
+          path="images/sets"
+          formControlName="imgUrl"
+          [control]="form.controls.imgUrl"
+          [imgUrl]="form.controls.imgUrl.value"
+        ></app-file-upload>
+      </div>
+
+    </div>
+    <div class="admin-form__main">
+
+      <div class="admin-form__main__controls">
+        <app-form-control
+          label="Set's name"
+          type="text"
+          formControlName="name"
+          validationMessage="Please provide the set's name."
+          [control]="form.controls.name"
+        ></app-form-control>
+      </div>
+
+      <div class="admin-form__main__actions">
+        <button type="button" class="admin-button black">
+          Cancel
+        </button>
+        <button type="button" class="admin-button red">
+          Delete
+        </button>
+        <button type="submit" class="admin-button green">
+          Save
+        </button>
+      </div>
+      
+    </div>
+  </form>
+</div>

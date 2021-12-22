@@ -1,0 +1,35 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-other";
+@import "utility/mixins/mixins-flex";
+
+.toggle-control{
+  @include d-flex($ai: center);
+  @include rect(6rem, 3rem);
+  border-radius: 3rem;
+  background-color: $grey-500;
+  cursor: pointer;
+
+  &, &__dot{
+    transition: all .3s;
+  }
+
+  & input{
+    display: none;
+  }
+
+  &__dot{
+    @include circle(2.6rem);
+    margin-left: .2rem;
+    background-color: $white;
+  }
+
+  &.checked{
+    background-color: $main;
+
+    & .toggle-control{
+      &__dot{
+        margin-left: calc(100% - 2.8rem);
+      }
+    }
+  }
+}

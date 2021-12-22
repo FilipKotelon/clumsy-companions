@@ -15,16 +15,15 @@
 
   &__outlet{
     @include rect(calc(100% - 26rem), calc(100vh - 4.6rem));
-    padding: 3rem;
   }
 }
 
 ::ng-deep{
   .admin-wrapper{
     &__outlet{  
-      & > .admin-wrapper > *{
-        width: calc(100% - 29rem);
-        height: calc(100vh - 7.6rem);
+      & > *{
+        width: calc(100% - 26rem);
+        height: calc(100vh - 4.6rem);
       }
     }
   }

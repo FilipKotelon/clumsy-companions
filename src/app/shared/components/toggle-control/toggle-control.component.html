@@ -1,0 +1,13 @@
+<label 
+  class="toggle-control"
+  [ngClass]="{
+    'checked': input.checked
+  }"  
+>
+  <input 
+    #input
+    (change)="onChange($event, input.checked)"
+    type="checkbox" 
+  />
+  <div class="toggle-control__dot"></div>
+</label>

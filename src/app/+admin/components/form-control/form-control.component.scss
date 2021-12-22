@@ -1,0 +1,52 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-other";
+@import "utility/mixins/mixins-flex";
+
+.admin-form-control{
+  @include d-flex($ai: flex-start, $jc: space-between);
+  margin-bottom: 3rem;
+
+  &__label{
+    width: 14rem;
+    padding-right: 1.2rem;
+    margin-top: .2rem;
+  }
+
+  &__input{
+    @include d-flex($dir: column, $ai: flex-start);
+    width: calc(100% - 14rem);
+    position: relative;
+
+    & input, textarea{
+      width: 100%;
+      border-bottom: 1px solid $main;
+    }
+
+    & input{
+      height: 3.4rem;
+    }
+
+    & textarea{
+      height: 8.4rem;
+      resize: none;
+    }
+
+    & app-toggle-control{
+      margin-left: auto;
+    }
+
+    &__msg{
+      @include abs(0, calc(100% + .2rem));
+      color: $error;
+      font-size: 1.4rem;
+      opacity: 0;
+      visibility: hidden;
+      @include transition;
+
+      &.open{
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+}

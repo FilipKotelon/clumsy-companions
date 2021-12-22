@@ -1,0 +1,30 @@
+@import "utility/mixins/mixins-other";
+@import "utility/mixins/mixins-flex";
+
+.file-upload{
+  @include square(100%);
+
+  &, &__content{
+    @include d-flex($dir: column, $center: true);
+  }
+
+  & input{
+    display: none;
+  }
+
+  &__img{
+    @include abs(0, 0);
+    @include img-cover;
+    z-index: 0;
+  }
+
+  &__content{
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__title{
+    margin-bottom: 1.8rem;
+  }
+}

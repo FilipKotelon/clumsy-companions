@@ -11,6 +11,7 @@ import { BigNumberPipe } from './pipes/big-number.pipe';
 import { CardFrontComponent } from './components/card/card-front/card-front.component';
 import { CardSleeveComponent } from './components/card/card-sleeve/card-sleeve.component';
 import { CardEffectComponent } from './components/card/card-effect/card-effect.component';
+import { ToggleControlComponent } from './components/toggle-control/toggle-control.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { CardEffectComponent } from './components/card/card-effect/card-effect.c
     CardFrontComponent,
     CardSleeveComponent,
     CardEffectComponent,
+    ToggleControlComponent,
   ],
   imports: [
     CommonModule,
@@ -42,6 +44,7 @@ import { CardEffectComponent } from './components/card/card-effect/card-effect.c
     CardFrontComponent,
     CardSleeveComponent,
     CardEffectComponent,
+    ToggleControlComponent,
   ]
 })
 export class SharedModule { }

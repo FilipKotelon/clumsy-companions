@@ -1,0 +1,33 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+.admin-simple-list-item{
+  @include d-flex($dir: column, $jc: flex-end);
+  position: relative;
+
+  &.shape{
+    &-square{
+      @include square(32rem);
+    }
+
+    &-rectangle{
+      @include rect(32rem, 48rem);
+    }
+  }
+
+  &__img{
+    @include abs(0, 0);
+    @include img-cover;
+    z-index: 0;
+  }
+
+  &__name{
+    @include d-flex($center: true);
+    @include rect(100%, 4rem);
+    background-color: $main;
+    color: $white;
+    position: relative;
+    z-index: 1;
+  }
+}

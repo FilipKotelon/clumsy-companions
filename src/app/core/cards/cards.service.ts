@@ -49,8 +49,8 @@ export class CardsService {
         let finalCards = cards;
         
         if(params){
-          if(params.search){
-            finalCards = cards.filter(card => card.name.includes(params.search));
+          if(params.name){
+            finalCards = cards.filter(card => card.name.includes(params.name));
           }
         }
 

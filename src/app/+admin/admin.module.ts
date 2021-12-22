@@ -18,6 +18,8 @@ import { AdminItemWrapperComponent } from './components/admin-item-wrapper/admin
 import { CardsEditComponent } from './pages/cards/cards-edit/cards-edit.component';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { SetsEditComponent } from './pages/sets/sets-edit/sets-edit.component';
+import { SimpleListItemComponent } from './components/simple-list-item/simple-list-item.component';
+import { FormControlComponent } from './components/form-control/form-control.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +39,8 @@ import { SetsEditComponent } from './pages/sets/sets-edit/sets-edit.component';
     CardsEditComponent,
     FileUploadComponent,
     SetsEditComponent,
+    SimpleListItemComponent,
+    FormControlComponent,
   ],
   imports: [
     SharedModule,

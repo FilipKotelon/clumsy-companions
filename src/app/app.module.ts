@@ -23,7 +23,7 @@ import { AuthEffects } from '@core/auth/store/auth.effects';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,

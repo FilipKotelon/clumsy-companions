@@ -1,1 +1,31 @@
-<p>sets works!</p>
+<div class="admin-list-page">
+  <div class="admin-title-con">
+    <h1 class="medium-title color-main">Sets</h1>
+    <a routerLink="/admin/sets/new" class="admin-button set green">Add new</a>
+  </div>
+  
+  <div class="item-grid">
+    <ng-container *ngFor="let set of sets">
+  
+      <app-admin-item-wrapper
+        *ngIf="set.editable"
+        (deleted)="onDelete(set.id)"
+        editLink="/admin/sets/edit/{{ set.id }}"
+      >
+        <app-simple-list-item
+          shape="rectangle"
+          [name]="set.name"
+          [imgUrl]="set.imgUrl"
+        ></app-simple-list-item>
+      </app-admin-item-wrapper>
+  
+      <app-simple-list-item
+        *ngIf="!set.editable"
+        shape="rectangle"
+        [name]="set.name"
+        [imgUrl]="set.imgUrl"
+      ></app-simple-list-item>
+  
+    </ng-container>
+  </div>
+</div>

@@ -1,30 +1,34 @@
-
-@import "utility/variables";
-@import "utility/mixins/mixins-flex";
-@import "utility/mixins/mixins-other";
-@import "utility/mixins/mixins-spacing";
-
 .admin-form{
-  @include d-flex($ai: flex-start, $jc: space-between, $wrap: wrap);
+  @include d-flex;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background-color: $white;
 
-  &__main{
-    @include d-flex($dir: column, $ai: flex-start);
-    width: 50%;
+  &__display{
+    @include rect(54rem, 72rem);
+    background-color: $black;
+    border-radius: 1.5rem;
+    color: $white;
 
-    & > *{
-      width: 100%;
+    &__upload{
+      @include square(100%);
+      padding: 1.5rem;
     }
   }
 
-  &__actions{
-    @include d-flex($ai: center);
-    @include m-not-last(2.4rem, r);
-    width: 100%;
-    margin-top: 2.4rem
-  }
+  &__main{
+    @include d-flex($dir: column, $ai: flex-start);
+    width: 44rem;
+    padding: 3rem 2rem;
 
-  &__image-con{
-    @include rect(42%, 46rem);
-    background: $grey-300;
+    &__controls{
+      width: 100%;
+    }
+
+    &__actions{
+      width: 100%;
+      margin-top: auto;
+      @include flex-row-3(1.2rem);
+    }
   }
 }

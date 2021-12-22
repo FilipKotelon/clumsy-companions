@@ -1,0 +1,9 @@
+.admin-edit-page{
+  @include d-flex($center: true);
+  height: 100%;
+  padding: 3rem;
+}
+
+.admin-list-page{
+  padding: 3rem 0 0 3rem;
+}

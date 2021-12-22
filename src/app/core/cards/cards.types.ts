@@ -22,7 +22,7 @@ export enum CardType {
 }
 
 export interface CardQueryParams {
-  search?: string;
+  name?: string;
   set?: string;
   type?: CardType;
 }
