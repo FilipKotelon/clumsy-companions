@@ -44,7 +44,6 @@ export abstract class InputComponent implements ControlValueAccessor, OnChanges,
   onChange(e:Event, value:any): void {
     //set changed value
     this.innerValue = value;
-    console.log(this.control);
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
   }

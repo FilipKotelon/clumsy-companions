@@ -2,7 +2,7 @@ import { Store } from '@ngrx/store';
 import { Injectable } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { of } from 'rxjs';
-import { catchError, switchMap, take } from 'rxjs/operators';
+import { catchError, finalize, last, switchMap, take } from 'rxjs/operators';
 
 import * as fromStore from '@core/store/reducer';
 import * as MessageActions from '@core/message/store/message.actions';
@@ -23,9 +23,10 @@ export class FilesService {
     const fileRef = this.fireStorage.ref(filePath);
     const task = fileRef.put(file);
 
-    const response: FileUploadResponse = {
+    const response: any = {
       percentage$: task.percentageChanges(),
       fileUrl$: task.snapshotChanges().pipe(
+        last(),
         switchMap(() => {
           return fileRef.getDownloadURL().pipe(
             switchMap((url: string) => {
@@ -41,7 +42,7 @@ export class FilesService {
           console.log(error);
           this.store.dispatch(new MessageActions.Error('File upload failed.'))
   
-          return of('')
+          return of('');
         })
       )
     }
@@ -66,7 +67,7 @@ export class FilesService {
   }
 
   getUniqueFileName = (fileName: string) => {
-    return fileName.split(/(\\|\/)/g).pop() + '_' + this.getRandomFileId();
+    return this.getRandomFileId() + '_' + fileName.split(/(\\|\/)/g).pop();
   }
 
   getRandomFileId = () => Math.random().toString(36).substr(2, 9);

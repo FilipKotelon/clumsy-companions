@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { InputComponent } from '@shared/utility/input-component.class';
 import { FilesService } from '@core/files/files.service';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import { fadeInOut } from '@app/shared/animations/component-animations';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -15,6 +16,7 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR: any = {
   selector: 'app-file-upload',
   templateUrl: './file-upload.component.html',
   styleUrls: ['./file-upload.component.scss'],
+  animations: [fadeInOut],
   providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR]
 })
 export class FileUploadComponent extends InputComponent implements OnDestroy {

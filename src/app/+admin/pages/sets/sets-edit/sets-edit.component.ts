@@ -13,7 +13,6 @@ import { SetsService } from '@core/sets/sets.service';
 })
 export class SetsEditComponent extends EditableOrNew {
   form: FormGroup;
-  set: Set;
 
   constructor(
     protected route: ActivatedRoute,
@@ -33,27 +32,35 @@ export class SetsEditComponent extends EditableOrNew {
 
     if(this.id){
       this.setsService.getSet(this.id).subscribe(set => {
-        this.set = set;
+        if(!set){
+          this.setsService.redirectOnNoSet();
+        }
+  
+        if(!set.editable){
+          this.setsService.redirectOnUneditableSet();
+        }
 
         this.form = new FormGroup({
           name: new FormControl(set.name, [Validators.required]),
           imgUrl: new FormControl(set.imgUrl, [Validators.required])
         })
-  
-        if(!set.editable){
-          this.setsService.redirectOnUneditableSet();
-        }
       })
     }
   }
 
   onSubmit = (): void => {
     if(this.form.valid){
+      const id = this.id;
+      const imgUrl = this.form.get('imgUrl').value;
+      const name = this.form.get('name').value;
 
+      if(this.editMode){
+        this.setsService.updateSet(id, name, imgUrl);
+      } else {
+        this.setsService.createSet(name, imgUrl);
+      }
     } else {
       this.setsService.handleValidationError();
     }
-
-    console.log(this.form);
   }
 }

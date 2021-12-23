@@ -1,8 +1,11 @@
+@import "utility/variables";
 @import "utility/mixins/mixins-other";
 @import "utility/mixins/mixins-flex";
 
 .file-upload{
   @include square(100%);
+  position: relative;
+  padding: 1.5rem;
 
   &, &__content{
     @include d-flex($dir: column, $center: true);
@@ -26,5 +29,17 @@
 
   &__title{
     margin-bottom: 1.8rem;
+  }
+
+  &__progress{
+    @include abs($l: 0, $b: 0);
+    @include rect(100%, .6rem);
+    z-index: 2;
+
+    &__bar{
+      @include transition;
+      @include rect(0%, 100%);
+      background: $main;
+    }
   }
 }

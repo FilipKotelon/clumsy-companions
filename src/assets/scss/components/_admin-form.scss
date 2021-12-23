@@ -8,11 +8,11 @@
     @include rect(54rem, 72rem);
     background-color: $black;
     border-radius: 1.5rem;
+    overflow: hidden;
     color: $white;
 
     &__upload{
       @include square(100%);
-      padding: 1.5rem;
     }
   }
 
