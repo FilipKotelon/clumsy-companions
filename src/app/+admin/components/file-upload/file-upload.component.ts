@@ -1,4 +1,4 @@
-import { Component, forwardRef, Input, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, forwardRef, Input, OnDestroy, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { InputComponent } from '@shared/utility/input-component.class';
@@ -24,9 +24,13 @@ export class FileUploadComponent extends InputComponent implements OnDestroy {
   @Input() path: string;
   @Input() displayText: string;
 
+  @Output() uploaded = new EventEmitter<void>();
+
   uploading = false;
   uploadPercentage = 0;
   
+  imgsToDelete: string[];
+  originalImgUrl: string;
   uploadPercentageSub: Subscription;
   uploadSub: Subscription;
 
@@ -63,6 +67,8 @@ export class FileUploadComponent extends InputComponent implements OnDestroy {
       this.imgUrl = url;
       this.onChange(e, url);
       this.uploading = false;
+      
+      this.uploaded.emit();
     })
   }
 

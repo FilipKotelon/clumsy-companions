@@ -1,4 +1,4 @@
-import { Card, CardSize, CardType, OpenableCardEffect } from '@core/cards/cards.types';
+import { Card, CardSize, CardType } from '@core/cards/cards.types';
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
@@ -6,20 +6,11 @@ import { Component, Input, OnInit } from '@angular/core';
   templateUrl: './card-front.component.html',
   styleUrls: ['./card-front.component.scss']
 })
-export class CardFrontComponent implements OnInit{
+export class CardFrontComponent{
   @Input() card: Card;
   @Input() permShowName = false;
   @Input() size: CardSize;
 
   allCardTypes = CardType;
-  cardEffects: OpenableCardEffect[] = [];
-
-  ngOnInit(): void {
-    if(this.card.type !== CardType.Food){
-      this.cardEffects = this.card.effects.map(effect => ({
-        open: false,
-        effect
-      }))
-    }
-  }
+  cardEffects: Card[] = [];
 }

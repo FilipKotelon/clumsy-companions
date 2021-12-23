@@ -1,5 +1,8 @@
 <div class="admin-edit-page">
-  <div class="admin-form">
+  <form 
+    [formGroup]="form"
+    class="admin-form"
+  >
     <div class="admin-form__display">
 
       <div class="admin-form__display__upload">
@@ -12,9 +15,85 @@
         ></app-file-upload>
       </div>
 
+      <div class="admin-form__display__card card-front size-big">
+
+        <div class="card-front__info-con">
+
+          <div class="card-front__info">
+            <div class="card-front__info__left">
+              <div class="card-front__strength">
+                <div class="card-front__strength__bg"></div>
+                <input
+                  type="number"
+                  max="99"
+                  min="0"
+                  class="card-property-input"
+                  [formControl]="form.controls.strength"
+                />
+              </div>
+            </div>
+            <div class="card-front__info__right">
+              <div class="card-front__cost">
+                <input
+                  type="number"
+                  max="99"
+                  min="1"
+                  class="card-property-input"
+                  [formControl]="form.controls.cost"
+                />
+              </div>
+        
+              <app-admin-card-effect-wrapper
+                *ngFor="let effectFormGroup of cardEffectGroups"
+              >
+                <app-card-effect
+                  [effect]="effectFormGroup.effect"
+                ></app-card-effect>
+              </app-admin-card-effect-wrapper>
+        
+              <div class="card-front__energy">
+                <input
+                  type="number"
+                  max="99"
+                  min="1"
+                  class="card-property-input"
+                  [formControl]="form.controls.energy"
+                />
+              </div>
+            </div>
+          </div>
+        
+          <div class="card-front__name">
+            {{ form.controls.name.value }}
+          </div>
+        </div>
+
+      </div>
+
     </div>
     <div class="admin-form__main">
 
+      <div class="admin-form__main__controls">
+        <app-form-control
+          label="Card's name"
+          type="text"
+          formControlName="name"
+          validationMessage="Please provide the card's name."
+          [control]="form.controls.name"
+        ></app-form-control>
+      </div>
+
+      <div class="admin-form__main__actions">
+        <button type="button" class="admin-button black" (click)="onOpenCancelPopup()">
+          Cancel
+        </button>
+        <button *ngIf="this.editMode" type="button" class="admin-button red" (click)="onOpenDeletePopup()">
+          Delete
+        </button>
+        <button type="submit" class="admin-button green">
+          Save
+        </button>
+      </div>
     </div>
-  </div>
+  </form>
 </div>

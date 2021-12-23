@@ -14,6 +14,8 @@ export class AcceptPopupComponent {
   @Input() msg: string;
   @Input() acceptMsg = 'Accept';
   @Input() declineMsg = 'Cancel';
+  @Input() acceptBtnClass = 'green';
+  @Input() declineBtnClass = 'red';
   
   @Output() declined = new EventEmitter<void>()
   @Output() accepted = new EventEmitter<void>()

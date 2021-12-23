@@ -33,20 +33,13 @@ export interface EffectValues {
   energy: number;
 }
 
-export class CardEffect {
-  constructor(
-    readonly name: string,
-    readonly description: string,
-    readonly effectType: CardEffectType,
-    readonly effectAction: GameEffectActionType,
-    readonly effectValues: EffectValues,
-    readonly effectPhase?: GamePhase
-  ) {}
-}
-
-export interface OpenableCardEffect {
-  open: boolean;
-  effect: CardEffect;
+export interface CardEffect {
+  readonly name: string;
+  readonly description: string;
+  readonly type: CardEffectType;
+  readonly action: GameEffectActionType;
+  readonly values: EffectValues;
+  readonly phase?: GamePhase;
 }
 
 export interface Card {

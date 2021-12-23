@@ -20,6 +20,7 @@ import { FileUploadComponent } from './components/file-upload/file-upload.compon
 import { SetsEditComponent } from './pages/sets/sets-edit/sets-edit.component';
 import { SimpleListItemComponent } from './components/simple-list-item/simple-list-item.component';
 import { FormControlComponent } from './components/form-control/form-control.component';
+import { AdminCardEffectWrapperComponent } from './components/admin-card-effect-wrapper/admin-card-effect-wrapper.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { FormControlComponent } from './components/form-control/form-control.com
     SetsEditComponent,
     SimpleListItemComponent,
     FormControlComponent,
+    AdminCardEffectWrapperComponent,
   ],
   imports: [
     SharedModule,

@@ -11,6 +11,7 @@ import { WelcomeComponent } from './pages/welcome/welcome.component';
 import { AdminComponent } from './admin.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AiDecksComponent } from './pages/ai-decks/ai-decks.component';
 
 let routes: Routes = [
   {
@@ -115,6 +116,13 @@ let routes: Routes = [
       {
         path: 'ai-opponents',
         component: AiOpponentsComponent,
+        data: {
+          anmimation: '8'
+        }
+      },
+      {
+        path: 'ai-decks',
+        component: AiDecksComponent,
         data: {
           anmimation: '8'
         }

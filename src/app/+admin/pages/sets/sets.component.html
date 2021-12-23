@@ -9,7 +9,7 @@
   
       <app-admin-item-wrapper
         *ngIf="set.editable"
-        (deleted)="onDelete(set.id)"
+        (deleted)="onOpenDeletePopup(set.id)"
         editLink="/admin/sets/edit/{{ set.id }}"
       >
         <app-simple-list-item
@@ -28,4 +28,14 @@
   
     </ng-container>
   </div>
+
+  <app-accept-popup
+    msg="Do you want to delete this set?"
+    acceptMsg="Delete"
+    acceptBtnClass="red"
+    declineBtnClass="black"
+    [open]="deletePopupOpen"
+    (declined)="closeDeletePopup()"
+    (accepted)="deleteSet()"
+  ></app-accept-popup>
 </div>

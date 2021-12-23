@@ -5,9 +5,11 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-import { DbSet, Set } from './sets.types';
+import { DbSet, Set, SetUpdateData } from './sets.types';
+import { FilesService } from '@core/files/files.service';
 
 import * as fromStore from '@core/store/reducer';
+
 import * as MessageActions from '@core/message/store/message.actions';
 
 @Injectable({
@@ -18,6 +20,7 @@ export class SetsService {
   constructor(
     private store: Store<fromStore.AppState>,
     private fireStore: AngularFirestore,
+    private filesSvc: FilesService,
     private router: Router
   ) { }
 
@@ -74,10 +77,10 @@ export class SetsService {
     })
   }
 
-  updateSet = (id: string, name: string, imgUrl: string): void => {
+  updateSet = (id: string, data: SetUpdateData): void => {
     this.fireStore.collection<DbSet>('sets').doc(id).update({
-      name: name,
-      imgUrl: imgUrl
+      name: data.name,
+      imgUrl: data.imgUrl
     }).then(() => {
       this.store.dispatch(
         new MessageActions.Info('The set was updated successfully!')
@@ -88,6 +91,25 @@ export class SetsService {
       this.store.dispatch(
         new MessageActions.Error('An error occurred while updating the set.')
       );
+    })
+  }
+
+  deleteSet = (id: string, redirectPath?: string): void => {
+    this.fireStore.collection<DbSet>('sets').doc(id).get().subscribe(setDoc => {
+      const imgUrl = setDoc.data().imgUrl;
+      
+      this.fireStore.collection<DbSet>('sets').doc(id).delete()
+        .then(() => {
+          this.store.dispatch(
+            new MessageActions.Info('The set was deleted successfully!')
+          );
+
+          this.filesSvc.deleteFile(imgUrl);
+
+          if(redirectPath){
+            this.router.navigate(['/admin/sets']);
+          }
+        })
     })
   }
 

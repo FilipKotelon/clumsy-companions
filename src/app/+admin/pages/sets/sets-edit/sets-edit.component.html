@@ -13,6 +13,7 @@
           formControlName="imgUrl"
           [control]="form.controls.imgUrl"
           [imgUrl]="form.controls.imgUrl.value"
+          (uploaded)="onImgUpload()"
         ></app-file-upload>
       </div>
 
@@ -30,10 +31,10 @@
       </div>
 
       <div class="admin-form__main__actions">
-        <button type="button" class="admin-button black">
+        <button type="button" class="admin-button black" (click)="onOpenCancelPopup()">
           Cancel
         </button>
-        <button type="button" class="admin-button red">
+        <button *ngIf="this.editMode" type="button" class="admin-button red" (click)="onOpenDeletePopup()">
           Delete
         </button>
         <button type="submit" class="admin-button green">
@@ -43,4 +44,24 @@
       
     </div>
   </form>
+
+  <app-accept-popup
+    msg="Do you want to delete this set?"
+    acceptMsg="Delete"
+    acceptBtnClass="red"
+    declineBtnClass="black"
+    [open]="deletePopupOpen"
+    (declined)="closeDeletePopup()"
+    (accepted)="deleteSet()"
+  ></app-accept-popup>
+
+  <app-accept-popup
+    msg="Do you want to abandon your changes?"
+    acceptMsg="Yes"
+    declineMsg="Stay"
+    declineBtnClass="black"
+    [open]="cancelPopupOpen"
+    (declined)="closeCancelPopup()"
+    (accepted)="cancel()"
+  ></app-accept-popup>
 </div>

@@ -1,25 +1,19 @@
 $name-size-md: 3.4rem;
 $info-size-md: 5rem;
 $info-font-size-md: 2.2rem;
+$effect-name-size-md: 2.2rem;
+$effect-desc-size-md: 1.6rem;
+
+$name-size-big: 5rem;
+$info-size-big: 10rem;
+$info-font-size-big: 3.4rem;
+$effect-name-size-big: 2.6rem;
+$effect-desc-size-big: 2.2rem;
 
 .card-front{
   position: relative;
   overflow: hidden;
   border-radius: .3rem;
-
-  &.size{
-    &-small{
-
-    }
-
-    &-medium{
-      @include rect(32rem, 48rem);
-    }
-
-    &-big{
-
-    }
-  }
 
   &__img{
     @include abs(0, 0);
@@ -69,6 +63,7 @@ $info-font-size-md: 2.2rem;
 
   &__cost, &__effect{
     background-color: $white;
+    color: $black;
   }
 
   &__cost, &__strength, &__energy{
@@ -81,12 +76,6 @@ $info-font-size-md: 2.2rem;
 
   &__cost{
     margin-bottom: auto;
-  }
-
-  &__effect{
-    & img{
-      @include square(calc(#{$info-size-md} * 0.68));
-    }
   }
 
   &__energy{
@@ -128,6 +117,45 @@ $info-font-size-md: 2.2rem;
 
   &__effect{
     margin-bottom: 1.2rem;
+
+    &__img{
+      @include square(calc(#{$info-size-md} * 0.68));
+    }
+
+    &__inner{
+      @include d-flex($center: true);
+      @include square(100%);
+      cursor: pointer;
+    }
+
+    &__modal{
+      @include abs(0, 0);
+      @include square(100%);
+      z-index: 10;
+      @include d-flex($dir: column, $center: true);
+      background-color: $white-dimmed-transparent-stronger;
+      color: $black;
+      
+      & .card-front__effect{
+        margin-bottom: calc(#{$info-size-md} * 0.5);
+      }
+
+      &__name{
+        font-weight: bold;
+        font-size: $effect-name-size-md;
+        margin-bottom: calc(#{$effect-name-size-md} * 0.6);
+      }
+
+      &__desc{
+        font-size: $effect-desc-size-md;
+      }
+
+      &__close{
+        @include square(calc(#{$info-size-md} / 2));
+        @include abs($r: $name-size-md, $t: $name-size-md);
+        cursor: pointer;
+      }
+    }
   }
 
   &:hover, &.show-name{
@@ -136,5 +164,111 @@ $info-font-size-md: 2.2rem;
         height: calc(100% - 2 *#{$name-size-md});
       }
     }
+  }
+
+  &.size{
+    &-small{
+
+    }
+
+    &-medium{
+      @include rect(32rem, 48rem);
+    }
+
+    &-big{
+      @include rect(50rem, 75rem);
+
+      & .card-front{
+        &__info-con{
+          @include rect(100%, calc(100% + #{$name-size-big}));
+        }
+
+        &__info{
+          height: calc(100% - #{$name-size-big});
+        }
+
+        &__name{
+          @include rect(100%, #{$name-size-big});
+        }
+
+        &__cost, &__effect, &__energy{
+          @include square($info-size-big);
+        }
+
+        &__cost, &__strength, &__energy{
+          font-size: $info-font-size-big;
+        }
+
+        &__effect{
+          &__img{
+            @include square(calc(#{$info-size-big} * 0.68));
+          }
+
+          &__modal{
+            & .card-front__effect{
+              margin-bottom: calc(#{$info-size-big} * 0.5);
+            }
+
+            &__name{
+              font-size: $effect-name-size-big;
+            }
+      
+            &__desc{
+              font-size: $effect-desc-size-big;
+            }
+
+            &__close{
+              @include square(calc(#{$info-size-big} / 2));
+              @include abs($r: $name-size-big, $t: $name-size-big);
+            }
+          }
+        }
+
+        &__strength{
+          @include square($info-size-big);
+      
+          &__bg{
+            &::before{
+              border-width: calc(#{$info-size-big} / 2);
+              top: calc(-#{$info-size-big} / 2);
+            }
+      
+            &::after{
+              top: calc(#{$info-size-big} / 2);
+              border-width: calc(#{$info-size-big} / 2);
+            }
+          }
+        }
+      
+        &:hover, &.show-name{
+          & .card-front{
+            &__info{
+              height: calc(100% - 2 *#{$name-size-big});
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.card-property-input{
+  text-align: center;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  color: inherit;
+  font-size: inherit;
+
+  /* Chrome, Safari, Edge, Opera */
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  &[type=number] {
+    -moz-appearance: textfield;
   }
 }

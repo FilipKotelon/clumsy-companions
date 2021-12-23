@@ -9,8 +9,8 @@
       {{ msg }}
     </div>
     <div class="popup-message__actions">
-      <button class="shop-button" (click)="onAccept()" appHoverEnlargeCursor>{{acceptMsg}}</button>
-      <button class="shop-button" (click)="onDecline()" appHoverEnlargeCursor>{{declineMsg}}</button>
+      <button class="admin-button {{ declineBtnClass }}" (click)="onDecline()" appHoverEnlargeCursor>{{declineMsg}}</button>
+      <button class="admin-button {{ acceptBtnClass }}" (click)="onAccept()" appHoverEnlargeCursor>{{acceptMsg}}</button>
     </div>
   </div>
 </div>

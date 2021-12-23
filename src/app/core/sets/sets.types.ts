@@ -8,3 +8,8 @@ export interface DbSet {
 export interface Set extends DbSet {
   id: string;
 }
+
+export interface SetUpdateData {
+  name: string;
+  imgUrl: string;
+}

@@ -10,9 +10,26 @@
     border-radius: 1.5rem;
     overflow: hidden;
     color: $white;
+    position: relative;
 
     &__upload{
+      @include abs(0, 0);
       @include square(100%);
+      z-index: 0;
+    }
+
+    &__card{
+      width: 100% !important;
+      height: 100% !important;
+      position: relative;
+      z-index: 1;
+      pointer-events: none;
+
+      & .card-front__info{
+        &__left, &__right{
+          pointer-events: all;
+        }
+      }
     }
   }
 
@@ -29,6 +46,7 @@
       width: 100%;
       margin-top: auto;
       @include flex-row-3(1.2rem);
+      justify-content: flex-end;
     }
   }
 }

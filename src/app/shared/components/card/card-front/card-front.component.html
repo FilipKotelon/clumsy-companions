@@ -26,9 +26,8 @@
         </div>
   
         <app-card-effect
-          *ngFor="let cardEffect of cardEffects"
-          [effect]="cardEffect.effect"
-          [open]="cardEffect.open"
+          *ngFor="let cardEffect of card.effects"
+          [effect]="cardEffect"
         ></app-card-effect>
   
         <div class="card-front__energy">
@@ -46,8 +45,7 @@
         </div>
 
         <app-card-effect
-          [effect]="cardEffects[0].effect"
-          [open]="cardEffects[0].open"
+          [effect]="card.effects[0]"
           [cardType]="card.type"
         ></app-card-effect>
       </div>

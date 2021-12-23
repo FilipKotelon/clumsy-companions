@@ -66,4 +66,16 @@ export class CardsService {
       })
     )
   }
+
+  getCard = (id: string): Observable<Card> => {
+    return this.fireStore.collection<Card>('cards').doc(id).get().pipe(
+      map(cardDoc => {
+        return cardDoc.data();
+      })
+    )
+  }
+
+  deleteCard = (id: string, redirectPath?: string): void => {
+    console.log('todo', id, redirectPath);
+  }
 }

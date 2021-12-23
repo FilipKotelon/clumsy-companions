@@ -8,6 +8,9 @@ import { Set } from '@core/sets/sets.types';
   styleUrls: ['./sets.component.scss']
 })
 export class SetsComponent implements OnInit {
+  private idToDelete = '';
+
+  deletePopupOpen: boolean;
   sets: Set[];
 
   constructor(
@@ -17,11 +20,21 @@ export class SetsComponent implements OnInit {
   ngOnInit(): void {
     this.setsSvc.getSets().subscribe(sets => {
       this.sets = sets;
-      console.log(this.sets);
     })
   }
 
-  onDelete = (id: string): void => {
-    console.log(id);
+  onOpenDeletePopup = (id: string): void => {
+    this.deletePopupOpen = true;
+    this.idToDelete = id;
+  }
+
+  closeDeletePopup = (): void => {
+    this.deletePopupOpen = false;
+    this.idToDelete = '';
+  }
+
+  deleteSet = (): void => {
+    this.setsSvc.deleteSet(this.idToDelete, '/admin/sets');
+    this.closeDeletePopup();
   }
 }
