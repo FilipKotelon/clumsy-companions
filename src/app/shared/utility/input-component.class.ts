@@ -5,6 +5,7 @@ import { ControlValueAccessor, FormControl } from '@angular/forms';
 export abstract class InputComponent implements ControlValueAccessor, OnChanges, AfterViewInit {
   @Input() label: string;
   @Input() validationMessage: string;
+  @Input() fromControlName: string;
   @Input() control:FormControl = new FormControl(); 
 
   @ViewChild('input') inputRef:ElementRef; 

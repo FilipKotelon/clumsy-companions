@@ -1,0 +1,15 @@
+@import "utility/variables";
+
+input, textarea{
+  width: 100%;
+  border-bottom: .1rem solid $main;
+}
+
+input{
+  height: 3.4rem;
+}
+
+textarea{
+  height: 8rem;
+  resize: none;
+}

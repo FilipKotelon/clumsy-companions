@@ -19,8 +19,8 @@ import { CardsEditComponent } from './pages/cards/cards-edit/cards-edit.componen
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { SetsEditComponent } from './pages/sets/sets-edit/sets-edit.component';
 import { SimpleListItemComponent } from './components/simple-list-item/simple-list-item.component';
-import { FormControlComponent } from './components/form-control/form-control.component';
 import { AdminCardEffectWrapperComponent } from './components/admin-card-effect-wrapper/admin-card-effect-wrapper.component';
+import { AdminControlWrapperComponent } from './components/admin-control-wrapper/admin-control-wrapper.component';
 
 @NgModule({
   declarations: [
@@ -41,8 +41,8 @@ import { AdminCardEffectWrapperComponent } from './components/admin-card-effect-
     FileUploadComponent,
     SetsEditComponent,
     SimpleListItemComponent,
-    FormControlComponent,
     AdminCardEffectWrapperComponent,
+    AdminControlWrapperComponent,
   ],
   imports: [
     SharedModule,

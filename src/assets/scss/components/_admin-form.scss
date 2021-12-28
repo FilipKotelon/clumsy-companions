@@ -50,3 +50,40 @@
     }
   }
 }
+
+.admin-form-control{
+  @include d-flex($ai: flex-start);
+  margin-bottom: 3rem;
+
+  &__label{
+    width: 14rem;
+    padding-right: .4rem;
+  }
+
+  &__input{
+    @include d-flex();
+    position: relative;
+    width: calc(100% - 14rem);
+
+    & app-select-control, app-simple-control{
+      width: 100%;
+    }
+
+    & app-toggle-control{
+      margin-left: auto;
+    }
+
+    &__msg{
+      @include abs(0, calc(100% + .2rem));
+      color: $error;
+      opacity: 0;
+      visibility: hidden;
+      @include transition;
+
+      &.open{
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+}

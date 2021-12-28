@@ -26,7 +26,7 @@ export class SetsEditComponent extends EditableOrNew {
     super(route);
   }
   
-  initForm = (): void => {
+  init = (): void => {
     let name = '',
       imgUrl = '';
 

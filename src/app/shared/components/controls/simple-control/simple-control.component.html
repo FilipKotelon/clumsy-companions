@@ -1,0 +1,14 @@
+<textarea
+  *ngIf="type === 'textarea'"
+  #input
+  (change)="onChange($event, input.value)"
+  [value]="value"
+></textarea>
+
+<input 
+  *ngIf="type !== 'textarea'"
+  #input
+  (change)="onChange($event, input.value)"
+  [type]="type"
+  [value]="value"
+/>

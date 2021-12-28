@@ -1,0 +1,19 @@
+<div class="admin-form-control">
+  <div class="admin-form-control__label">
+    {{ label }}:
+  </div>
+  <div class="admin-form-control__input">
+
+    <ng-content></ng-content>
+
+    <div 
+      class="admin-form-control__input__msg"
+      [ngClass]="{
+        'open': !control.valid && control.dirty
+      }"  
+    >
+      {{ validationMessage }}
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,68 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-other";
+@import "utility/mixins/mixins-flex";
+
+.select-control{
+  @include rect(100%, 3.4rem);
+  position: relative;
+  border-bottom: 1px solid $main;
+  cursor: pointer;
+  overflow: hidden;
+
+  &.open{
+    overflow: initial;
+    z-index: 30;
+
+    & .select-control{
+      &__toggler{
+        transform: translate(-50%, -50%) rotate(180deg);
+      }
+
+      &__options{
+        width: calc(100% + .8rem);
+        left: -.4rem;
+        border-color: $main;
+        height: auto;
+        max-height: 34rem;
+        overflow: auto;
+      }
+
+      &__option{
+        padding: .2rem .4rem;
+      }
+    }
+  }
+
+  &__toggler{
+    @include abs-center-y;
+    @include transition;
+    right: 0;
+    pointer-events: none;
+    z-index: 20;
+  }
+
+  &__options{
+    @include abs(0, 0);
+    @include rect(100%, 3.4rem);
+    @include d-flex($dir: column);
+    @include transition;
+    background-color: $white;
+    z-index: 10;
+    border: 1px solid transparent;
+    @include scrollbar($color: $grey-500, $bg: $white, $w: .6rem, $rounded: false);
+  }
+
+  &__option{
+    @include rect(100%, 3.4rem);
+    min-height: 3.4rem;
+    transition: all .6s, order 0s;
+
+    &:hover{
+      background-color: $grey-200;
+    }
+
+    &.selected{
+      order: -1;
+    }
+  }
+}

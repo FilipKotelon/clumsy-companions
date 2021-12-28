@@ -1,0 +1,22 @@
+<div 
+  class="select-control"
+  [ngClass]="{
+    'open': isOpen
+  }"
+>
+  <div class="select-control__options">
+    
+    <div 
+      *ngFor="let option of options"
+      class="select-control__option"
+      (click)="!isOpen ? openSelect() : selectValue($event, option.key)"
+      [ngClass]="{
+        'selected': option.key === value
+      }"
+    >
+      {{ option.value }}
+    </div>
+
+  </div>
+  <img src="assets/img/icons/arrow-down-green.svg" alt="Open" class="select-control__toggler">
+</div>

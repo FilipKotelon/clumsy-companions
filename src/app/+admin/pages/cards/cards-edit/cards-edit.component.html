@@ -1,6 +1,7 @@
 <div class="admin-edit-page">
   <form 
     [formGroup]="form"
+    (ngSubmit)="onSubmit()"
     class="admin-form"
   >
     <div class="admin-form__display">
@@ -28,6 +29,7 @@
                   max="99"
                   min="0"
                   class="card-property-input"
+                  placeholder="-"
                   [formControl]="form.controls.strength"
                 />
               </div>
@@ -39,6 +41,7 @@
                   max="99"
                   min="1"
                   class="card-property-input"
+                  placeholder="-"
                   [formControl]="form.controls.cost"
                 />
               </div>
@@ -57,6 +60,7 @@
                   max="99"
                   min="1"
                   class="card-property-input"
+                  placeholder="-"
                   [formControl]="form.controls.energy"
                 />
               </div>
@@ -74,13 +78,65 @@
     <div class="admin-form__main">
 
       <div class="admin-form__main__controls">
-        <app-form-control
+
+        <app-admin-control-wrapper
           label="Card's name"
-          type="text"
-          formControlName="name"
           validationMessage="Please provide the card's name."
           [control]="form.controls.name"
-        ></app-form-control>
+        >
+          <app-simple-control
+            type="text"
+            formControlName="name"
+            [control]="form.controls.name"
+          ></app-simple-control>
+        </app-admin-control-wrapper>
+
+        <app-admin-control-wrapper
+          label="Description"
+          validationMessage="Please provide the card's description."
+          [control]="form.controls.description"
+        >
+          <app-simple-control
+            type="textarea"
+            formControlName="description"
+            [control]="form.controls.description"
+          ></app-simple-control>
+        </app-admin-control-wrapper>
+
+        <app-admin-control-wrapper
+          label="Card type"
+          validationMessage="Please choose a type."
+          [control]="form.controls.type"
+        >
+          <app-select-control
+            formControlName="type"
+            [control]="form.controls.type"
+            [options]="cardTypeOptions"
+          ></app-select-control>
+        </app-admin-control-wrapper>
+
+        <app-admin-control-wrapper
+          label="Set"
+          validationMessage="Please choose a set."
+          [control]="form.controls.setId"
+        >
+          <app-select-control
+            formControlName="setId"
+            [control]="form.controls.setId"
+            [options]="setOptions"
+          ></app-select-control>
+        </app-admin-control-wrapper>
+
+        <app-admin-control-wrapper
+          label="Show final look"
+          [control]="form.controls.setId"
+        >
+          <app-toggle-control
+            formControlName="showFinalLook"
+            [control]="form.controls.showFinalLook"
+          ></app-toggle-control>
+        </app-admin-control-wrapper>
+
       </div>
 
       <div class="admin-form__main__actions">

@@ -1,17 +1,20 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+
 import { InfoMessageComponent } from './components/info-message/info-message.component';
 import { ErrorMessageComponent } from './components/error-message/error-message.component';
 import { AcceptPopupComponent } from './components/accept-popup/accept-popup.component';
 import { PopupMessageComponent } from './components/popup-message/popup-message.component';
 import { LabeledInputComponent } from './components/labeled-input/labeled-input.component';
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
-import { LoadingModalComponent } from './loading-modal/loading-modal.component';
-import { BigNumberPipe } from './pipes/big-number.pipe';
+import { LoadingModalComponent } from './components/loading-modal/loading-modal.component';
 import { CardFrontComponent } from './components/card/card-front/card-front.component';
 import { CardSleeveComponent } from './components/card/card-sleeve/card-sleeve.component';
 import { CardEffectComponent } from './components/card/card-effect/card-effect.component';
-import { ToggleControlComponent } from './components/toggle-control/toggle-control.component';
+import { ToggleControlComponent } from './components/controls/toggle-control/toggle-control.component';
+import { SelectControlComponent } from './components/controls/select-control/select-control.component';
+import { SimpleControlComponent } from './components/controls/simple-control/simple-control.component';
+import { BigNumberPipe } from './pipes/big-number/big-number.pipe';
 
 @NgModule({
   declarations: [
@@ -26,6 +29,8 @@ import { ToggleControlComponent } from './components/toggle-control/toggle-contr
     CardSleeveComponent,
     CardEffectComponent,
     ToggleControlComponent,
+    SelectControlComponent,
+    SimpleControlComponent,
   ],
   imports: [
     CommonModule,
@@ -45,6 +50,8 @@ import { ToggleControlComponent } from './components/toggle-control/toggle-contr
     CardSleeveComponent,
     CardEffectComponent,
     ToggleControlComponent,
+    SelectControlComponent,
+    SimpleControlComponent,
   ]
 })
 export class SharedModule { }

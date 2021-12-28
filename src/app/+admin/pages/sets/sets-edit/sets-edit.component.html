@@ -21,13 +21,19 @@
     <div class="admin-form__main">
 
       <div class="admin-form__main__controls">
-        <app-form-control
+
+        <app-admin-control-wrapper
           label="Set's name"
-          type="text"
-          formControlName="name"
           validationMessage="Please provide the set's name."
           [control]="form.controls.name"
-        ></app-form-control>
+        >
+          <app-simple-control
+            type="text"
+            formControlName="name"
+            [control]="form.controls.name"
+          ></app-simple-control>
+        </app-admin-control-wrapper>
+        
       </div>
 
       <div class="admin-form__main__actions">

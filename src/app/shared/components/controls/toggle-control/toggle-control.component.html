@@ -2,12 +2,13 @@
   class="toggle-control"
   [ngClass]="{
     'checked': input.checked
-  }"  
+  }"
 >
-  <input 
+  <input
     #input
+    type="checkbox"
     (change)="onChange($event, input.checked)"
-    type="checkbox" 
+    [checked]="!!value"
   />
   <div class="toggle-control__dot"></div>
 </label>

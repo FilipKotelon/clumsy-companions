@@ -45,8 +45,9 @@ export interface CardEffect {
 export interface Card {
   readonly id: string;
   readonly type: CardType;
-  readonly name: string;
   readonly setId: string;
+  readonly name: string;
+  readonly description: string;
   readonly imgUrl: string;
   readonly cost?: number;
   readonly effects?: CardEffect[];

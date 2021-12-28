@@ -10,15 +10,15 @@ export abstract class EditableOrNew implements OnInit {
 
   constructor(protected route: ActivatedRoute) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.route.params.subscribe((params: Params) => {
       this.id = params['id'];
       this.editMode = params['id'] != null;
-      this.initForm();
+      this.init();
     });
   }
 
-  protected abstract initForm()
+  protected abstract init()
 
   abstract onSubmit()
 }

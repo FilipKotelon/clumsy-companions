@@ -12,12 +12,11 @@ export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR: any = {
 @Component({
   selector: 'app-toggle-control',
   templateUrl: './toggle-control.component.html',
-  styleUrls: ['./toggle-control.component.scss']
+  styleUrls: ['./toggle-control.component.scss'],
+  providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR]
 })
 export class ToggleControlComponent extends InputComponent {
-
   constructor() {
-    super()
+    super();
   }
-
 }
