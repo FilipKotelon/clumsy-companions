@@ -1,0 +1,128 @@
+<div
+  *ngIf="open"
+  [@fadeInOut]
+  class="admin-edit-effect-con">
+  <form
+    class="admin-edit-effect"
+    [formGroup]="formGroup"
+  >
+
+    <h3 class="medium-text">{{ editMode ? 'Edit' : 'Add an' }} effect</h3>
+
+    <app-admin-control-wrapper
+      label="Effect's name"
+      validationMessage="Please provide the effect's name."
+      [control]="formGroup.controls.name"
+    >
+      <app-simple-control
+        type="text"
+        formControlName="name"
+        [control]="formGroup.controls.name"
+      ></app-simple-control>
+    </app-admin-control-wrapper>
+
+    <app-admin-control-wrapper
+      label="Description"
+      validationMessage="Please provide the effect's description."
+      [control]="formGroup.controls.description"
+    >
+      <app-simple-control
+        type="textarea"
+        formControlName="description"
+        [control]="formGroup.controls.description"
+      ></app-simple-control>
+    </app-admin-control-wrapper>
+
+    <app-admin-control-wrapper
+      label="Type"
+      validationMessage="Please choose an effect type."
+      [control]="formGroup.controls.type"
+    >
+      <app-select-control
+        formControlName="type"
+        [control]="formGroup.controls.type"
+        [options]="effectTypeOptions"
+      ></app-select-control>
+    </app-admin-control-wrapper>
+
+    <app-admin-control-wrapper
+      label="Action"
+      validationMessage="Please choose an action."
+      [control]="formGroup.controls.action"
+    >
+      <app-select-control
+        formControlName="action"
+        [control]="formGroup.controls.action"
+        [options]="effectActionOptions"
+      ></app-select-control>
+    </app-admin-control-wrapper>
+
+    <div
+      [formGroup]="effectValues"
+      class="admin-edit-effect__values"
+    >
+      <app-admin-control-wrapper
+        label="Main value"
+        validationMessage="Please provide a positive value or no value."
+        [control]="effectValues.controls.main"
+      >
+        <app-simple-control
+          type="number"
+          formControlName="main"
+          [control]="effectValues.controls.main"
+        ></app-simple-control>
+      </app-admin-control-wrapper>
+  
+      <app-admin-control-wrapper
+        label="Energy value"
+        validationMessage="Please provide a positive value or no value."
+        [control]="effectValues.controls.energy"
+      >
+        <app-simple-control
+          type="number"
+          formControlName="energy"
+          [control]="effectValues.controls.energy"
+        ></app-simple-control>
+      </app-admin-control-wrapper>
+  
+      <app-admin-control-wrapper
+        label="Strength value"
+        validationMessage="Please provide a positive value or no value."
+        [control]="effectValues.controls.strength"
+      >
+        <app-simple-control
+          type="number"
+          formControlName="strength"
+          [control]="effectValues.controls.strength"
+        ></app-simple-control>
+      </app-admin-control-wrapper>
+    </div>
+
+    <div class="admin-edit-effect__actions">
+      <button
+        *ngIf="!editMode"
+        type="button"
+        class="admin-button set black"
+        (click)="onCancel()"
+      >
+        Cancel
+      </button>
+      <button
+        *ngIf="editMode"
+        type="button"
+        class="admin-button set red"
+        (click)="onDelete()"
+      >
+        Delete
+      </button>
+      <button
+        type="button"
+        class="admin-button set green"
+        (click)="onClose()"
+      >
+        Save
+      </button>
+    </div>
+
+  </form>
+</div>

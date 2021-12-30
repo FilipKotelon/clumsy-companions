@@ -55,6 +55,7 @@ $effect-desc-size-big: 2.2rem;
     @include rect(100%, #{$name-size-md});
     text-align: center;
     background-color: $white;
+    color: $black;
   }
 
   &__cost, &__effect, &__energy{
@@ -178,6 +179,14 @@ $effect-desc-size-big: 2.2rem;
     &-big{
       @include rect(50rem, 75rem);
 
+      &:hover, &.show-name{
+        & .card-front{
+          &__info{
+            height: calc(100% - 2 *#{$name-size-big});
+          }
+        }
+      }
+
       & .card-front{
         &__info-con{
           @include rect(100%, calc(100% + #{$name-size-big}));
@@ -259,6 +268,10 @@ $effect-desc-size-big: 2.2rem;
   z-index: 1;
   color: inherit;
   font-size: inherit;
+
+  &::placeholder{
+    color: inherit;
+  }
 
   /* Chrome, Safari, Edge, Opera */
   &::-webkit-outer-spin-button,

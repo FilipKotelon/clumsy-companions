@@ -21,6 +21,7 @@ import { SetsEditComponent } from './pages/sets/sets-edit/sets-edit.component';
 import { SimpleListItemComponent } from './components/simple-list-item/simple-list-item.component';
 import { AdminCardEffectWrapperComponent } from './components/admin-card-effect-wrapper/admin-card-effect-wrapper.component';
 import { AdminControlWrapperComponent } from './components/admin-control-wrapper/admin-control-wrapper.component';
+import { AdminEditEffectComponent } from './components/admin-edit-effect/admin-edit-effect.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { AdminControlWrapperComponent } from './components/admin-control-wrapper
     SimpleListItemComponent,
     AdminCardEffectWrapperComponent,
     AdminControlWrapperComponent,
+    AdminEditEffectComponent,
   ],
   imports: [
     SharedModule,

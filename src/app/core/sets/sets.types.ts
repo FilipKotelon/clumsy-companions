@@ -1,15 +1,13 @@
-export interface DbSet {
-  name: string;
-  imgUrl: string;
-  dateAdded: Date;
-  editable: boolean;
+export interface SetMainData {
+  readonly name: string;
+  readonly imgUrl: string;
+}
+
+export interface DbSet extends SetMainData {
+  readonly dateAdded: Date;
+  readonly editable: boolean;
 }
 
 export interface Set extends DbSet {
-  id: string;
-}
-
-export interface SetUpdateData {
-  name: string;
-  imgUrl: string;
+  readonly id: string;
 }

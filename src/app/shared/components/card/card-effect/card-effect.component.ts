@@ -1,9 +1,11 @@
-import { fadeInOut } from '@shared/animations/component-animations';
-import { CardType } from '@core/cards/cards.types';
-import { Component, Input, OnInit, Output } from '@angular/core';
-import { CardEffect, CardEffectType } from '@core/cards/cards.types';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 
-import * as GameEffectActions from '@core/game/store/game.effect.actions';
+import { CardType } from '@core/cards/cards.types';
+
+import { CardEffect, CardEffectType } from '@core/cards/cards.types';
+import { GameEffectActionType } from '@core/game/store/game.effect.actions';
+
+import { fadeInOut } from '@shared/animations/component-animations';
 
 @Component({
   selector: 'app-card-effect',
@@ -30,9 +32,9 @@ export class CardEffectComponent implements OnInit {
     let additional = '';
 
     if(type === CardEffectType.AuraEffect){
-      if(action === GameEffectActions.GAME_EFFECT_AURA_BUFF){
+      if(action === GameEffectActionType.GAME_EFFECT_AURA_BUFF){
         additional = '-buff';
-      } else if(action === GameEffectActions.GAME_EFFECT_AURA_DEBUFF){
+      } else if(action === GameEffectActionType.GAME_EFFECT_AURA_DEBUFF){
         additional = '-debuff';
       }
     }

@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-import { DbSet, Set, SetUpdateData } from './sets.types';
+import { DbSet, Set, SetMainData } from './sets.types';
 import { FilesService } from '@core/files/files.service';
 
 import * as fromStore from '@core/store/reducer';
@@ -18,10 +18,10 @@ import * as MessageActions from '@core/message/store/message.actions';
 export class SetsService {
 
   constructor(
-    private store: Store<fromStore.AppState>,
     private fireStore: AngularFirestore,
     private filesSvc: FilesService,
-    private router: Router
+    private router: Router,
+    private store: Store<fromStore.AppState>
   ) { }
 
   getSets = (): Observable<Set[]> => {
@@ -48,18 +48,22 @@ export class SetsService {
   getSet = (id: string): Observable<Set> => {
     return this.fireStore.collection<DbSet>('sets').doc(id).get().pipe(
       map(setDoc => {
-        return {
-          ...setDoc.data(),
-          id: setDoc.id
+        if(setDoc.data()){
+          return {
+            ...setDoc.data(),
+            id: setDoc.id
+          }
+        } else {
+          return null;
         }
       })
     )
   }
 
-  createSet = (name: string, imgUrl: string): void => {
+  createSet = (data: SetMainData): void => {
     this.fireStore.collection<DbSet>('sets').add({
-      name: name,
-      imgUrl: imgUrl,
+      name: data.name,
+      imgUrl: data.imgUrl,
       dateAdded: new Date(),
       editable: true
     }).then(setDoc => {
@@ -77,10 +81,9 @@ export class SetsService {
     })
   }
 
-  updateSet = (id: string, data: SetUpdateData): void => {
+  updateSet = (id: string, data: SetMainData): void => {
     this.fireStore.collection<DbSet>('sets').doc(id).update({
-      name: data.name,
-      imgUrl: data.imgUrl
+      ...data
     }).then(() => {
       this.store.dispatch(
         new MessageActions.Info('The set was updated successfully!')
@@ -111,22 +114,6 @@ export class SetsService {
           }
         })
     })
-  }
-
-  redirectOnUneditableSet = (): void => {
-    this.store.dispatch(
-      new MessageActions.Error('The set with this id is not editable.')
-    );
-
-    this.router.navigate(['/admin/sets']);
-  }
-
-  redirectOnNoSet = (): void => {
-    this.store.dispatch(
-      new MessageActions.Error('This set does not exist.')
-    );
-
-    this.router.navigate(['/admin/sets']);
   }
 
   handleValidationError = () => {

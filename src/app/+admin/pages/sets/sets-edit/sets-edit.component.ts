@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EditableOrNew } from '@admin/utility/editable-or-new.class';
 import { SetsService } from '@core/sets/sets.service';
 import { FilesService } from '@app/core/files/files.service';
+import { MessageService } from '@app/core/message/message.service';
 
 @Component({
   selector: 'app-sets-edit',
@@ -19,6 +20,7 @@ export class SetsEditComponent extends EditableOrNew {
 
   constructor(
     private filesSvc: FilesService,
+    private messageSvc: MessageService,
     protected route: ActivatedRoute,
     private router: Router,
     private setsSvc: SetsService,
@@ -38,11 +40,15 @@ export class SetsEditComponent extends EditableOrNew {
     if(this.id){
       this.setsSvc.getSet(this.id).subscribe(set => {
         if(!set){
-          this.setsSvc.redirectOnNoSet();
+          this.messageSvc.displayError('This set does not exist.');
+      
+          this.router.navigate(['/admin/sets']);
         }
   
         if(!set.editable){
-          this.setsSvc.redirectOnUneditableSet();
+          this.messageSvc.displayError('The set with this id is not editable.');
+      
+          this.router.navigate(['/admin/sets']);
         }
 
         this.form = new FormGroup({
@@ -64,7 +70,7 @@ export class SetsEditComponent extends EditableOrNew {
           { name, imgUrl }
         );
       } else {
-        this.setsSvc.createSet(name, imgUrl);
+        this.setsSvc.createSet({name, imgUrl});
       }
     } else {
       this.setsSvc.handleValidationError();

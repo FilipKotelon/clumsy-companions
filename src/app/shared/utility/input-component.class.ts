@@ -22,8 +22,11 @@ export abstract class InputComponent implements ControlValueAccessor, OnChanges,
       () => {
         // check condition if the form control is RESET
         if (this.control.value === '' || this.control.value === null || this.control.value === undefined) {
-          this.innerValue = '';      
-          this.inputRef.nativeElement.value = '';                 
+          this.innerValue = '';
+
+          if(this.inputRef){
+            this.inputRef.nativeElement.value = '';
+          }
         }
       }
     );

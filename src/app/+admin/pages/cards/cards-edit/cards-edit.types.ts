@@ -4,4 +4,5 @@ import { CardEffect } from '@core/cards/cards.types';
 export interface CardEffectFormGroup {
   formGroup: FormGroup;
   effect: CardEffect;
+  open: boolean;
 }

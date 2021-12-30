@@ -47,7 +47,7 @@ export class SelectControlComponent extends InputComponent {
     this.value = key;
     this.isOpen = false;
     
-    this.onChange(e, key);
+    this.onChange(e, this.value);
   }
   
   openSelect = () => {

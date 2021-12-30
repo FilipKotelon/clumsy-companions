@@ -1,8 +1,17 @@
 import { GameEffectActionType } from '@core/game/store/game.effect.actions';
-import { GamePhase } from '@core/game/game.types';
+
+export const CARD_SETTINGS = {
+  MIN_COST: 1,
+  MAX_COST: 8,
+  MIN_STRENGTH: 0,
+  MAX_STRENGTH: 8,
+  MIN_ENERGY: 1,
+  MAX_ENERGY: 10,
+  MIN_EFFECT_VALUE: 1,
+  MAX_EFFECT_VALUE: 10
+}
 
 export enum CardEffectType {
-  AtPhaseEffect = 'atphase',
   AuraEffect = 'aura',
   OnEnterEffect = 'onenter',
   OnExitEffect = 'onexit',
@@ -39,20 +48,30 @@ export interface CardEffect {
   readonly type: CardEffectType;
   readonly action: GameEffectActionType;
   readonly values: EffectValues;
-  readonly phase?: GamePhase;
 }
 
-export interface Card {
-  readonly id: string;
+export interface CardMainData {
   readonly type: CardType;
   readonly setId: string;
   readonly name: string;
-  readonly description: string;
+  readonly description?: string;
   readonly imgUrl: string;
   readonly cost?: number;
   readonly effects?: CardEffect[];
   readonly strength?: number;
   readonly energy?: number;
+}
+
+export interface DbCard extends CardMainData {
+  readonly dateAdded: Date;
+}
+
+export interface Card extends DbCard {
+  readonly id: string;
+}
+
+export interface CardUpdateData {
+
 }
 
 // export class CompanionCard implements Card {

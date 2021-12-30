@@ -3,9 +3,11 @@ import { take, map, catchError } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { AngularFirestore, CollectionReference, Query } from '@angular/fire/compat/firestore';
 
-import { Card } from '@core/cards/cards.types';
+import { Card, CardMainData, DbCard } from '@core/cards/cards.types';
+import { MessageService } from '@core/message/message.service';
 
 import { CardQueryParams } from './cards.types';
 
@@ -17,12 +19,14 @@ import * as MessageActions from '@core/message/store/message.actions';
 })
 export class CardsService {
   constructor(
-    private store: Store<fromStore.AppState>,
-    private fireStore: AngularFirestore
+    private fireStore: AngularFirestore,
+    private messageSvc: MessageService,
+    private router: Router,
+    private store: Store<fromStore.AppState>
   ) { }
 
   getCards = (params?: CardQueryParams): Observable<Card[]> => {
-    return this.fireStore.collection<Card>('cards', ref => {
+    return this.fireStore.collection<DbCard>('cards', ref => {
       let query: CollectionReference | Query = ref;
 
       if(params){
@@ -58,9 +62,7 @@ export class CardsService {
       }),
       catchError(error => {
         console.log(error);
-        this.store.dispatch(
-          new MessageActions.Error('Cards could not be loaded.')
-        )
+        this.messageSvc.displayError('Cards could not be loaded.');
 
         return [];
       })
@@ -68,11 +70,37 @@ export class CardsService {
   }
 
   getCard = (id: string): Observable<Card> => {
-    return this.fireStore.collection<Card>('cards').doc(id).get().pipe(
+    return this.fireStore.collection<DbCard>('cards').doc(id).get().pipe(
       map(cardDoc => {
-        return cardDoc.data();
+        if(cardDoc.data()){
+          return {
+            ...cardDoc.data(),
+            id
+          }
+        } else {
+          return null;
+        }
       })
     )
+  }
+
+  createCard = (data: CardMainData): void => {
+    this.fireStore.collection<DbCard>('cards').add({
+      ...data,
+      dateAdded: new Date()
+    }).then(cardDoc => {
+      this.messageSvc.displayInfo('Card created successfully!');
+
+      this.router.navigate([`/admin/cards/edit/${cardDoc.id}`]);
+    }).catch(error => {
+      console.log(error);
+
+      this.messageSvc.displayError('An error occurred while adding the card.');
+    })
+  }
+
+  updateCard = (data: CardMainData): void => {
+
   }
 
   deleteCard = (id: string, redirectPath?: string): void => {

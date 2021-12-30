@@ -16,13 +16,24 @@
         ></app-file-upload>
       </div>
 
-      <div class="admin-form__display__card card-front size-big">
+      <div
+        *ngIf="!!cardType"
+        @fadeInOut
+        class="admin-form__display__card card-front size-big"
+        [ngClass]="{
+          'show-name': !showFinalLook
+        }"
+      >
 
         <div class="card-front__info-con">
 
           <div class="card-front__info">
             <div class="card-front__info__left">
-              <div class="card-front__strength">
+              <div
+                *ngIf="shouldHaveStrengthAndEnergy"
+                @fadeInOut
+                class="card-front__strength"
+              >
                 <div class="card-front__strength__bg"></div>
                 <input
                   type="number"
@@ -34,8 +45,17 @@
                 />
               </div>
             </div>
-            <div class="card-front__info__right">
-              <div class="card-front__cost">
+            <div 
+              class="card-front__info__right"
+              [ngClass]="{
+                'to-top': isCharmOrTrick
+              }"
+            >
+              <div
+                *ngIf="shouldHaveCost"
+                @fadeInOut
+                class="card-front__cost"
+              >
                 <input
                   type="number"
                   max="99"
@@ -45,16 +65,64 @@
                   [formControl]="form.controls.cost"
                 />
               </div>
-        
-              <app-admin-card-effect-wrapper
-                *ngFor="let effectFormGroup of cardEffectGroups"
+
+              <div class="admin-card-effect-wrapper">
+                <div
+                  *ngIf="canAddMoreEffects"
+                  @fadeInOut
+                  (click)="openNewCardEffectForm()"
+                  class="card-front__effect"
+                >
+                  <div class="card-front__effect__inner">
+                    <img class="card-front__effect__img" src="assets/img/icons/plus-black.svg" alt="Add effect">
+                  </div>
+                </div>
+                <app-admin-edit-effect
+                  [editMode]="false"
+                  [formGroup]="newCardEffectForm"
+                  [open]="newCardEffectFormOpen"
+                  (closed)="saveNewCardEffect()"
+                  (cancelled)="closeNewCardEffectForm()"
+                ></app-admin-edit-effect>
+              </div>
+
+              <ng-container *ngIf="shouldHaveEffects">
+                <app-admin-card-effect-wrapper
+                  *ngFor="let effectFormGroup of cardEffectGroups"
+                  @fadeInOut
+                  [canDelete]="!(isCharmOrTrick && cardEffectGroups.length === 1)"
+                  [formGroup]="effectFormGroup.formGroup"
+                  [open]="effectFormGroup.open"
+                  (closedEdit)="closeEffectFormGroup(effectFormGroup)"
+                  (deleted)="deleteEffectFormGroup(effectFormGroup)"
+                  (openedEdit)="openEffectFormGroup(effectFormGroup)"
+                >
+
+                  <app-card-effect
+                    *ngIf="isCharm"
+                    [effect]="effectFormGroup.effect"
+                    [cardType]="cardType"
+                  ></app-card-effect>
+
+                  <app-card-effect
+                    *ngIf="isTrick"
+                    [effect]="effectFormGroup.effect"
+                    [cardType]="cardType"
+                  ></app-card-effect>
+
+                  <app-card-effect
+                    *ngIf="!isCharmOrTrick"
+                    [effect]="effectFormGroup.effect"
+                  ></app-card-effect>
+
+                </app-admin-card-effect-wrapper>
+              </ng-container>
+
+              <div
+                *ngIf="shouldHaveStrengthAndEnergy"
+                @fadeInOut
+                class="card-front__energy"
               >
-                <app-card-effect
-                  [effect]="effectFormGroup.effect"
-                ></app-card-effect>
-              </app-admin-card-effect-wrapper>
-        
-              <div class="card-front__energy">
                 <input
                   type="number"
                   max="99"
@@ -68,16 +136,25 @@
           </div>
         
           <div class="card-front__name">
-            {{ form.controls.name.value }}
+            {{ cardName }}
           </div>
         </div>
 
       </div>
 
     </div>
+
     <div class="admin-form__main">
 
-      <div class="admin-form__main__controls">
+      <h1 class="medium-text color-main">{{ editMode ? 'Edit card' : 'Add a new card' }}</h1>
+
+      <div
+        #controls
+        class="admin-form__main__controls"
+        [ngClass]="{
+          'overflowing': areControlsOverflowing
+        }"
+      >
 
         <app-admin-control-wrapper
           label="Card's name"
@@ -137,6 +214,21 @@
           ></app-toggle-control>
         </app-admin-control-wrapper>
 
+      </div>
+
+      <div
+        *ngIf="validationMsgs.length"
+        @fadeInOut
+        class="admin-form__main__validation"
+      >
+        <div class="admin-form__main__validation__inner">
+          <div
+            *ngFor="let msg of validationMsgs"
+            @fadeInOut
+          >
+            &bull; {{ msg }}
+          </div>
+        </div>
       </div>
 
       <div class="admin-form__main__actions">

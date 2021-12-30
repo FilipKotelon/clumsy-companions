@@ -1,1 +1,27 @@
-<ng-content></ng-content>
+<div class="admin-card-effect-wrapper">
+
+  <div *ngIf="canDelete"
+    class="admin-card-effect-wrapper__delete"
+    (click)="onDelete()"
+  >
+    <img src="assets/img/icons/close-white.svg" alt="Delete">
+  </div>
+  <div
+    class="admin-card-effect-wrapper__edit"
+    (click)="onOpenEdit()"
+  >
+    <img src="assets/img/icons/edit.svg" alt="Edit">
+  </div>
+  <div class="admin-card-effect-wrapper__effect">
+    <ng-content></ng-content>
+  </div>
+
+  <app-admin-edit-effect
+    [editMode]="true"
+    [formGroup]="formGroup"
+    [open]="open"
+    (closed)="onCloseEdit()"
+    (deleted)="onDelete()"
+  ></app-admin-edit-effect>
+
+</div>

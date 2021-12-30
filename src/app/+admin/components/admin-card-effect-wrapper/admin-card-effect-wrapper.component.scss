@@ -1,0 +1,42 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+.admin-card-effect-wrapper{
+  position: relative;
+
+  &__delete{
+    @include abs(-10%, -10%);
+    @include circle(40%);
+    background-color: $red;
+    cursor: pointer;
+    z-index: 10;
+    @include transition;
+
+    & img{
+      @include square(50%);
+    }
+
+    &:hover{
+      transform: scale(1.08);
+    }
+  }
+
+  &__edit{
+    @include abs(0, 0);
+    @include circle(100%);
+    opacity: 0;
+    z-index: 5;
+    background-color: $white-dimmed-transparent-stronger;
+    cursor: pointer;
+    @include transition;
+
+    &:hover{
+      opacity: 1;
+    }
+  }
+
+  &__effect{
+    pointer-events: none;
+  }
+}

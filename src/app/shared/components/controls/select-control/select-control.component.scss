@@ -19,16 +19,10 @@
       }
 
       &__options{
-        width: calc(100% + .8rem);
-        left: -.4rem;
         border-color: $main;
         height: auto;
         max-height: 34rem;
         overflow: auto;
-      }
-
-      &__option{
-        padding: .2rem .4rem;
       }
     }
   }
@@ -56,6 +50,7 @@
     @include rect(100%, 3.4rem);
     min-height: 3.4rem;
     transition: all .6s, order 0s;
+    padding: .2rem .4rem;
 
     &:hover{
       background-color: $grey-200;
