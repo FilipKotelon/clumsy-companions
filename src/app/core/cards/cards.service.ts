@@ -7,18 +7,19 @@ import { Router } from '@angular/router';
 import { AngularFirestore, CollectionReference, Query } from '@angular/fire/compat/firestore';
 
 import { Card, CardMainData, DbCard } from '@core/cards/cards.types';
+import { FilesService } from '@core/files/files.service';
 import { MessageService } from '@core/message/message.service';
 
 import { CardQueryParams } from './cards.types';
 
 import * as fromStore from '@core/store/reducer';
-import * as MessageActions from '@core/message/store/message.actions';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CardsService {
   constructor(
+    private filesSvc: FilesService,
     private fireStore: AngularFirestore,
     private messageSvc: MessageService,
     private router: Router,
@@ -99,11 +100,44 @@ export class CardsService {
     })
   }
 
-  updateCard = (data: CardMainData): void => {
-
+  updateCard = (id: string, data: CardMainData): void => {
+    this.fireStore.collection<DbCard>('cards').doc(id)
+      .update(data)
+      .then(() => {
+        this.messageSvc.displayInfo('Card updated successfully!');
+      })
+      .catch(error => {
+        console.log(error);
+  
+        this.messageSvc.displayError('An error occurred while updating the set.');
+      })
   }
 
   deleteCard = (id: string, redirectPath?: string): void => {
-    console.log('todo', id, redirectPath);
+    this.fireStore.collection<DbCard>('cards').doc(id).get().subscribe(cardDoc => {
+      const data = cardDoc.data();
+
+      if(!data){
+        this.messageSvc.displayError('The card with this id does not exist.');
+      }
+
+      const imgUrl = data.imgUrl;
+
+      this.fireStore.collection<DbCard>('cards').doc(id).delete()
+        .then(() => {
+          this.messageSvc.displayInfo('The card was deleted successfully!');
+
+          this.filesSvc.deleteFile(imgUrl);
+
+          if(redirectPath){
+            this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([redirectPath]));
+          }
+        })
+        .catch(error => {
+          console.log(error);
+
+          this.messageSvc.displayError('An error occurred while deleting this card.');
+        })
+    })
   }
 }

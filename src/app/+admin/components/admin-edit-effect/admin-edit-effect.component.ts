@@ -29,7 +29,7 @@ export class AdminEditEffectComponent {
     options = [
       {
         key: '',
-        value: 'Select type'
+        value: 'Select action'
       },
       ...Object.values(GameEffectActionType).map(type => ({
         key: type,

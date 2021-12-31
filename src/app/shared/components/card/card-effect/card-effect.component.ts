@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 
-import { CardType } from '@core/cards/cards.types';
+import { CardType, FOOD_CARD_EFFECT } from '@core/cards/cards.types';
 
 import { CardEffect, CardEffectType } from '@core/cards/cards.types';
 import { GameEffectActionType } from '@core/game/store/game.effect.actions';
@@ -23,11 +23,20 @@ export class CardEffectComponent implements OnInit {
   open: boolean;
 
   ngOnInit(): void {
+    if(this.cardType && this.cardType === CardType.Food){
+      this.effect = FOOD_CARD_EFFECT;
+    }
+
     this.effectIcon = this.getEffectIconName();
   }
 
   getEffectIconName = (): string => {
     const type = this.cardType ? this.cardType : this.effect.type;
+
+    if(type === CardType.Food){
+      return `${type}`;
+    }
+
     const action = this.effect.action;
     let additional = '';
 
@@ -39,7 +48,7 @@ export class CardEffectComponent implements OnInit {
       }
     }
 
-    return `${type}${additional}`
+    return `${type}${additional}`;
   }
 
   onOpen = (): void => {

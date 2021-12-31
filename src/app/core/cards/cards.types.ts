@@ -1,16 +1,5 @@
 import { GameEffectActionType } from '@core/game/store/game.effect.actions';
 
-export const CARD_SETTINGS = {
-  MIN_COST: 1,
-  MAX_COST: 8,
-  MIN_STRENGTH: 0,
-  MAX_STRENGTH: 8,
-  MIN_ENERGY: 1,
-  MAX_ENERGY: 10,
-  MIN_EFFECT_VALUE: 1,
-  MAX_EFFECT_VALUE: 10
-}
-
 export enum CardEffectType {
   AuraEffect = 'aura',
   OnEnterEffect = 'onenter',
@@ -70,58 +59,25 @@ export interface Card extends DbCard {
   readonly id: string;
 }
 
-export interface CardUpdateData {
-
+export const CARD_SETTINGS = {
+  MIN_COST: 1,
+  MAX_COST: 8,
+  MIN_STRENGTH: 0,
+  MAX_STRENGTH: 8,
+  MIN_ENERGY: 1,
+  MAX_ENERGY: 10,
+  MIN_EFFECT_VALUE: 1,
+  MAX_EFFECT_VALUE: 10
 }
 
-// export class CompanionCard implements Card {
-//   readonly type = CardType.Companion;
-
-//   constructor(
-//     readonly id: string,
-//     readonly name: string,
-//     readonly setId: string,
-//     readonly imgUrl: string,
-//     readonly cost: number,
-//     readonly effects: CardEffect[],
-//     readonly strength: number,
-//     readonly energy: number
-//   ) {}
-// }
-
-// export class CharmCard implements Card {
-//   readonly type = CardType.Charm;
-
-//   constructor(
-//     readonly id: string,
-//     readonly name: string,
-//     readonly setId: string,
-//     readonly imgUrl: string,
-//     readonly cost: number,
-//     readonly effects: CardEffect[]
-//   ) {}
-// }
-
-// export class TrickCard implements Card {
-//   readonly type = CardType.Trick;
-
-//   constructor(
-//     readonly id: string,
-//     readonly name: string,
-//     readonly setId: string,
-//     readonly imgUrl: string,
-//     readonly cost: number,
-//     readonly effects: CardEffect[]
-//   ) {}
-// }
-
-// export class FoodCard implements Card {
-//   readonly type = CardType.Food;
-
-//   constructor(
-//     readonly id: string,
-//     readonly name: string,
-//     readonly setId: string,
-//     readonly imgUrl: string,
-//   ) {}
-// }
+export const FOOD_CARD_EFFECT: CardEffect = {
+  name: 'Food',
+  description: 'This card adds 1 Food to your resources.',
+  type: CardEffectType.AuraEffect,
+  action: GameEffectActionType.GAME_EFFECT_ADD_FOOD,
+  values: {
+    main: 1,
+    strength: null,
+    energy: null
+  }
+}

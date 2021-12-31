@@ -11,8 +11,11 @@ import { Card } from '@core/cards/cards.types';
   styleUrls: ['./cards.component.scss']
 })
 export class CardsComponent implements OnInit {
+  private idToDelete = '';
+
   cards: Card[];
   cardSize: CardSize = CardSize.Medium;
+  deletePopupOpen: boolean;
 
   constructor(
     private cardsSvc: CardsService
@@ -24,7 +27,18 @@ export class CardsComponent implements OnInit {
     })
   }
 
-  onDelete = (id: string): void => {
-    console.log(id, 'delete');
+  onOpenDeletePopup = (id: string): void => {
+    this.idToDelete = id;
+    this.deletePopupOpen = true;
+  }
+
+  closeDeletePopup = (): void => {
+    this.deletePopupOpen = false;
+  }
+
+  deleteCard = (): void => {
+    this.cardsSvc.deleteCard(this.idToDelete, '/admin/cards');
+    this.idToDelete = '';
+    this.closeDeletePopup();
   }
 }

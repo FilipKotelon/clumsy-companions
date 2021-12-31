@@ -3,7 +3,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Card, CardEffect, CardEffectType, CardMainData, CardType, CARD_SETTINGS } from '@core/cards/cards.types';
+import { Card, CardEffect, CardEffectType, CardMainData, CardType, CARD_SETTINGS, FOOD_CARD_EFFECT } from '@core/cards/cards.types';
 import { CardsService } from '@core/cards/cards.service';
 import { FilesService } from '@core/files/files.service';
 import { GameEffectActionType } from '@core/game/store/game.effect.actions';
@@ -30,6 +30,7 @@ export class CardsEditComponent extends EditableOrNew {
   cancelPopupOpen: boolean;
   cardEffectGroups: CardEffectFormGroup[] = [];
   deletePopupOpen: boolean;
+  foodDefaultEffect = FOOD_CARD_EFFECT;
   form: FormGroup;
   formSubmitted = false;
   newCardEffectForm: FormGroup;
@@ -249,16 +250,14 @@ export class CardsEditComponent extends EditableOrNew {
   //#region Submit
   onSubmit = (): void => {
     this.formSubmitted = true;
-    console.log(this.form, this.canSubmit);
 
     if(this.canSubmit){
       const cardData = this.getCardFromControls();
-      console.log(cardData);
 
       if(this.editMode){
-        
+        this.cardsSvc.updateCard(this.id, cardData);
       } else {
-        this.cardsSvc.createCard(this.getCardFromControls());
+        this.cardsSvc.createCard(cardData);
       }
     } else {
       this.markAllInvalidControls();
@@ -554,7 +553,7 @@ export class CardsEditComponent extends EditableOrNew {
     this.deletePopupOpen = false;
   }
 
-  deleteSet = (): void => {
+  deleteCard = (): void => {
     this.cardsSvc.deleteCard(this.id, '/admin/sets');
     this.closeDeletePopup();
   }

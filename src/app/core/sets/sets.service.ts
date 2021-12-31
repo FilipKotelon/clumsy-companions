@@ -7,10 +7,9 @@ import { catchError, map } from 'rxjs/operators';
 
 import { DbSet, Set, SetMainData } from './sets.types';
 import { FilesService } from '@core/files/files.service';
+import { MessageService } from '@core/message/message.service';
 
 import * as fromStore from '@core/store/reducer';
-
-import * as MessageActions from '@core/message/store/message.actions';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +19,7 @@ export class SetsService {
   constructor(
     private fireStore: AngularFirestore,
     private filesSvc: FilesService,
+    private messageSvc: MessageService,
     private router: Router,
     private store: Store<fromStore.AppState>
   ) { }
@@ -36,9 +36,7 @@ export class SetsService {
       }),
       catchError(error => {
         console.log(error);
-        this.store.dispatch(
-          new MessageActions.Error('Sets could not be loaded.')
-        );
+        this.messageSvc.displayError('Sets could not be loaded.');
 
         return [];
       })
@@ -67,17 +65,13 @@ export class SetsService {
       dateAdded: new Date(),
       editable: true
     }).then(setDoc => {
-      this.store.dispatch(
-        new MessageActions.Info('The set was added successfully!')
-      );
+      this.messageSvc.displayInfo('The set was added successfully!');
 
       this.router.navigate([`/admin/sets/edit/${setDoc.id}`]);
     }).catch(error => {
       console.log(error);
 
-      this.store.dispatch(
-        new MessageActions.Error('An error occurred while adding the set.')
-      );
+      this.messageSvc.displayError('An error occurred while adding the set.');
     })
   }
 
@@ -85,15 +79,11 @@ export class SetsService {
     this.fireStore.collection<DbSet>('sets').doc(id).update({
       ...data
     }).then(() => {
-      this.store.dispatch(
-        new MessageActions.Info('The set was updated successfully!')
-      );
+      this.messageSvc.displayInfo('The set was updated successfully!');
     }).catch(error => {
       console.log(error);
 
-      this.store.dispatch(
-        new MessageActions.Error('An error occurred while updating the set.')
-      );
+      this.messageSvc.displayError('An error occurred while updating the set.');
     })
   }
 
@@ -103,22 +93,23 @@ export class SetsService {
       
       this.fireStore.collection<DbSet>('sets').doc(id).delete()
         .then(() => {
-          this.store.dispatch(
-            new MessageActions.Info('The set was deleted successfully!')
-          );
+          this.messageSvc.displayInfo('The set was deleted successfully!');
 
           this.filesSvc.deleteFile(imgUrl);
 
           if(redirectPath){
-            this.router.navigate(['/admin/sets']);
+            this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([redirectPath]));
           }
+        })
+        .catch(error => {
+          console.log(error);
+
+          this.messageSvc.displayError('An error occurred while deleting this card.');
         })
     })
   }
 
   handleValidationError = () => {
-    this.store.dispatch(
-      new MessageActions.Error('Upload an image and provide the set\'s name.')
-    )
+    this.messageSvc.displayError('Upload an image and provide the set\'s name.');
   }
 }

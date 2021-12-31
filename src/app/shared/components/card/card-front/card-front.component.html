@@ -39,6 +39,7 @@
 
     <!-- CHARM AND TRICK CARD START -->
     <div class="card-front__info" *ngIf="card.type === allCardTypes.Charm || card.type === allCardTypes.Trick">
+      <div class="card-front__info__left"></div>
       <div class="card-front__info__right to-top">
         <div class="card-front__cost">
           {{ card.cost }}
@@ -54,13 +55,12 @@
 
     <!-- FOOD CARD START -->
     <div class="card-front__info" *ngIf="card.type === allCardTypes.Food">
+      <div class="card-front__info__left"></div>
       <div class="card-front__info__right to-top">
-        <div class="card-effect">
-          <img 
-            src="assets/img/icons/effect-types/food.svg" 
-            alt="Food Card"
-          >
-        </div>
+        <app-card-effect
+          [effect]="card.effects[0]"
+          [cardType]="card.type"
+        ></app-card-effect>
       </div>
     </div>
     <!-- FOOD CARD END -->

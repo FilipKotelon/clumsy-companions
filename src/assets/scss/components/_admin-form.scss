@@ -43,6 +43,7 @@
 
     &__controls{
       width: 100%;
+      height: 100%;
       overflow: hidden;
       margin-bottom: 1.2rem;
       @include scrollbar($color: $main, $bg: $grey-300, $w: .6rem, $rounded: true);
