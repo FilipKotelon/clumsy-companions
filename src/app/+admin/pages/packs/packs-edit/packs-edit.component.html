@@ -8,8 +8,8 @@
 
       <div class="admin-form__display__upload">
         <app-file-upload
-          displayText="Upload the set's image!"
-          path="images/sets"
+          displayText="Upload the pack's image!"
+          path="images/packs"
           formControlName="imgUrl"
           [control]="form.controls.imgUrl"
           [imgUrl]="form.controls.imgUrl.value"
@@ -23,8 +23,8 @@
       <div class="admin-form__main__controls">
 
         <app-admin-control-wrapper
-          label="Set's name"
-          validationMessage="Please provide the set's name."
+          label="Pack's name"
+          validationMessage="Please provide the pack's name."
           [control]="form.controls.name"
         >
           <app-simple-control
@@ -32,6 +32,40 @@
             formControlName="name"
             [control]="form.controls.name"
           ></app-simple-control>
+        </app-admin-control-wrapper>
+
+        <app-admin-control-wrapper
+          label="Price"
+          validationMessage="Please provide the pack's price."
+          [control]="form.controls.price"
+        >
+          <app-simple-control
+            type="number"
+            formControlName="price"
+            [control]="form.controls.price"
+          ></app-simple-control>
+        </app-admin-control-wrapper>
+        
+        <app-admin-control-wrapper
+          label="Set"
+          validationMessage="Please choose a set."
+          [control]="form.controls.setId"
+        >
+          <app-select-control
+            formControlName="setId"
+            [control]="form.controls.setId"
+            [options]="setOptions"
+          ></app-select-control>
+        </app-admin-control-wrapper>
+
+        <app-admin-control-wrapper
+          label="Visible in shop"
+          [control]="form.controls.visibleInShop"
+        >
+          <app-toggle-control
+            formControlName="visibleInShop"
+            [control]="form.controls.visibleInShop"
+          ></app-toggle-control>
         </app-admin-control-wrapper>
         
       </div>
@@ -67,13 +101,13 @@
   </form>
 
   <app-accept-popup
-    msg="Do you want to delete this set?"
+    msg="Do you want to delete this pack?"
     acceptMsg="Delete"
     acceptBtnClass="red"
     declineBtnClass="black"
     [open]="deletePopupOpen"
     (declined)="closeDeletePopup()"
-    (accepted)="deleteSet()"
+    (accepted)="deletePack()"
   ></app-accept-popup>
 
   <app-accept-popup

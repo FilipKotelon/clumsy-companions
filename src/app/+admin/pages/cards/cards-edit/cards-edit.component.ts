@@ -208,22 +208,10 @@ export class CardsEditComponent extends EditableOrNew {
   //#region Init and forms
   init = (): void => {
     this.form = this.buildForm();
-    this.newCardEffectForm = this.buildEffectFormGroup()
+    this.newCardEffectForm = this.buildEffectFormGroup();
 
-    if(!this.id){
-      this.subs.push(
-        this.form.controls.effects.valueChanges.pipe(
-          tap((changes) => {
-            console.log(changes);
-          })
-        ).subscribe((changes) => {
-          console.log(changes);
-        })
-      );
-    }
-
-    this.setsSvc.getSets().subscribe(sets => {
-      this.setOptions = this.mapSetsToSelectOptions(sets);
+    this.setsSvc.getSetSelectOptions().subscribe(setOptions => {
+      this.setOptions = setOptions;
   
       if(this.id){
         this.cardsSvc.getCard(this.id).subscribe(card => {
@@ -235,12 +223,6 @@ export class CardsEditComponent extends EditableOrNew {
 
           this.form = this.buildForm(card);
           this.cardEffectGroups = this.getEffectFormGroups();
-
-          this.subs.push(
-            this.form.controls.effects.valueChanges.subscribe(changes => {
-              console.log(changes);
-            })
-          );
         });
       }
     })
@@ -495,13 +477,6 @@ export class CardsEditComponent extends EditableOrNew {
       control.markAsDirty();
     })
   }
-  
-  mapSetsToSelectOptions = (sets: Set[]): SelectControlOption[] => {
-    return sets.map(set => ({
-      key: set.id,
-      value: set.name
-    }))
-  }
   //#endregion
 
   //#region Validation
@@ -527,7 +502,7 @@ export class CardsEditComponent extends EditableOrNew {
   }
 
   validateIsSetId = (control: FormControl): ValidationErrors => {
-    const foundSet = !!this.setOptions.find(set => set.key === control.value);
+    const foundSet = !!this.setOptions.find(set => ((set.key === control.value) && set.key));
 
     if(!foundSet){
       return {'setIdIsIncorrect': true};

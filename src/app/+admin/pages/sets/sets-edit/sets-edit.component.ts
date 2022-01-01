@@ -1,40 +1,55 @@
-import { Set } from '@core/sets/sets.types';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/forms';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { EditableOrNew } from '@admin/utility/editable-or-new.class';
+
 import { SetsService } from '@core/sets/sets.service';
-import { FilesService } from '@app/core/files/files.service';
-import { MessageService } from '@app/core/message/message.service';
+import { FilesService } from '@core/files/files.service';
+import { MessageService } from '@core/message/message.service';
+
+import { fadeInOut } from '@shared/animations/component-animations';
 
 @Component({
   selector: 'app-sets-edit',
   templateUrl: './sets-edit.component.html',
-  styleUrls: ['./sets-edit.component.scss']
+  styleUrls: ['./sets-edit.component.scss'],
+  animations: [fadeInOut]
 })
 export class SetsEditComponent extends EditableOrNew {
   cancelPopupOpen: boolean;
   deletePopupOpen: boolean;
   form: FormGroup;
+  formSubmitted = false;
 
   constructor(
     private filesSvc: FilesService,
     private messageSvc: MessageService,
     protected route: ActivatedRoute,
     private router: Router,
-    private setsSvc: SetsService,
+    private setsSvc: SetsService
   ) {
     super(route);
   }
+
+  get validationMsgs(): string[] {
+    const msgs: string[] = [];
+    const controls = this.form.controls;
+    const imgUrl = controls.imgUrl;
+
+    //#region Check image
+    if(!imgUrl.valid && (imgUrl.touched || this.formSubmitted)){
+      msgs.push(`Please upload an image.`);
+    }
+    //#endregion
+
+    return msgs;
+  }
   
   init = (): void => {
-    let name = '',
-      imgUrl = '';
-
     this.form = new FormGroup({
-      name: new FormControl(name, [Validators.required]),
-      imgUrl: new FormControl(imgUrl, [Validators.required])
+      name: new FormControl('', [Validators.required]),
+      imgUrl: new FormControl('', [Validators.required])
     })
 
     if(this.id){
@@ -60,6 +75,8 @@ export class SetsEditComponent extends EditableOrNew {
   }
 
   onSubmit = (): void => {
+    this.formSubmitted = true;
+
     if(this.form.valid){
       const imgUrl = this.form.get('imgUrl').value;
       const name = this.form.get('name').value;
@@ -73,8 +90,17 @@ export class SetsEditComponent extends EditableOrNew {
         this.setsSvc.createSet({name, imgUrl});
       }
     } else {
-      this.setsSvc.handleValidationError();
+      this.markAllInvalidControls();
+      this.messageSvc.displayError('Upload an image and provide the set\'s name.');
     }
+  }
+
+  markAllInvalidControls = (): void => {
+    const invalidControls: AbstractControl[] = 
+      Object.values(this.form.controls)
+      .filter(control => !control.valid);
+
+    invalidControls.forEach(control => control.markAsDirty());
   }
 
   onOpenDeletePopup = (): void => {

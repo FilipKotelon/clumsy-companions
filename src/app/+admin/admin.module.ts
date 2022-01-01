@@ -22,6 +22,8 @@ import { SimpleListItemComponent } from './components/simple-list-item/simple-li
 import { AdminCardEffectWrapperComponent } from './components/admin-card-effect-wrapper/admin-card-effect-wrapper.component';
 import { AdminControlWrapperComponent } from './components/admin-control-wrapper/admin-control-wrapper.component';
 import { AdminEditEffectComponent } from './components/admin-edit-effect/admin-edit-effect.component';
+import { AdminShopItemWrapperComponent } from './components/admin-shop-item-wrapper/admin-shop-item-wrapper.component';
+import { PacksEditComponent } from './pages/packs/packs-edit/packs-edit.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +47,8 @@ import { AdminEditEffectComponent } from './components/admin-edit-effect/admin-e
     AdminCardEffectWrapperComponent,
     AdminControlWrapperComponent,
     AdminEditEffectComponent,
+    AdminShopItemWrapperComponent,
+    PacksEditComponent,
   ],
   imports: [
     SharedModule,

@@ -1,0 +1,36 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+.pack{
+  @include rect(32rem, 48rem);
+  position: relative;
+  overflow: hidden;
+
+  &__img{
+    @include abs(0, 0);
+    @include img-cover;
+    z-index: 0;
+  }
+
+  &__overlay{
+    @include abs($l: 0, $b: 0);
+    @include rect(100%, 25%);
+    @include d-flex($ai: center, $jc: flex-end);
+
+    &::after{
+      @include default-after;
+      @include square(110%);
+      background-color: $main;
+      transform-origin: top right;
+      transform: rotate(-10deg);
+    }
+
+    &__img{
+      position: relative;
+      z-index: 1;
+      height: 70%;
+      margin-right: 5%;
+    }
+  }
+}

@@ -1,3 +1,6 @@
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
 import { SetsEditComponent } from './pages/sets/sets-edit/sets-edit.component';
 import { CardsEditComponent } from './pages/cards/cards-edit/cards-edit.component';
 import { AiOpponentsComponent } from './pages/ai-opponents/ai-opponents.component';
@@ -9,9 +12,8 @@ import { SetsComponent } from './pages/sets/sets.component';
 import { CardsComponent } from './pages/cards/cards.component';
 import { WelcomeComponent } from './pages/welcome/welcome.component';
 import { AdminComponent } from './admin.component';
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
 import { AiDecksComponent } from './pages/ai-decks/ai-decks.component';
+import { PacksEditComponent } from './pages/packs/packs-edit/packs-edit.component';
 
 let routes: Routes = [
   {
@@ -87,10 +89,33 @@ let routes: Routes = [
       },
       {
         path: 'packs',
-        component: PacksComponent,
         data: {
           anmimation: '4'
-        }
+        },
+        children: [
+          {
+            path: '',
+            component: PacksComponent,
+            pathMatch: 'full',
+            data: {
+              anmimation: '41'
+            },
+          },
+          {
+            path: 'new',
+            component: PacksEditComponent,
+            data: {
+              animation: '42'
+            },
+          },
+          {
+            path: 'edit/:id',
+            component: PacksEditComponent,
+            data: {
+              animation: '43'
+            }
+          },
+        ]
       },
       {
         path: 'avatars',

@@ -1,1 +1,35 @@
-<p>packs works!</p>
+<div class="admin-list-page">
+  <div class="admin-title-con">
+    <h1 class="medium-title color-main">Packs</h1>
+    <a routerLink="/admin/packs/new" class="admin-button set green">Add new</a>
+  </div>
+  
+  <div class="item-grid">
+    <ng-container *ngFor="let pack of packs">
+  
+      <app-admin-shop-item-wrapper
+        [shopProduct]="pack"
+      >
+        <app-admin-item-wrapper
+          (deleted)="onOpenDeletePopup(pack.id)"
+          editLink="/admin/packs/edit/{{ pack.id }}"
+        >
+          <app-pack
+            [pack]="pack"
+          ></app-pack>
+        </app-admin-item-wrapper>
+      </app-admin-shop-item-wrapper>
+  
+    </ng-container>
+  </div>
+
+  <app-accept-popup
+    msg="Do you want to delete this pack?"
+    acceptMsg="Delete"
+    acceptBtnClass="red"
+    declineBtnClass="black"
+    [open]="deletePopupOpen"
+    (declined)="closeDeletePopup()"
+    (accepted)="deletePack()"
+  ></app-accept-popup>
+</div>

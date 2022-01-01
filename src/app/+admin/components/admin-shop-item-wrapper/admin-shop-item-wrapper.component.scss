@@ -1,0 +1,19 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+.admin-shop-item-wrapper{
+  &__info{
+    @include d-flex($ai: center, $jc: space-between);
+    @include rect(100%, 4rem);
+
+    &__price{
+      @include d-flex($ai: center);
+
+      & img{
+        width: 1.8rem;
+        margin-right: .8rem;
+      }
+    }
+  }
+}

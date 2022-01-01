@@ -2,14 +2,15 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Store } from '@ngrx/store';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 
 import { DbSet, Set, SetMainData } from './sets.types';
 import { FilesService } from '@core/files/files.service';
 import { MessageService } from '@core/message/message.service';
 
 import * as fromStore from '@core/store/reducer';
+import { SelectControlOption } from '@app/shared/components/controls/select-control/select-control.types';
 
 @Injectable({
   providedIn: 'root'
@@ -54,6 +55,25 @@ export class SetsService {
         } else {
           return null;
         }
+      })
+    )
+  }
+
+  getSetSelectOptions = (): Observable<SelectControlOption[]> => {
+    return this.getSets().pipe(
+      switchMap(sets => {
+        return of(
+          [
+            {
+              key: '',
+              value: 'Select set'
+            },
+            ...sets.map(set => ({
+              key: set.id,
+              value: set.name
+            }))
+          ]
+        )
       })
     )
   }
@@ -107,9 +127,5 @@ export class SetsService {
           this.messageSvc.displayError('An error occurred while deleting this card.');
         })
     })
-  }
-
-  handleValidationError = () => {
-    this.messageSvc.displayError('Upload an image and provide the set\'s name.');
   }
 }

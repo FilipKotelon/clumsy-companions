@@ -1,0 +1,12 @@
+<div class="admin-shop-item-wrapper">
+  <div class="admin-shop-item-wrapper__content">
+    <ng-content></ng-content>
+  </div>
+  <div class="admin-shop-item-wrapper__info">
+    <div class="admin-shop-item-wrapper__info__name">{{ shopProduct.name }}</div>
+    <div class="admin-shop-item-wrapper__info__price">
+      <img src="assets/img/icons/coin-gold.svg" alt="Coin">
+      <span>{{ shopProduct.price | bigNumber }}</span>
+    </div>
+  </div>
+</div>
