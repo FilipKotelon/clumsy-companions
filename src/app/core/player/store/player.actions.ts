@@ -1,12 +1,12 @@
 import { Player } from '@core/player/player.types';
 import { Action } from '@ngrx/store';
 
-export const PLAYER_SET = '[Player] Set';
+export const SET_PLAYER = '[Player] Set';
 
-export type PlayerActions = PlayerSet;
+export type PlayerActions = SetPlayer;
 
-export class PlayerSet implements Action {
-  readonly type = PLAYER_SET;
+export class SetPlayer implements Action {
+  readonly type = SET_PLAYER;
 
   constructor( public payload: Player ) {}
 }

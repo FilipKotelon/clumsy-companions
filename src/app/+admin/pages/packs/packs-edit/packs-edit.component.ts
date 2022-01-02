@@ -106,7 +106,7 @@ export class PacksEditComponent extends EditableOrNew {
   getPackDataFromControls = (): PackMainData => {
     const name = this.form.get('name').value;
     const imgUrl = this.form.get('imgUrl').value;
-    const price = this.form.get('price').value;
+    const price = +this.form.get('price').value;
     const setId = this.form.get('setId').value;
     const visibleInShop = this.form.get('visibleInShop').value;
 

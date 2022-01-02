@@ -5,11 +5,12 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
-import { AuthType, DbUser } from './auth.types';
+import { AuthType, DbUser, User } from './auth.types';
 
 import * as fromStore from '@core/store/reducer';
 import * as AuthActions from '@core/auth/store/auth.actions';
 import * as AuthHelpers from '@core/auth/store/auth.helpers';
+import * as AuthSelectors from '@core/auth/store/auth.selectors';
 import * as LoadingActions from '@core/loading/store/loading.actions';
 import * as MessageActions from '@core/message/store/message.actions';
 
@@ -24,6 +25,10 @@ export class AuthService{
     private fireStore: AngularFirestore,
     private store: Store<fromStore.AppState>
   ) {}
+
+  getUser = (): Observable<User> => {
+    return this.store.select(AuthSelectors.selectUser);
+  }
 
   logIn = (email: string, password: string): void => {
     if(email && password){

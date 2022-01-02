@@ -1,0 +1,6 @@
+<div class="shop-wrapper">
+  <app-sidebar></app-sidebar>
+  <div class="shop-page-wrapper" [@routeAnimations]="prepareRoute(outlet)">
+    <router-outlet #outlet="outlet"></router-outlet>
+  </div>
+</div>

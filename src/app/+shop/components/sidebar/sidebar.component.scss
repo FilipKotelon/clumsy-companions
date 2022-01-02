@@ -1,0 +1,21 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+.shop-sidebar{
+  @include d-flex($dir: column);
+  width: 18rem;
+
+  &__item{
+    @include d-flex($ai: center);
+    @include rect(100%, 7rem);
+    font-size: 2.2rem;
+    padding: 0 1.5rem;
+    @include transition;
+
+    &.active{
+      background-color: $main;
+      color: $white;
+    }
+  }
+}

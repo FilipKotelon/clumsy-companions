@@ -15,15 +15,15 @@ export class AdminCardEffectWrapperComponent {
   @Output() deleted = new EventEmitter<void>();
   @Output() openedEdit = new EventEmitter<void>();
 
-  onCloseEdit = () => {
+  onCloseEdit = (): void => {
     this.closedEdit.emit();
   }
 
-  onDelete = () => {
+  onDelete = (): void => {
     this.deleted.emit();
   }
 
-  onOpenEdit = () => {
+  onOpenEdit = (): void => {
     this.openedEdit.emit();
   }
 }

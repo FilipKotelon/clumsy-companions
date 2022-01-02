@@ -1,22 +1,29 @@
-import { HubComponent } from './hub.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+
+import { PacksComponent } from './pages/packs/packs.component';
+import { ShopComponent } from './shop.component';
 
 let routes: Routes = [
   {
     path: '',
-    component: HubComponent,
+    component: ShopComponent,
     data: {
       animation: '1'
     },
     children: [
       {
-        path: 'shop',
-        loadChildren: () => import('@shop/shop.module').then(m => m.ShopModule),
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'packs'
+      },
+      {
+        path: 'packs',
+        component: PacksComponent,
         data: {
           animation: '11'
         }
-      }
+      },
     ]
   },
 ];
@@ -27,4 +34,4 @@ let routes: Routes = [
   ],
   exports: [RouterModule]
 })
-export class HubRoutingModule {}
+export class ShopRoutingModule {}

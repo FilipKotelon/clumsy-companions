@@ -1,0 +1,15 @@
+<div class="number-step-control">
+  <div
+    class="number-step-control__less"
+    (click)="decreaseValue($event)"
+  >
+    <img src="assets/img/icons/minus-green.svg" alt="Less">
+  </div>
+  <div class="number-step-control__value">{{ value }}</div>
+  <div
+    class="number-step-control__more"
+    (click)="increaseValue($event)"
+  >
+    <img src="assets/img/icons/plus-green.svg" alt="More">
+  </div>
+</div>

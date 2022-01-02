@@ -15,11 +15,11 @@ export interface DbUser {
   role: UserRole;
   currentAvatarId: string;
   currentDeckId: string;
-  decks: string[];
-  ownedAvatars: string[];
-  ownedPacks: string[];
-  ownedCards: string[];
-  ownedSleeves: string[];
+  decksIds: string[];
+  ownedAvatarsIds: string[];
+  ownedPacksIds: string[];
+  ownedCardsIds: string[];
+  ownedSleevesIds: string[];
   coins: number;
   winCount: number;
   lossCount: number;
@@ -29,6 +29,7 @@ export class User {
   constructor(
     public email: string,
     public id: string,
+    public dbId: string,
     public role: UserRole,
     private _token: string,
     private _tokenExpirationDate: Date,

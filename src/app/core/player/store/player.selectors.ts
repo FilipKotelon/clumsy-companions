@@ -7,10 +7,10 @@ export const selectPlayer = (state: fromStore.AppState) => state.player.player;
 
 export const selectCoins = createSelector(
   selectPlayer,
-  (player: Player) => player.coins
+  (player: Player) => player ? player.coins : null
 )
 
-export const selectOwnedPacks = createSelector(
+export const selectOwnedPacksIds = createSelector(
   selectPlayer,
-  (player: Player) => player.ownedPacks
+  (player: Player) => player ? player.ownedPacksIds : []
 )

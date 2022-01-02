@@ -55,11 +55,11 @@ export class AuthEffects {
                   role: UserRole.Player,
                   currentAvatarId: [],
                   currentDeckId: -1,
-                  decks: [],
-                  ownedAvatars: [],
-                  ownedPacks: [],
-                  ownedCards: [],
-                  ownedSleeves: [],
+                  decksIds: [],
+                  ownedAvatarsIds: [],
+                  ownedPacksIds: [],
+                  ownedCardsIds: [],
+                  ownedSleevesIds: [],
                   coins: 0,
                   winCount: 0,
                   lossCount: 0
@@ -80,6 +80,7 @@ export class AuthEffects {
                         return handleAuthSuccess({
                           user: {
                             ...theUser,
+                            dbId: dbUser.id,
                             email: userCred.user.email,
                             token: tokenRes.token,
                             role: UserRole.Player,
@@ -136,10 +137,11 @@ export class AuthEffects {
                   mergeMap(tokenRes => {
                     const theUser = <DbUser>dbUser.docs[0].data();
                     const dbUserRole = dbUser ? theUser.role : UserRole.Player;
-                    
+
                     return handleAuthSuccess({
                       user: {
                         ...theUser,
+                        dbId: dbUser.docs[0].id,
                         email: userCred.user.email,
                         token: tokenRes.token,
                         role: dbUserRole,
@@ -247,6 +249,7 @@ export class AuthEffects {
               return handleAuthSuccess({
                 user: {
                   ...theUser,
+                  dbId: dbUser.docs[0].id,
                   email: user.email,
                   token: user.token,
                   role: dbUserRole,

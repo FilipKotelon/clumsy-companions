@@ -2,8 +2,9 @@ import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 
+import { PlayerService } from '@core/player/player.service';
+
 import * as fromStore from '@core/store/reducer';
-import * as PlayerSelectors from '@core/player/store/player.selectors';
 import * as AuthActions from '@core/auth/store/auth.actions';
 
 @Component({
@@ -14,19 +15,20 @@ import * as AuthActions from '@core/auth/store/auth.actions';
 export class NavComponent implements OnInit, OnDestroy {
   coinsSub: Subscription;
   packsSub: Subscription;
-  coins: number;
-  packsAmount: number;
+  coins = 0;
+  packsAmount = 0;
 
   constructor(
+    private playerSvc: PlayerService,
     private store: Store<fromStore.AppState>
   ) { }
 
   ngOnInit(): void {
-    this.coinsSub = this.store.select(PlayerSelectors.selectCoins).subscribe(coins => {
+    this.coinsSub = this.playerSvc.getCoins().subscribe(coins => {
       this.coins = coins;
     })
 
-    this.packsSub = this.store.select(PlayerSelectors.selectOwnedPacks).subscribe(packs => {
+    this.packsSub = this.playerSvc.getOwnedPacksIds().subscribe(packs => {
       this.packsAmount = packs.length;
     })
   }

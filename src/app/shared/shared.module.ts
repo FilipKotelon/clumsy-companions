@@ -16,6 +16,7 @@ import { SelectControlComponent } from './components/controls/select-control/sel
 import { SimpleControlComponent } from './components/controls/simple-control/simple-control.component';
 import { BigNumberPipe } from './pipes/big-number/big-number.pipe';
 import { PackComponent } from './components/pack/pack.component';
+import { NumberStepControlComponent } from './components/controls/number-step-control/number-step-control.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { PackComponent } from './components/pack/pack.component';
     SelectControlComponent,
     SimpleControlComponent,
     PackComponent,
+    NumberStepControlComponent,
   ],
   imports: [
     CommonModule,
@@ -54,7 +56,8 @@ import { PackComponent } from './components/pack/pack.component';
     ToggleControlComponent,
     SelectControlComponent,
     SimpleControlComponent,
-    PackComponent
+    PackComponent,
+    NumberStepControlComponent,
   ]
 })
 export class SharedModule { }

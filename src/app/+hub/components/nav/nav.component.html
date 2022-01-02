@@ -6,10 +6,10 @@
       <span>Play</span>
     </button>
     <div class="hub-nav__links">
-      <a routerLink="/hub" routerLinkActive="active">Home</a>
+      <a routerLink="/hub" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
       <a routerLink="/hub/profile" routerLinkActive="active">Profile</a>
       <a routerLink="/hub/decks" routerLinkActive="active">Decks</a>
-      <a routerLink="/hub/store" routerLinkActive="active">Store</a>
+      <a routerLink="/hub/shop" routerLinkActive="active">Shop</a>
       <a routerLink="/hub/collection" routerLinkActive="active">Collection</a>
     </div>
   </div>
@@ -28,5 +28,3 @@
   </div>
 
 </nav>
-
-<div class="hub-nav-placeholder"></div>

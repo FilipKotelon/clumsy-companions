@@ -1,0 +1,55 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+.shop-item-wrapper{
+  border: .1rem solid $main;
+  border-radius: .3rem;
+  padding: 1.2rem;
+
+  &__product{
+    @include d-flex($center: true);
+    margin-bottom: 1.6rem;
+  }
+
+  &__name{
+    margin-bottom: 1rem;
+  }
+
+  &__actions{
+    @include d-flex($ai: center);
+  }
+
+  & .price-small{
+    margin-right: auto;
+  }
+
+  &__amount{
+    margin-right: 1.6rem;
+  }
+
+  &__buy{
+    @include rect(6rem, 3.2rem);
+    @include d-flex($center: true);
+    border: .1rem solid $main;
+    background-color: $main;
+    color: $white;
+    @include transition;
+    cursor: pointer;
+
+    &:hover{
+      background-color: $white;
+      color: $main;
+    }
+  }
+}
+
+::ng-deep{
+  .shop-item-wrapper{
+    & .shop-item-wrapper__product{
+      & .pack{
+        @include rect(16rem, 24rem);
+      }
+    }
+  }
+}

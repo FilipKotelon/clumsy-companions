@@ -24,13 +24,13 @@ let routes: Routes = [
         path: '',
         component: WelcomeComponent,
         data: {
-          anmimation: '1'
+          animation: '1'
         }
       },
       {
         path: 'cards',
         data: {
-          anmimation: '2'
+          animation: '2'
         },
         children: [
           {
@@ -60,7 +60,7 @@ let routes: Routes = [
       {
         path: 'sets',
         data: {
-          anmimation: '3'
+          animation: '3'
         },
         children: [
           {
@@ -90,7 +90,7 @@ let routes: Routes = [
       {
         path: 'packs',
         data: {
-          anmimation: '4'
+          animation: '4'
         },
         children: [
           {
@@ -98,7 +98,7 @@ let routes: Routes = [
             component: PacksComponent,
             pathMatch: 'full',
             data: {
-              anmimation: '41'
+              animation: '41'
             },
           },
           {
@@ -121,35 +121,35 @@ let routes: Routes = [
         path: 'avatars',
         component: AvatarsComponent,
         data: {
-          anmimation: '5'
+          animation: '5'
         }
       },
       {
         path: 'sleeves',
         component: SleevesComponent,
         data: {
-          anmimation: '6'
+          animation: '6'
         }
       },
       {
         path: 'players',
         component: PlayersComponent,
         data: {
-          anmimation: '7'
+          animation: '7'
         }
       },
       {
         path: 'ai-opponents',
         component: AiOpponentsComponent,
         data: {
-          anmimation: '8'
+          animation: '8'
         }
       },
       {
         path: 'ai-decks',
         component: AiDecksComponent,
         data: {
-          anmimation: '8'
+          animation: '8'
         }
       },
     ]

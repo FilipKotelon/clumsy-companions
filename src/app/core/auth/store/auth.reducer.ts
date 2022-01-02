@@ -28,6 +28,7 @@ export function authReducer ( state = initState, action: AuthActions.AuthActions
       const user = new User(
         state.user.email,
         state.user.id,
+        state.user.dbId,
         state.user.role,
         action.payload.token,
         action.payload.expirationTime

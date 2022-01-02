@@ -1,0 +1,16 @@
+<div class="shop-page">
+  <div class="shop-info">
+    Buy a pack of cards to get 5 random cards you don't have yet!
+  </div>
+  <div class="shop-grid">
+    <app-shop-item-wrapper
+      *ngFor="let pack of packs"
+      [shopProduct]="pack"
+      (purchased)="onPurchase($event, pack)"
+    >
+      <app-pack
+        [pack]="pack"
+      ></app-pack>
+    </app-shop-item-wrapper>
+  </div>
+</div>

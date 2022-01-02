@@ -1,4 +1,6 @@
-<app-nav></app-nav>
-<div class="wrapper" [@routeAnimations]="prepareRoute(outlet)">
-  <router-outlet #outlet="outlet"></router-outlet>
+<div class="hub-wrapper">
+  <app-nav></app-nav>
+  <div class="hub-page-wrapper" [@routeAnimations]="prepareRoute(outlet)">
+    <router-outlet #outlet="outlet"></router-outlet>
+  </div>
 </div>

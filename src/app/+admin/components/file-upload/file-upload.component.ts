@@ -44,7 +44,7 @@ export class FileUploadComponent extends InputComponent implements OnDestroy {
     this.clearSubs();
   }
 
-  uploadImg = (e: Event) => {
+  uploadImg = (e: Event): void => {
     this.clearSubs()
 
     const input = (<HTMLInputElement>e.target);
@@ -72,7 +72,7 @@ export class FileUploadComponent extends InputComponent implements OnDestroy {
     })
   }
 
-  clearSubs = () => {
+  clearSubs = (): void => {
     if(this.uploadPercentageSub){
       this.uploadPercentageSub.unsubscribe();
     }

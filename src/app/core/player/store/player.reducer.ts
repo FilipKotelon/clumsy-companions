@@ -12,7 +12,7 @@ const initState: State = {
 
 export function playerReducer ( state = initState, action: PlayerActions.PlayerActions ): State {
   switch(action.type){
-    case PlayerActions.PLAYER_SET :
+    case PlayerActions.SET_PLAYER :
       return {
         ...state,
         player: action.payload

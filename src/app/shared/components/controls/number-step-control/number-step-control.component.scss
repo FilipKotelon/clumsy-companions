@@ -1,0 +1,15 @@
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+.number-step-control{
+  @include d-flex($ai: center, $jc: space-between);
+  width: 5rem;
+
+  &__less, &__more{
+    cursor: pointer;
+
+    & img{
+      @include square(.9rem);
+    }
+  }
+}

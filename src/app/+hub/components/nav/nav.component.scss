@@ -5,10 +5,6 @@
 $links-space: 1.5rem;
 
 .hub-nav{
-  &-placeholder{
-    height: 6rem;
-  }
-
   @include d-flex($jc: space-between);
   height: 6rem;
   font-size: 2.2rem;

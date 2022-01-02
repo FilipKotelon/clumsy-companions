@@ -1,4 +1,4 @@
-import { User, UserRole } from '@core/auth/auth.types';
+import { DbUser, User, UserRole } from '@core/auth/auth.types';
 import { Action } from '@ngrx/store';
 
 export const LOGIN_START = '[Auth] Login Start';
@@ -17,23 +17,11 @@ export interface UserRegisterData extends UserLoginData {
   username: string;
 }
 
-export interface UserFullData {
-  id: string;
-  username: string;
+export interface UserFullData extends DbUser {
+  dbId: string;
   email: string;
   token: string;
-  role: UserRole;
   expirationDate: Date;
-  currentAvatarId: string;
-  currentDeckId: string;
-  decks: string[];
-  ownedAvatars: string[];
-  ownedPacks: string[];
-  ownedCards: string[];
-  ownedSleeves: string[];
-  coins: number;
-  winCount: number;
-  lossCount: number;
 }
 
 export interface AuthSuccessFullData {

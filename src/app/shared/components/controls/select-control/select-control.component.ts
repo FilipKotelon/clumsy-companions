@@ -1,9 +1,9 @@
-import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
+import { Component, forwardRef, Input } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { InputComponent } from '@shared/utility/input-component.class';
 
-import { SelectControlChangeEvent, SelectControlOption } from './select-control.types';
+import { SelectControlOption } from './select-control.types';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,

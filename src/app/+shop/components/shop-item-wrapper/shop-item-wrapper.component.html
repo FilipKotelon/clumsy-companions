@@ -1,0 +1,28 @@
+<div
+  class="shop-item-wrapper"
+  [formGroup]="form"
+>
+  <div class="shop-item-wrapper__product">
+    <ng-content></ng-content>
+  </div>
+  <div class="shop-item-wrapper__name">{{ shopProduct.name }}</div>
+  <div class="shop-item-wrapper__actions">
+    <div class="price-small">
+      <img src="assets/img/icons/coin-gold.svg" alt="Coin">
+      <span>{{ shopProduct.price | bigNumber }}</span>
+    </div>
+    <div class="shop-item-wrapper__amount">
+      <app-number-step-control
+        formControlName="amount"
+        [control]="form.controls.amount"
+      ></app-number-step-control>
+    </div>
+    <button
+      (click)="onPurchase()"
+      type="button"
+      class="shop-item-wrapper__buy"
+    >
+      Buy
+    </button>
+  </div>
+</div>

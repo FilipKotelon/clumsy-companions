@@ -56,6 +56,7 @@ export const handleAuthSuccess = (data: AuthSuccessFullData): Action[] => {
   const user = new User(
     data.user.email,
     data.user.id,
+    data.user.dbId,
     data.user.role,
     data.user.token,
     data.user.expirationDate
@@ -65,11 +66,11 @@ export const handleAuthSuccess = (data: AuthSuccessFullData): Action[] => {
     data.user.username,
     data.user.currentAvatarId,
     data.user.currentDeckId,
-    data.user.decks,
-    data.user.ownedAvatars,
-    data.user.ownedPacks,
-    data.user.ownedCards,
-    data.user.ownedSleeves,
+    data.user.decksIds,
+    data.user.ownedAvatarsIds,
+    data.user.ownedPacksIds,
+    data.user.ownedCardsIds,
+    data.user.ownedSleevesIds,
     data.user.coins,
     data.user.winCount,
     data.user.lossCount
@@ -82,7 +83,7 @@ export const handleAuthSuccess = (data: AuthSuccessFullData): Action[] => {
       user,
       redirectTo: data.redirectTo
     }),
-    new PlayerActions.PlayerSet(player)
+    new PlayerActions.SetPlayer(player)
   ]
 }
 
@@ -96,6 +97,7 @@ export const getLocalStorageUser = (): User => {
   const userData : {
     email: string,
     id: string,
+    dbId: string,
     role: UserRole,
     _token: string,
     _tokenExpirationDate: string
@@ -104,6 +106,7 @@ export const getLocalStorageUser = (): User => {
   const user = new User(
     userData.email,
     userData.id,
+    userData.dbId,
     userData.role,
     userData._token,
     new Date(userData._tokenExpirationDate)
