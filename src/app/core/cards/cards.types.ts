@@ -1,4 +1,5 @@
 import { GameEffectActionType } from '@core/game/store/game.effect.actions';
+import { EffectValues } from '@core/game/game.types';
 
 export enum CardEffectType {
   AuraEffect = 'aura',
@@ -25,12 +26,6 @@ export interface CardQueryParams {
   type?: CardType;
 }
 
-export interface EffectValues {
-  main: number;
-  strength: number;
-  energy: number;
-}
-
 export interface CardEffect {
   readonly name: string;
   readonly description: string;
@@ -49,6 +44,7 @@ export interface CardMainData {
   readonly effects?: CardEffect[];
   readonly strength?: number;
   readonly energy?: number;
+  readonly availableInGame: boolean;
 }
 
 export interface DbCard extends CardMainData {

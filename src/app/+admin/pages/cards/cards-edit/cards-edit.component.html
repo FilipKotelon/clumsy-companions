@@ -210,6 +210,16 @@
           ></app-select-control>
         </app-admin-control-wrapper>
 
+        <app-admin-control-wrapper
+          label="Available in game"
+          [control]="form.controls.availableInGame"
+        >
+          <app-toggle-control
+            formControlName="availableInGame"
+            [control]="form.controls.availableInGame"
+          ></app-toggle-control>
+        </app-admin-control-wrapper>
+
         <!-- <app-admin-control-wrapper
           label="Show final look"
           [control]="form.controls.setId"

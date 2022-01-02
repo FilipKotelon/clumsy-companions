@@ -354,6 +354,7 @@ export class CardsEditComponent extends EditableOrNew {
       cost: new FormControl(card ? card.cost : null, [Validators.required, Validators.min(CARD_SETTINGS.MIN_COST), Validators.max(CARD_SETTINGS.MAX_COST), this.validateIsInteger]),
       strength: new FormControl(card ? card.strength : null, [Validators.required, Validators.min(CARD_SETTINGS.MIN_STRENGTH), Validators.max(CARD_SETTINGS.MAX_STRENGTH), this.validateIsInteger]),
       energy: new FormControl(card ? card.energy : null, [Validators.required, Validators.min(CARD_SETTINGS.MIN_ENERGY), Validators.max(CARD_SETTINGS.MAX_ENERGY), this.validateIsInteger]),
+      availableInGame: new FormControl(true),
       showFinalLook: new FormControl(false),
       effects: new FormArray(
         card ?
@@ -408,6 +409,7 @@ export class CardsEditComponent extends EditableOrNew {
       cost: this.form.controls.cost.value,
       strength: this.form.controls.strength.value,
       energy: this.form.controls.energy.value,
+      availableInGame: this.form.controls.availableInGame.value,
       effects: effectControls.map(control => {
         const group = <FormGroup>control;
         const values = <FormGroup>group.controls.values;
