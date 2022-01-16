@@ -1,6 +1,8 @@
-import { HubComponent } from './hub.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+
+import { HubComponent } from './hub.component';
+import { PacksComponent } from './pages/packs/packs.component';
 
 let routes: Routes = [
   {
@@ -15,6 +17,13 @@ let routes: Routes = [
         loadChildren: () => import('@shop/shop.module').then(m => m.ShopModule),
         data: {
           animation: '11'
+        }
+      },
+      {
+        path: 'packs',
+        component: PacksComponent,
+        data: {
+          animation: '12'
         }
       }
     ]

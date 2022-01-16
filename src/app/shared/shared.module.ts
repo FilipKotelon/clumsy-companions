@@ -17,6 +17,7 @@ import { SimpleControlComponent } from './components/controls/simple-control/sim
 import { BigNumberPipe } from './pipes/big-number/big-number.pipe';
 import { PackComponent } from './components/pack/pack.component';
 import { NumberStepControlComponent } from './components/controls/number-step-control/number-step-control.component';
+import { GiftModalComponent } from './components/gift-modal/gift-modal.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { NumberStepControlComponent } from './components/controls/number-step-co
     SimpleControlComponent,
     PackComponent,
     NumberStepControlComponent,
+    GiftModalComponent,
   ],
   imports: [
     CommonModule,

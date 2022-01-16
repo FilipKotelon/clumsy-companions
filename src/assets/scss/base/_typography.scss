@@ -126,3 +126,15 @@ a.color-main:hover{
     margin-right: .8rem;
   }
 }
+
+.amount{
+  &-wrapper{
+    position: relative;
+  }
+
+  @include abs($r: -.8rem, $t: 20%);
+  background-color: $main;
+  color: $white;
+  padding: .6rem .8rem;
+  font-size: 2.2rem;
+}

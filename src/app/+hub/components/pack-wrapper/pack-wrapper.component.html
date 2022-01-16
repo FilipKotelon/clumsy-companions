@@ -1,0 +1,13 @@
+<div
+  (click)="open()"
+  class="hub-pack-wrapper amount-wrapper"
+>
+  <div class="hub-pack-wrapper__pack">
+    <app-pack
+      [pack]="pack"
+    ></app-pack>
+  </div>
+  <div class="amount">
+    x {{ pack.amount }}
+  </div>
+</div>

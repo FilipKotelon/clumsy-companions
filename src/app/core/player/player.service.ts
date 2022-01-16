@@ -11,9 +11,11 @@ import * as PlayerSelectors from '@core/player/store/player.selectors';
 
 import { DbUser } from '@core/auth/auth.types';
 import { Player } from './player.types';
-import { Pack } from '../packs/packs.types';
+import { Pack, PackWithAmount } from '../packs/packs.types';
 import { MessageService } from '../message/message.service';
 import { ShopProduct } from '../shop/shop.types';
+import { PacksService } from '../packs/packs.service';
+import { Card } from '../cards/cards.types';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +27,7 @@ export class PlayerService {
     private authSvc: AuthService,
     private fireStore: AngularFirestore,
     private messageSvc: MessageService,
+    private packsSvc: PacksService,
     private store: Store<fromStore.AppState>
   ) {
     this.authSvc.getUser().subscribe(user => {
@@ -65,6 +68,28 @@ export class PlayerService {
     );
   }
 
+  getOwnedPacks = (): Observable<PackWithAmount[]> => {
+    return this.getOwnedPacksIds().pipe(
+      switchMap(packsIds => {
+        const uniquePacksIds: {[key: string]: number} = packsIds.reduce((prev, cur) => {
+          prev[cur] = prev[cur] ? prev[cur] + 1 : 1;
+          return prev;
+        }, {})
+
+        return this.packsSvc.getPacks(Object.keys(uniquePacksIds)).pipe(
+          switchMap(packs => {
+            return of(
+              packs.map(pack => ({
+                ...pack,
+                amount: uniquePacksIds[pack.id]
+              }))
+            );
+          })
+        );
+      })
+    );
+  }
+
   purchasePack = (pack: Pack, amount: number): void => {
     const totalPrice = pack.price * amount;
 
@@ -98,5 +123,15 @@ export class PlayerService {
         this.messageSvc.displayError(`You don't have enough coins for this purchase.`);
       }
     })
+  }
+
+  openPack = (pack: Pack): void => {
+    this.getPlayer()
+      .pipe(take(1))
+      .subscribe(({ ownedCardsIds }) => {
+        this.packsSvc.openPack(pack, ownedCardsIds).subscribe(cards => {
+          console.log(cards.map(card => card.name));
+        });
+      })
   }
 }

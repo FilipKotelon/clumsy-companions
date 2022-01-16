@@ -32,11 +32,15 @@ export class CardsService {
 
       if(params){
         if(params.set){
-          query = query.where('set', '==', params.set);
+          query = query.where('setId', '==', params.set);
         }
   
         if(params.type){
           query = query.where('type', '==', params.type);
+        }
+
+        if(params.availableInGame){
+          query = query.where('availableInGame', '==', params.availableInGame);
         }
       }
 

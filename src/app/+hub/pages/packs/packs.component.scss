@@ -1,0 +1,15 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+@import "utility/mixins/mixins-spacing";
+
+.hub-packs-page{
+  @include d-flex($center: true);
+  height: 100%;
+  padding-bottom: 12rem;
+
+  &__packs{
+    @include d-flex();
+    @include m-not-last(3rem, r);
+  }
+}

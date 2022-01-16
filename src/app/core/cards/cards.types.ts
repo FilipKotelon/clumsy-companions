@@ -24,6 +24,7 @@ export interface CardQueryParams {
   name?: string;
   set?: string;
   type?: CardType;
+  availableInGame?: boolean;
 }
 
 export interface CardEffect {

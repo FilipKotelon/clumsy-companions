@@ -354,7 +354,7 @@ export class CardsEditComponent extends EditableOrNew {
       cost: new FormControl(card ? card.cost : null, [Validators.required, Validators.min(CARD_SETTINGS.MIN_COST), Validators.max(CARD_SETTINGS.MAX_COST), this.validateIsInteger]),
       strength: new FormControl(card ? card.strength : null, [Validators.required, Validators.min(CARD_SETTINGS.MIN_STRENGTH), Validators.max(CARD_SETTINGS.MAX_STRENGTH), this.validateIsInteger]),
       energy: new FormControl(card ? card.energy : null, [Validators.required, Validators.min(CARD_SETTINGS.MIN_ENERGY), Validators.max(CARD_SETTINGS.MAX_ENERGY), this.validateIsInteger]),
-      availableInGame: new FormControl(true),
+      availableInGame: new FormControl(card ? card.availableInGame : false),
       showFinalLook: new FormControl(false),
       effects: new FormArray(
         card ?
@@ -531,7 +531,7 @@ export class CardsEditComponent extends EditableOrNew {
   }
 
   deleteCard = (): void => {
-    this.cardsSvc.deleteCard(this.id, '/admin/sets');
+    this.cardsSvc.deleteCard(this.id, '/admin/cards');
     this.closeDeletePopup();
   }
 
@@ -555,7 +555,7 @@ export class CardsEditComponent extends EditableOrNew {
         this.filesSvc.deleteFile(imgUrl);
       }
   
-      this.router.navigate(['/admin/sets']);
+      this.router.navigate(['/admin/cards']);
     }
   }
   //#endregion
