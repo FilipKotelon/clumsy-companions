@@ -1,1 +1,49 @@
-<p>gift-modal works!</p>
+<div
+  *ngIf="open"
+  @fadeInOut
+  class="gift-modal"
+>
+  <div class="gift-modal__main">
+    <div class="gift-modal__main__title medium-title color-main">
+      {{ currentGift.title }}
+    </div>
+    <div
+      *ngIf="currentGift.description"
+      class="gift-modal__main__description medium-text"
+    >
+      {{ currentGift.description }}
+    </div>
+    <div class="gift-modal__main__gifts">
+
+      <div
+        *ngFor="let card of currentGift.cards"
+        class="gift gift--card"
+      >
+        <app-card-front
+          [card]="card"
+          [permShowName]="true"
+          size="medium"
+        ></app-card-front>
+      </div>
+
+      <div
+        *ngIf="currentGift.coins"
+        class="gift gift--coins"
+      >
+        <img
+          class="gift--coins__icon"
+          src="assets/img/icons/coin-gold.svg"
+          alt="Coins"
+        >
+        <div class="gift--coins__amount big-text">{{ currentGift.coins }}</div>
+      </div>
+
+    </div>
+    <div
+      (click)="onClose()"
+      class="gift-modal__main__close page-button"
+    >
+      Continue
+    </div>
+  </div>
+</div>

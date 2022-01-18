@@ -4,7 +4,6 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 @Component({
   selector: 'app-accept-popup',
   templateUrl: './accept-popup.component.html',
-  styleUrls: ['./accept-popup.component.scss'],
   animations: [
     fadeInOut
   ]

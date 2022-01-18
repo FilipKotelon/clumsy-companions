@@ -1,0 +1,52 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+@import "utility/mixins/mixins-spacing";
+
+.gift-modal{
+  @include fix(0, 0);
+  @include square(100%);
+  @include d-flex($center: true);
+  background-color: $white-dimmed-transparent-stronger;
+  z-index: 5000;
+  padding: 5rem;
+
+  &__main{
+    @include d-flex($center: true, $dir: column);
+
+    &__title, &__description{
+      text-align: center;
+    }
+
+    &__title{
+      margin-bottom: 6rem;
+    }
+
+    &__description{
+      margin-top: -3rem;
+      margin-bottom: 6rem;
+    }
+
+    &__gifts{
+      @include d-flex();
+      @include m-not-last(3rem, r);
+      margin-bottom: 6rem;
+    }
+  }
+}
+
+.gift{
+  &--coins{
+    @include d-flex($center: true, $dir: column);
+    padding: 0 8rem;
+
+    &__icon{
+      @include square(14rem);
+      margin-bottom: 3rem;
+    }
+  }
+
+  &--card{
+    box-shadow: .2rem .4rem 1.8rem rgba(0, 0, 0, 0.15);
+  }
+}

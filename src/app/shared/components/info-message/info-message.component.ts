@@ -8,8 +8,7 @@ import { PopupController } from '../../utility/popup-controller.class';
 
 @Component({
   selector: 'app-info-message',
-  templateUrl: './info-message.component.html',
-  styleUrls: ['./info-message.component.scss']
+  templateUrl: './info-message.component.html'
 })
 export class InfoMessageComponent extends PopupController {
   constructor(protected store: Store<fromStore.AppState>) {

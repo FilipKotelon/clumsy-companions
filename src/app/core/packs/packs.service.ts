@@ -1,20 +1,16 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
-
-import { Store } from '@ngrx/store';
-
 import { combineLatest, Observable } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 import { Card } from '@core/cards/cards.types';
 import { CardsService } from '@core/cards/cards.service';
 import { FilesService } from '@core/files/files.service';
+import { Gift } from '@core/gift/gift.types';
 import { MessageService } from '@core/message/message.service';
 
-import * as fromStore from '@core/store/reducer';
-
 import { Pack, PackMainData, PACKS_SETTINGS } from './packs.types';
-import { catchError, map, switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +22,6 @@ export class PacksService {
     private filesSvc: FilesService,
     private messageSvc: MessageService,
     private router: Router,
-    private store: Store<fromStore.AppState>
   ) { }
 
   getPacks = (ids: string[] = []): Observable<Pack[]> => {
@@ -130,32 +125,55 @@ export class PacksService {
     })
   }
 
-  openPack = (pack: Pack, ownedCardsIds: string[]): Observable<Card[]> => {
-    return this.cardsSvc.getCards({
-      set: pack.setId,
-      availableInGame: true
-    }).pipe(
-      map(cards => {
-        const availableCards = cards.filter(card => !ownedCardsIds.includes(card.id));
-
-        if(availableCards.length <= PACKS_SETTINGS.CARDS_IN_PACK) {
-          return availableCards;
-        } else {
-          const uniqueCards: Card[] = [];
-          const uniqueIds: number[] = [];
-          
-          while(uniqueCards.length < PACKS_SETTINGS.CARDS_IN_PACK){
-            const id = Math.floor(Math.random() * availableCards.length);
-
-            if(!uniqueIds.includes(id)){
-              uniqueIds.push(id);
-              uniqueCards.push(availableCards[id]);
+  openPack = (pack: Pack, ownedCardsIds: string[]): Observable<Gift> => {
+    return this.cardsSvc
+      .getCards({
+        set: pack.setId,
+        availableInGame: true
+      })
+      .pipe(
+        map(cards => this.getUniqueCardsFromPack(cards, ownedCardsIds)),
+        map(cards => {
+          const gift: Gift = {
+            title: 'Enjoy your new cards!',
+            cards: cards
+          };
+  
+          if(cards.length < PACKS_SETTINGS.CARDS_IN_PACK){
+            if(cards.length === 0) {
+              gift.title = 'You already have all the cards available in that pack!';
+              gift.description = 'To not be left with nothing, take these coins as a refund!';
+              gift.coins = pack.price;
+            } else {
+              gift.description = 'These were the last cards you could get from that pack! We refunded you some coins for the cards you didn\'t get.';
+              gift.coins = Math.ceil(pack.price * ((PACKS_SETTINGS.CARDS_IN_PACK - cards.length) / PACKS_SETTINGS.CARDS_IN_PACK));
             }
           }
 
-          return uniqueCards;
+          return gift;
+        })
+      );
+  }
+
+  private getUniqueCardsFromPack = (cards: Card[], ownedCardsIds: string[]): Card[] => {
+    const availableCards = cards.filter(card => !ownedCardsIds.includes(card.id));
+
+    if(availableCards.length <= PACKS_SETTINGS.CARDS_IN_PACK) {
+      return availableCards;
+    } else {
+      const uniqueCards: Card[] = [];
+      const uniqueIds: number[] = [];
+      
+      while(uniqueCards.length < PACKS_SETTINGS.CARDS_IN_PACK){
+        const id = Math.floor(Math.random() * availableCards.length);
+
+        if(!uniqueIds.includes(id)){
+          uniqueIds.push(id);
+          uniqueCards.push(availableCards[id]);
         }
-      })
-    )
+      }
+
+      return uniqueCards;
+    }
   }
 }

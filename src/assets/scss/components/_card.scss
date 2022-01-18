@@ -136,6 +136,7 @@ $effect-desc-size-big: 2.2rem;
       @include d-flex($dir: column, $center: true);
       background-color: $white-dimmed-transparent-stronger;
       color: $black;
+      padding: 1.5rem;
       
       & .card-front__effect{
         margin-bottom: calc(#{$info-size-md} * 0.5);
@@ -145,10 +146,12 @@ $effect-desc-size-big: 2.2rem;
         font-weight: bold;
         font-size: $effect-name-size-md;
         margin-bottom: calc(#{$effect-name-size-md} * 0.6);
+        text-align: center;
       }
 
       &__desc{
         font-size: $effect-desc-size-md;
+        text-align: center;
       }
 
       &__close{

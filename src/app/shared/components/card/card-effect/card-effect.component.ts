@@ -10,7 +10,6 @@ import { fadeInOut } from '@shared/animations/component-animations';
 @Component({
   selector: 'app-card-effect',
   templateUrl: './card-effect.component.html',
-  styleUrls: ['./card-effect.component.scss'],
   animations: [
     fadeInOut
   ]

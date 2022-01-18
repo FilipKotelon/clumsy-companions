@@ -8,8 +8,7 @@ import { PopupController } from '@shared/utility/popup-controller.class';
 
 @Component({
   selector: 'app-error-message',
-  templateUrl: './error-message.component.html',
-  styleUrls: ['./error-message.component.scss']
+  templateUrl: './error-message.component.html'
 })
 export class ErrorMessageComponent extends PopupController {
   constructor(protected store: Store<fromStore.AppState>) {

@@ -3,8 +3,7 @@ import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-card-front',
-  templateUrl: './card-front.component.html',
-  styleUrls: ['./card-front.component.scss']
+  templateUrl: './card-front.component.html'
 })
 export class CardFrontComponent{
   @Input() card: Card;

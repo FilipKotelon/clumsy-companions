@@ -60,6 +60,7 @@ import { GiftModalComponent } from './components/gift-modal/gift-modal.component
     SimpleControlComponent,
     PackComponent,
     NumberStepControlComponent,
+    GiftModalComponent,
   ]
 })
 export class SharedModule { }
