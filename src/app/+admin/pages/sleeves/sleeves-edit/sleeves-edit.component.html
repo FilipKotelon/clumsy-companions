@@ -1,0 +1,110 @@
+<div class="admin-edit-page">
+  <form  
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    class="admin-form"
+  >
+    <div class="admin-form__display">
+
+      <div class="admin-form__display__upload">
+        <app-file-upload
+          displayText="Upload the sleeve's image!"
+          path="images/sleeves"
+          formControlName="imgUrl"
+          [control]="form.controls.imgUrl"
+          [imgUrl]="form.controls.imgUrl.value"
+          (uploaded)="onImgUpload()"
+        ></app-file-upload>
+      </div>
+
+    </div>
+    <div class="admin-form__main">
+
+      <div class="admin-form__main__controls">
+
+        <app-admin-control-wrapper
+          label="Sleeve's name"
+          validationMessage="Please provide the sleeve's name."
+          [control]="form.controls.name"
+        >
+          <app-simple-control
+            type="text"
+            formControlName="name"
+            [control]="form.controls.name"
+          ></app-simple-control>
+        </app-admin-control-wrapper>
+
+        <app-admin-control-wrapper
+          label="Price"
+          validationMessage="Please provide the sleeve's price."
+          [control]="form.controls.price"
+        >
+          <app-simple-control
+            type="number"
+            formControlName="price"
+            [control]="form.controls.price"
+          ></app-simple-control>
+        </app-admin-control-wrapper>
+
+        <app-admin-control-wrapper
+          label="Visible in shop"
+          [control]="form.controls.visibleInShop"
+        >
+          <app-toggle-control
+            formControlName="visibleInShop"
+            [control]="form.controls.visibleInShop"
+          ></app-toggle-control>
+        </app-admin-control-wrapper>
+        
+      </div>
+
+      <div
+        *ngIf="validationMsgs.length"
+        @fadeInOut
+        class="admin-form__main__validation"
+      >
+        <div class="admin-form__main__validation__inner">
+          <div
+            *ngFor="let msg of validationMsgs"
+            @fadeInOut
+          >
+            &bull; {{ msg }}
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-form__main__actions">
+        <button type="button" class="admin-button black" (click)="onOpenCancelPopup()">
+          Cancel
+        </button>
+        <button *ngIf="editMode" type="button" class="admin-button red" (click)="onOpenDeletePopup()">
+          Delete
+        </button>
+        <button type="submit" class="admin-button green">
+          Save
+        </button>
+      </div>
+      
+    </div>
+  </form>
+
+  <app-accept-popup
+    msg="Do you want to delete this sleeve?"
+    acceptMsg="Delete"
+    acceptBtnClass="red"
+    declineBtnClass="black"
+    [open]="deletePopupOpen"
+    (declined)="closeDeletePopup()"
+    (accepted)="deleteSleeve()"
+  ></app-accept-popup>
+
+  <app-accept-popup
+    msg="Do you want to abandon your changes?"
+    acceptMsg="Yes"
+    declineMsg="Stay"
+    declineBtnClass="black"
+    [open]="cancelPopupOpen"
+    (declined)="closeCancelPopup()"
+    (accepted)="cancel()"
+  ></app-accept-popup>
+</div>

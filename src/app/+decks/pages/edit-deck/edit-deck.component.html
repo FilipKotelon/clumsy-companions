@@ -1,8 +1,10 @@
-<div class="deck-builder-page">
+<div
+  [formGroup]="form"
+  class="deck-builder-page"
+>
   <div
     *ngIf="setSelectOpen"
     @fadeInOut
-    [formGroup]="form"
     class="deck-builder-choose-set">
     <div class="deck-builder-choose-set__main">
       <div class="deck-builder-choose-set__title medium-text">Choose the set the deck will use:</div>
@@ -52,11 +54,23 @@
       </app-deck-card-wrapper>
     </div>
 
-    <div class="deck-builder__deck">
+    <div
+      class="deck-builder__deck"
+      [ngClass]="{'expanded': deckExpanded}"
+    >
 
       <div class="deck-builder__deck__controls">
         <div class="deck-builder__deck__controls__left">
-          <div class="deck-builder__deck__controls__open-details">
+          <div
+            class="deck-builder__deck__controls__open-details"
+            (click)="openDetails()"
+          >
+            <div
+              *ngIf="detailsErrorsCount"
+              class="deck-builder__deck__controls__open-details__errors"
+            >
+              {{ detailsErrorsCount }}
+            </div>
             <img src="assets/img/icons/cog-white.svg" alt="Open deck details">
           </div>
           <div class="deck-builder__deck__controls__name">
@@ -70,20 +84,20 @@
         </div>
 
         <div
-          (click)="deckExpanded ? collapseDeck() : expandDeck()"
           class="deck-builder__deck__controls__expand"
+          (click)="deckExpanded ? collapseDeck() : expandDeck()"
         >
-          {{ deckExpanded ? 'Collapse' : 'Expand' }}
+          {{ deckExpanded ? 'Collapse' : 'Expand'}}
         </div>
 
         <div class="deck-builder__deck__controls__actions">
           <div
-            class="deck-builder__deck__controls__amount"
+            class="deck-builder__deck__controls__amount medium-text"
             [ngClass]="{'wrong': !hasAcceptableAmountOfCards}"
           >
-            {{ addedCards.length }} Card{{ addedCards.length > 1 ? 's' : '' }}
+            {{ addedCards.length }} Card{{ addedCards.length === 1 ? '' : 's' }}
           </div>
-          <button type="button" class="admin-button black" (click)="onOpenCancelPopup()">
+          <button type="button" class="admin-button blue" (click)="onOpenCancelPopup()">
             Cancel
           </button>
           <button *ngIf="editMode" type="button" class="admin-button red" (click)="onOpenDeletePopup()">
@@ -100,23 +114,68 @@
       </div>
 
       <div class="deck-builder__deck__cards">
-        <div class="deck-builder__cards">
-          <app-deck-card-wrapper
-            *ngFor="let card of uniqueAddedCards"
-            [amount]="getCardAmount(card)"
-            (decreasedAmount)="onDecreaseCardAmount(card)"
-            (increasedAmount)="onIncreaseCardAmount(card)"
-            (removed)="onRemoveCard(card)"
-          >
-            <app-card-front
-              [card]="card"
-              size="small"
-            ></app-card-front>
-          </app-deck-card-wrapper>
+        <app-deck-card-wrapper
+          *ngFor="let card of uniqueAddedCards"
+          [amount]="getCardAmount(card)"
+          (decreasedAmount)="onDecreaseCardAmount(card)"
+          (increasedAmount)="onIncreaseCardAmount(card)"
+          (removed)="onRemoveCard(card)"
+        >
+          <app-card-front
+            [card]="card"
+            size="small"
+          ></app-card-front>
+        </app-deck-card-wrapper>
       </div>
 
     </div>
 
+  </div>
+
+  <div
+    *ngIf="detailsOpen"
+    @fadeInOut
+    class="deck-details"
+  >
+    <div class="deck-details__main">
+      <div
+        class="deck-details__close"
+        (click)="closeDetails()"
+      >
+        <img src="assets/img/icons/close.svg" alt="Close">
+      </div>
+      <div class="deck-details__title medium-text">
+        Choose a sleeve:
+      </div>
+      <div class="deck-details__items">
+        <div
+          *ngFor="let sleeve of sleevesOptions"
+          class="deck-details__item"
+          [ngClass]="{'selected': sleeve.id === sleeveId}"
+          (click)="chooseSleeve(sleeve.id)"
+        >
+          <img [src]="sleeve.imgUrl" alt="Card thumbnail">
+        </div>
+      </div>
+      <div class="deck-details__title medium-text">
+        Choose a thumbnail:
+      </div>
+      <div class="deck-details__items">
+        <div
+          *ngFor="let card of uniqueAddedCards"
+          class="deck-details__item"
+          [ngClass]="{'selected': card.id === thumbnailCardId}"
+          (click)="chooseThumbnail(card.id)"
+        >
+          <img [src]="card.imgUrl" alt="Card thumbnail">
+        </div>
+        <div
+          *ngIf="!uniqueAddedCards.length"
+        >
+          Add some cards first to be able to choose a thumbnail!
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 

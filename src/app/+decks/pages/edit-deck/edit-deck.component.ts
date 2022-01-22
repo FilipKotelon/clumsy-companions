@@ -15,6 +15,8 @@ import { SetsService } from '@core/sets/sets.service';
 import { fadeInOut } from '@shared/animations/component-animations';
 import { SelectControlOption } from '@shared/components/controls/select-control/select-control.types';
 import { MessageService } from '@core/message/message.service';
+import { SleevesService } from '@core/sleeves/sleeves.service';
+import { Sleeve } from '@core/sleeves/sleeves.types';
 
 @Component({
   selector: 'app-edit-deck',
@@ -26,17 +28,18 @@ export class EditDeckComponent extends EditableOrNew {
   cancelPopupOpen: boolean;
   cardOptions: Card[] = [];
   deletePopupOpen: boolean;
-  detailsOpen = false;
   deckExpanded = false;
+  detailsOpen = false;
   inAdmin = false;
   setOptions: SelectControlOption[] = [];
   setSelectOpen = false;
+  sleevesOptions: Sleeve[] = [];
 
   addedCards: Card[] = [];
   form: FormGroup;
-  imgUrl = '';
+  thumbnailCardId = '';
   setId = '';
-  sleeveImgUrl = '';
+  sleeveId = '';
   
   constructor(
     protected route: ActivatedRoute,
@@ -45,13 +48,23 @@ export class EditDeckComponent extends EditableOrNew {
     private messageSvc: MessageService,
     private playerSvc: PlayerService,
     private router: Router,
-    private setsSvc: SetsService
+    private setsSvc: SetsService,
+    private sleevesSvc: SleevesService
   ) {
     super(route);
   }
 
+  get detailsErrorsCount(): number {
+    let count = 0;
+
+    if(!this.sleeveId) count++;
+    if(!this.thumbnailCardId) count++;
+
+    return count;
+  }
+
   get hasAcceptableAmountOfCards(): boolean {
-    return this.addedCards.length < DECK_SETTINGS.MAX_CARDS && this.addedCards.length > DECK_SETTINGS.MIN_CARDS;
+    return this.addedCards.length <= DECK_SETTINGS.MAX_CARDS && this.addedCards.length >= DECK_SETTINGS.MIN_CARDS;
   }
 
   get uniqueAddedCards(): Card[] {
@@ -67,6 +80,7 @@ export class EditDeckComponent extends EditableOrNew {
   init = (): void => {
     this.listenIfInAdmin();
     this.getSetOptions();
+    this.getSleevesOptions();
 
     if(this.id){
       this.loadDeck().subscribe(deck => {
@@ -110,8 +124,8 @@ export class EditDeckComponent extends EditableOrNew {
     return this.decksSvc.getDeck(this.id)
       .pipe(
         tap(deck => {
-          this.imgUrl = deck.imgUrl;
-          this.sleeveImgUrl = deck.sleeveImgUrl;
+          this.thumbnailCardId = deck.thumbnailCardId;
+          this.sleeveId = deck.sleeveId;
         })
       );
   }
@@ -122,15 +136,14 @@ export class EditDeckComponent extends EditableOrNew {
 
   getCards = (): void => {
     if(this.inAdmin) {
-      this.cardsSvc.getCards({ set: this.setId })
+      this.cardsSvc.getCards({ set: this.setId, availableInGame: true })
         .subscribe(cards => {
           this.cardOptions = cards;
-          console.log(this.cardOptions);
         });
     } else {
       this.playerSvc.getOwnedCardsIds()
         .subscribe(cardsIds => {
-          const params: CardQueryParams = { set: this.setId };
+          const params: CardQueryParams = { set: this.setId, availableInGame: true };
 
           if(cardsIds.length) {
             params.ids = cardsIds;
@@ -139,7 +152,6 @@ export class EditDeckComponent extends EditableOrNew {
           this.cardsSvc.getCards(params)
             .subscribe(cards => {
               this.cardOptions = cards;
-              console.log(this.cardOptions);
             });
         })
     }
@@ -151,9 +163,9 @@ export class EditDeckComponent extends EditableOrNew {
 
   getDeck = (): DeckMainData => {
     return {
-      imgUrl: this.imgUrl,
+      thumbnailCardId: this.thumbnailCardId,
       setId: this.setId,
-      sleeveImgUrl: this.sleeveImgUrl,
+      sleeveId: this.sleeveId,
       cardIds: this.addedCards.map(card => card.id),
       name: this.form.controls.name.value,
       global: this.inAdmin
@@ -164,6 +176,20 @@ export class EditDeckComponent extends EditableOrNew {
     this.setsSvc.getSetSelectOptions().subscribe(setOptions => {
       this.setOptions = setOptions;
     });
+  }
+
+  getSleevesOptions = (): void => {
+    let sleeves$: Observable<Sleeve[]>;
+
+    if(this.inAdmin){
+      sleeves$ = this.sleevesSvc.getSleeves();
+    } else {
+      sleeves$ = this.playerSvc.getOwnedSleeves();
+    }
+
+    sleeves$.subscribe(sleeves => {
+      this.sleevesOptions = sleeves;
+    })
   }
 
   chooseSetId = (): void => {
@@ -185,6 +211,14 @@ export class EditDeckComponent extends EditableOrNew {
     } else {
       this.messageSvc.displayError('Select a set!');
     }
+  }
+
+  chooseSleeve = (id: string): void => {
+    this.sleeveId = id;
+  }
+
+  chooseThumbnail = (id: string): void => {
+    this.thumbnailCardId = id;
   }
 
   openSetSelect = (): void => {
@@ -218,14 +252,6 @@ export class EditDeckComponent extends EditableOrNew {
     }
   }
 
-  collapseDeck = (): void => {
-    this.deckExpanded = false;
-  }
-
-  expandDeck = (): void => {
-    this.deckExpanded = true;
-  }
-
   onOpenDeletePopup = (): void => {
     this.deletePopupOpen = true;
   }
@@ -255,6 +281,18 @@ export class EditDeckComponent extends EditableOrNew {
   }
 
   cancel = (): void => {
-    this.router.navigate(['/admin/packs']);
+    if(this.inAdmin){
+      this.router.navigate(['/admin/decks']);
+    } else {
+      this.router.navigate(['/hub/decks']);
+    }
+  }
+
+  collapseDeck = (): void => {
+    this.deckExpanded = false;
+  }
+
+  expandDeck = (): void => {
+    this.deckExpanded = true;
   }
 }

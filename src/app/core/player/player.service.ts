@@ -14,6 +14,8 @@ import { Player } from './player.types';
 import { GiftService } from '../gift/gift.service';
 import { LoadingService } from '../loading/loading.service';
 import { Deck } from '@core/decks/decks.types';
+import { Sleeve } from '@core/sleeves/sleeves.types';
+import { SleevesService } from '@core/sleeves/sleeves.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +29,8 @@ export class PlayerService {
     private giftSvc: GiftService,
     private loadingSvc: LoadingService,
     private messageSvc: MessageService,
-    private packsSvc: PacksService
+    private packsSvc: PacksService,
+    private sleevesSvc: SleevesService
   ) {
     this.authSvc.getUser().subscribe(user => {
       this.playerDocRef = this.fireStore.collection<DbUser>('users').doc(user.dbId);
@@ -109,6 +112,22 @@ export class PlayerService {
               );
             })
           );
+      })
+    );
+  }
+
+  getOwnedSleevesIds = (): Observable<string[]> => {
+    return this.getPlayer().pipe(
+      switchMap(player => {
+        return of(player.ownedSleevesIds);
+      })
+    );
+  }
+
+  getOwnedSleeves = (): Observable<Sleeve[]> => {
+    return this.getOwnedSleevesIds().pipe(
+      switchMap(sleevesIds => {
+        return this.sleevesSvc.getSleeves(sleevesIds);
       })
     );
   }

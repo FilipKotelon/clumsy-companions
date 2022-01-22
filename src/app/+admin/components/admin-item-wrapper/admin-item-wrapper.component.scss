@@ -23,3 +23,12 @@
     }
   }
 }
+
+::ng-deep{
+  .admin-item-wrapper{
+    & .card-sleeve{
+      width: 32rem;
+      height: 48rem;
+    }
+  }
+}

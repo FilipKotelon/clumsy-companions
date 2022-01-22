@@ -33,28 +33,185 @@
 }
 
 .deck-builder{
+  height: 100%;
+
   &__filters{
     margin-bottom: 3rem;
   }
 
-  &__cards{
+  &__cards, &__deck__cards{
     @include d-flex($wrap: wrap);
-    @include m-not-last(3rem, r);
+    padding-left: 2rem;
+    padding-top: .4rem;
+    margin-left: -2rem;
+    width: calc(100% + 2rem);
+    @include scrollbar($color: $main, $bg: $grey-300, $w: .6rem, $rounded: false);
+    padding-bottom: .6rem;
 
     & > * {
+      margin-right: 3rem;
       margin-bottom: 3rem;
     }
   }
 
+  &__cards{
+    height: calc(100% - 18vh - 7.8rem);
+    overflow: auto;
+  }
+
   &__deck{
     @include abs($l: 0, $b: 0);
-    @include rect(100%, 30vh);
+    @include rect(100%, 18vh);
     z-index: 30;
-    background-color: $grey-900;
+    background-color: $black;
+    padding: 2.6rem 3rem;
     overflow: hidden;
+    @include transition;
+
+    &.expanded{
+      height: 80vh;
+
+      & .deck-builder__deck__cards{  
+        overflow: auto;
+      }
+    }
 
     &__controls{
       @include d-flex($jc: space-between);
+      margin-bottom: 1.8rem;
+
+      &__left{
+        @include d-flex($ai: center);
+      }
+
+      &__open-details{
+        margin-right: 1.6rem;
+        cursor: pointer;
+        position: relative;
+
+        & > img{
+          @include square(3rem);
+        }
+
+        &__errors{
+          @include abs($r: -.4rem, $t: -.4rem);
+          @include circle(1.8rem);
+          padding-top: .2rem;
+          font-size: 1.2rem;
+          color: $white;
+          background-color: $red;
+        }
+      }
+
+      &__name{
+        & input{
+          font-size: 3.6rem;
+          color: $white;
+        }
+      }
+
+      &__expand{
+        @include abs-center-x();
+        top: .4rem;
+        color: $white;
+        cursor: pointer;
+      }
+
+      &__amount{
+        margin-right: 2.4rem;
+        color: $white;
+
+        &.wrong{
+          color: $red;
+        }
+      }
+
+      &__actions{
+        @include d-flex($ai: center);
+
+        & button{
+          &:not(:last-child){
+            margin-right: 1.2rem;
+          }
+        }
+      }
+    }
+
+    &__cards{
+      height: calc(100% - 6.6rem);
+    }
+  }
+}
+
+.deck-details{
+  @include abs(0, 0);
+  @include square(100%);
+  @include d-flex($center: true);
+  z-index: 50;
+  background: $white-dimmed-transparent-stronger;
+
+  &__main{
+    background: $white;
+    position: relative;
+    padding: 2.4rem;
+    width: 86rem;
+    max-width: calc(100% - 3rem);
+  }
+
+  &__close{
+    @include abs($r: 1.2rem, $t: 1.2rem);
+    cursor: pointer;
+
+    & img{
+      @include square(1.8rem);
+    }
+  }
+
+  &__title{
+    margin-bottom: 1.4rem;
+  }
+
+  &__items{
+    @include d-flex();
+    @include m-not-last(1.8rem, r);
+    @include scrollbar($color: $main, $bg: $grey-300, $w: .6rem, $rounded: false);
+    width: calc(100% + 2rem);
+    padding: 1rem;
+    margin: 0 -1rem 1.8rem;
+    overflow: auto;
+
+    &::-webkit-scrollbar{
+      height: .6rem;
+    }
+  }
+
+  &__item{
+    @include rect(12rem, 18rem);
+    min-width: 12rem;
+    position: relative;
+    cursor: pointer;
+
+    &::after{
+      @include abs(-.7rem, -.7rem, -.7rem, -.7rem);
+      content: '';
+      display: block;
+      border: 2px solid $main;
+      border-radius: .3rem;
+      opacity: 0;
+      visibility: hidden;
+      @include transition;
+    }
+
+    &.selected{
+      &::after{
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    & > img{
+      @include img-cover;
+      border-radius: .3rem;
     }
   }
 }

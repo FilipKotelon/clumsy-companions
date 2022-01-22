@@ -24,6 +24,7 @@ import { AdminEditEffectComponent } from './components/admin-edit-effect/admin-e
 import { AdminShopItemWrapperComponent } from './components/admin-shop-item-wrapper/admin-shop-item-wrapper.component';
 import { PacksEditComponent } from './pages/packs/packs-edit/packs-edit.component';
 import { DecksComponent } from './pages/decks/decks.component';
+import { SleevesEditComponent } from './pages/sleeves/sleeves-edit/sleeves-edit.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { DecksComponent } from './pages/decks/decks.component';
     AdminShopItemWrapperComponent,
     PacksEditComponent,
     DecksComponent,
+    SleevesEditComponent,
   ],
   imports: [
     SharedModule,

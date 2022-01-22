@@ -1,8 +1,8 @@
 export interface DeckMainData {
   cardIds: string[];
   name: string;
-  imgUrl: string;
-  sleeveImgUrl: string;
+  thumbnailCardId: string;
+  sleeveId: string;
   setId: string;
   global: boolean;
 }

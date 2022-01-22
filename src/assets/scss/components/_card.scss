@@ -356,6 +356,16 @@ $effect-desc-size-big: 2.2rem;
   }
 }
 
+.card-sleeve{
+  &, & > img{
+    @include square(100%);
+  }
+
+  & > img{
+    object-fit: cover;
+  }
+}
+
 .card-property-input{
   text-align: center;
   width: 100%;

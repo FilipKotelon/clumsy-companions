@@ -14,6 +14,7 @@ import { WelcomeComponent } from './pages/welcome/welcome.component';
 import { AdminComponent } from './admin.component';
 import { PacksEditComponent } from './pages/packs/packs-edit/packs-edit.component';
 import { DecksComponent } from './pages/decks/decks.component';
+import { SleevesEditComponent } from './pages/sleeves/sleeves-edit/sleeves-edit.component';
 
 let routes: Routes = [
   {
@@ -126,10 +127,33 @@ let routes: Routes = [
       },
       {
         path: 'sleeves',
-        component: SleevesComponent,
         data: {
           animation: '6'
-        }
+        },
+        children: [
+          {
+            path: '',
+            component: SleevesComponent,
+            pathMatch: 'full',
+            data: {
+              animation: '61'
+            },
+          },
+          {
+            path: 'new',
+            component: SleevesEditComponent,
+            data: {
+              animation: '62'
+            },
+          },
+          {
+            path: 'edit/:id',
+            component: SleevesEditComponent,
+            data: {
+              animation: '63'
+            }
+          },
+        ]
       },
       {
         path: 'players',
