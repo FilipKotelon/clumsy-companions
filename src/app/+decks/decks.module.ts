@@ -1,12 +1,17 @@
 import { SharedModule } from '@shared/shared.module';
 import { NgModule } from '@angular/core';
-
-
+import { EditDeckComponent } from './pages/edit-deck/edit-deck.component';
+import { DeckCardWrapperComponent } from './components/deck-card-wrapper/deck-card-wrapper.component';
+import { DecksRoutingModule } from './decks-routing.module';
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    EditDeckComponent,
+    DeckCardWrapperComponent
+  ],
   imports: [
-    SharedModule
+    SharedModule,
+    DecksRoutingModule
   ]
 })
 export class DecksModule { }

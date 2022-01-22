@@ -1,0 +1,44 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+@import "utility/mixins/mixins-spacing";
+
+.deck-card-wrapper{
+  position: relative;
+
+  &__actions{
+    @include abs($l: -1.3rem, $t: .6rem);
+    @include d-flex($dir: column, $ai: center);
+    @include m-not-last(.4rem, b);
+    z-index: 10;
+    cursor: pointer;
+  }
+
+  &__action{
+    @include circle(3.4rem);
+    background-color: $white;
+
+    & img{
+      width: 2.4rem;
+    }
+
+    &.remove{
+      background-color: $red;
+
+      & img{
+        width: 1.8rem;
+      }
+    }
+  }
+
+  &__amount{
+    @include abs-center-x();
+    top: -.4rem;
+    @include rect(4rem, 3rem);
+    @include d-flex($center: true);
+    border-radius: .3rem;
+    background-color: $main;
+    color: $white;
+    z-index: 10;
+  }
+}

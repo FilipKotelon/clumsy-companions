@@ -10,7 +10,7 @@ import { FilesService } from '@core/files/files.service';
 import { MessageService } from '@core/message/message.service';
 
 import * as fromStore from '@core/store/reducer';
-import { SelectControlOption } from '@app/shared/components/controls/select-control/select-control.types';
+import { SelectControlOption } from '@shared/components/controls/select-control/select-control.types';
 
 @Injectable({
   providedIn: 'root'

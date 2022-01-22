@@ -1,0 +1,141 @@
+<div class="deck-builder-page">
+  <div
+    *ngIf="setSelectOpen"
+    @fadeInOut
+    [formGroup]="form"
+    class="deck-builder-choose-set">
+    <div class="deck-builder-choose-set__main">
+      <div class="deck-builder-choose-set__title medium-text">Choose the set the deck will use:</div>
+      <div class="deck-builder-choose-set__controls">
+        <app-select-control
+          formControlName="setId"
+          [control]="form.controls.setId"
+          [options]="setOptions"
+        ></app-select-control>
+        <button
+          type="button"
+          class="page-button"
+          (click)="chooseSetId()"
+        >
+          Continue
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
+    *ngIf="form"
+    @fadeInOut
+    class="deck-builder"
+  >
+
+    <div class="deck-builder__filters">
+      <button
+        class="page-button"
+        (click)="openSetSelect()"
+      >
+        Change the deck's set
+      </button>
+    </div>
+
+    <div class="deck-builder__cards">
+      <app-deck-card-wrapper
+        *ngFor="let card of cardOptions"
+        [amount]="getCardAmount(card)"
+        (decreasedAmount)="onDecreaseCardAmount(card)"
+        (increasedAmount)="onIncreaseCardAmount(card)"
+        (removed)="onRemoveCard(card)"
+      >
+        <app-card-front
+          [card]="card"
+          size="small"
+        ></app-card-front>
+      </app-deck-card-wrapper>
+    </div>
+
+    <div class="deck-builder__deck">
+
+      <div class="deck-builder__deck__controls">
+        <div class="deck-builder__deck__controls__left">
+          <div class="deck-builder__deck__controls__open-details">
+            <img src="assets/img/icons/cog-white.svg" alt="Open deck details">
+          </div>
+          <div class="deck-builder__deck__controls__name">
+            <input
+              type="text"
+              [formControl]="form.controls.name"
+              formControlName="name"
+              placeholder="Your deck's name..."
+            >
+          </div>
+        </div>
+
+        <div
+          (click)="deckExpanded ? collapseDeck() : expandDeck()"
+          class="deck-builder__deck__controls__expand"
+        >
+          {{ deckExpanded ? 'Collapse' : 'Expand' }}
+        </div>
+
+        <div class="deck-builder__deck__controls__actions">
+          <div
+            class="deck-builder__deck__controls__amount"
+            [ngClass]="{'wrong': !hasAcceptableAmountOfCards}"
+          >
+            {{ addedCards.length }} Card{{ addedCards.length > 1 ? 's' : '' }}
+          </div>
+          <button type="button" class="admin-button black" (click)="onOpenCancelPopup()">
+            Cancel
+          </button>
+          <button *ngIf="editMode" type="button" class="admin-button red" (click)="onOpenDeletePopup()">
+            Delete
+          </button>
+          <button
+            type="button"
+            class="admin-button green"
+            (click)="onSubmit()"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+
+      <div class="deck-builder__deck__cards">
+        <div class="deck-builder__cards">
+          <app-deck-card-wrapper
+            *ngFor="let card of uniqueAddedCards"
+            [amount]="getCardAmount(card)"
+            (decreasedAmount)="onDecreaseCardAmount(card)"
+            (increasedAmount)="onIncreaseCardAmount(card)"
+            (removed)="onRemoveCard(card)"
+          >
+            <app-card-front
+              [card]="card"
+              size="small"
+            ></app-card-front>
+          </app-deck-card-wrapper>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<app-accept-popup
+  msg="Do you want to delete this deck?"
+  acceptMsg="Delete"
+  acceptBtnClass="red"
+  declineBtnClass="black"
+  [open]="deletePopupOpen"
+  (declined)="closeDeletePopup()"
+  (accepted)="deleteDeck()"
+></app-accept-popup>
+
+<app-accept-popup
+  msg="Do you want to abandon your changes?"
+  acceptMsg="Yes"
+  declineMsg="Stay"
+  declineBtnClass="black"
+  [open]="cancelPopupOpen"
+  (declined)="closeCancelPopup()"
+  (accepted)="cancel()"
+></app-accept-popup>

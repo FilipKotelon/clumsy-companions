@@ -43,7 +43,7 @@ export class PacksService {
   
           return [];
         })
-      )
+      );
     }
 
     return this.fireStore.collection<PackMainData>('packs').get().pipe(
@@ -61,7 +61,7 @@ export class PacksService {
 
         return [];
       })
-    )
+    );
   }
 
   getPack = (id: string): Observable<Pack> => {
@@ -76,7 +76,7 @@ export class PacksService {
           return null;
         }
       })
-    )
+    );
   }
 
   createPack = (data: PackMainData): void => {
@@ -88,7 +88,7 @@ export class PacksService {
       console.log(error);
 
       this.messageSvc.displayError('An error occurred while adding the pack.');
-    })
+    });
   }
 
   updatePack = (id: string, data: PackMainData): void => {
@@ -100,7 +100,7 @@ export class PacksService {
       console.log(error);
 
       this.messageSvc.displayError('An error occurred while updating the pack.');
-    })
+    });
   }
 
   deletePack = (id: string, redirectPath?: string): void => {
@@ -121,8 +121,8 @@ export class PacksService {
           console.log(error);
 
           this.messageSvc.displayError('An error occurred while deleting this pack.');
-        })
-    })
+        });
+    });
   }
 
   openPack = (pack: Pack, ownedCardsIds: string[]): Observable<Gift> => {

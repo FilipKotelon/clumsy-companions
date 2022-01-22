@@ -12,8 +12,8 @@ import { SetsComponent } from './pages/sets/sets.component';
 import { CardsComponent } from './pages/cards/cards.component';
 import { WelcomeComponent } from './pages/welcome/welcome.component';
 import { AdminComponent } from './admin.component';
-import { AiDecksComponent } from './pages/ai-decks/ai-decks.component';
 import { PacksEditComponent } from './pages/packs/packs-edit/packs-edit.component';
+import { DecksComponent } from './pages/decks/decks.component';
 
 let routes: Routes = [
   {
@@ -146,12 +146,35 @@ let routes: Routes = [
         }
       },
       {
-        path: 'ai-decks',
-        component: AiDecksComponent,
+        path: 'decks',
         data: {
-          animation: '8'
-        }
-      },
+          animation: '9'
+        },
+        children: [
+          {
+            path: '',
+            component: DecksComponent,
+            pathMatch: 'full',
+            data: {
+              animation: '91'
+            }
+          },
+          {
+            path: 'new',
+            loadChildren: () => import('@decks/decks.module').then(m => m.DecksModule),
+            data: {
+              animation: '92'
+            }
+          },
+          {
+            path: 'edit/:id',
+            loadChildren: () => import('@decks/decks.module').then(m => m.DecksModule),
+            data: {
+              animation: '93'
+            }
+          }
+        ]
+      }
     ]
   },
 ];

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { ShopProduct } from '@app/core/shop/shop.types';
+import { ShopProduct } from '@core/shop/shop.types';
 
 @Component({
   selector: 'app-admin-shop-item-wrapper',

@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { InputComponent } from '@shared/utility/input-component.class';
 import { FilesService } from '@core/files/files.service';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
-import { fadeInOut } from '@app/shared/animations/component-animations';
+import { fadeInOut } from '@shared/animations/component-animations';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,

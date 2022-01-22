@@ -21,6 +21,7 @@ export enum CardType {
 }
 
 export interface CardQueryParams {
+  ids?: string[];
   name?: string;
   set?: string;
   type?: CardType;

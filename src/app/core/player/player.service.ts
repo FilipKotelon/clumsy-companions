@@ -13,6 +13,7 @@ import { PacksService } from '@core/packs/packs.service';
 import { Player } from './player.types';
 import { GiftService } from '../gift/gift.service';
 import { LoadingService } from '../loading/loading.service';
+import { Deck } from '@core/decks/decks.types';
 
 @Injectable({
   providedIn: 'root'
@@ -66,6 +67,14 @@ export class PlayerService {
     );
   }
 
+  getOwnedCardsIds = (): Observable<string[]> => {
+    return this.getPlayer().pipe(
+      switchMap(player => {
+        return of(player.ownedCardsIds);
+      })
+    );
+  }
+
   getOwnedPacksIds = (): Observable<string[]> => {
     return this.getPlayer().pipe(
       switchMap(player => {
@@ -83,8 +92,6 @@ export class PlayerService {
           if(a > b) return 1;
           return 0;
         });
-
-        console.log(sortedPacksIds);
 
         const uniquePacksIds: {[key: string]: number} = sortedPacksIds.reduce((prev, cur) => {
           prev[cur] = prev[cur] ? prev[cur] + 1 : 1;
@@ -172,6 +179,23 @@ export class PlayerService {
                 this.loadingSvc.removeLoadingTask('PLAYER_OPEN_PACK');
               });
           });
+      });
+  }
+
+  assignDeck = (deckId: string, callback?: Function) => {
+    this.getPlayer()
+      .pipe(take(1))
+      .subscribe(player => {
+        const decksIds = [...player.decksIds, deckId];
+
+        return this.playerDocRef
+          .update({ decksIds })
+          .then(() => {
+            if(callback) callback();
+          })
+          .catch(e => {
+            this.messageSvc.displayError('Something went wrong while assigning the deck to your account. If it is missing from your account, inform us immediately.');
+          })
       });
   }
 }

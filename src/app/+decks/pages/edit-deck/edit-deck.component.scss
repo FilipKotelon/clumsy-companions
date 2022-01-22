@@ -1,0 +1,60 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+@import "utility/mixins/mixins-spacing";
+
+.deck-builder-page{
+  position: relative;
+  height: 100%;
+  padding: 3rem;
+}
+
+.deck-builder-choose-set{
+  @include abs(0, 0);
+  @include square(100%);
+  z-index: 100;
+  @include d-flex($center: true);
+  background-color: $white-dimmed;
+
+  &__main{
+    background-color: $white;
+    padding: 3rem;
+  }
+
+  &__controls{
+    @include d-flex($ai: center);
+    margin-top: 1.8rem;
+
+    & app-select-control{
+      flex-grow: 1;
+      margin-right: 1.8rem;
+    }
+  }
+}
+
+.deck-builder{
+  &__filters{
+    margin-bottom: 3rem;
+  }
+
+  &__cards{
+    @include d-flex($wrap: wrap);
+    @include m-not-last(3rem, r);
+
+    & > * {
+      margin-bottom: 3rem;
+    }
+  }
+
+  &__deck{
+    @include abs($l: 0, $b: 0);
+    @include rect(100%, 30vh);
+    z-index: 30;
+    background-color: $grey-900;
+    overflow: hidden;
+
+    &__controls{
+      @include d-flex($jc: space-between);
+    }
+  }
+}

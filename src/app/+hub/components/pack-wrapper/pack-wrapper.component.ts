@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { PackWithAmount } from '@app/core/packs/packs.types';
-import { PlayerService } from '@app/core/player/player.service';
+import { Component, Input } from '@angular/core';
+import { PackWithAmount } from '@core/packs/packs.types';
+import { PlayerService } from '@core/player/player.service';
 
 @Component({
   selector: 'app-pack-wrapper',

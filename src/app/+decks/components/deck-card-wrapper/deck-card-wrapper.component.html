@@ -1,0 +1,36 @@
+<div
+  class="deck-card-wrapper"
+>
+  <div class="deck-card-wrapper__actions">
+    <div
+      class="deck-card-wrapper__action"
+      (click)="onIncrease()"
+    >
+      <img src="assets/img/icons/plus-black.svg" alt="Add">
+    </div>
+    <div
+      *ngIf="amount > 0"
+      @fadeInOut
+      class="deck-card-wrapper__action"
+      (click)="onDecrease()"
+    >
+      <img src="assets/img/icons/minus-black.svg" alt="Remove 1">
+    </div>
+    <div
+      *ngIf="amount > 0"
+      @fadeInOut
+      class="deck-card-wrapper__action remove"
+      (click)="onRemove()"
+    >
+      <img src="assets/img/icons/close-white.svg" alt="Remove">
+    </div>
+  </div>
+  <div
+    *ngIf="amount > 0"
+    @fadeInOut
+    class="deck-card-wrapper__amount"
+  >
+    x {{ amount }}
+  </div>
+  <ng-content></ng-content>
+</div>

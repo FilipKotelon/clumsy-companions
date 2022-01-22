@@ -5,6 +5,7 @@ import { HubComponent } from './hub.component';
 import { NavComponent } from './components/nav/nav.component';
 import { PacksComponent } from './pages/packs/packs.component';
 import { PackWrapperComponent } from './components/pack-wrapper/pack-wrapper.component';
+import { DecksComponent } from './pages/decks/decks.component';
 
 
 
@@ -13,7 +14,8 @@ import { PackWrapperComponent } from './components/pack-wrapper/pack-wrapper.com
     HubComponent,
     NavComponent,
     PacksComponent,
-    PackWrapperComponent
+    PackWrapperComponent,
+    DecksComponent
   ],
   imports: [
     SharedModule,

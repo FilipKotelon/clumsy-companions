@@ -13,7 +13,6 @@ import { AvatarsComponent } from './pages/avatars/avatars.component';
 import { SleevesComponent } from './pages/sleeves/sleeves.component';
 import { PlayersComponent } from './pages/players/players.component';
 import { AiOpponentsComponent } from './pages/ai-opponents/ai-opponents.component';
-import { AiDecksComponent } from './pages/ai-decks/ai-decks.component';
 import { AdminItemWrapperComponent } from './components/admin-item-wrapper/admin-item-wrapper.component';
 import { CardsEditComponent } from './pages/cards/cards-edit/cards-edit.component';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
@@ -24,6 +23,7 @@ import { AdminControlWrapperComponent } from './components/admin-control-wrapper
 import { AdminEditEffectComponent } from './components/admin-edit-effect/admin-edit-effect.component';
 import { AdminShopItemWrapperComponent } from './components/admin-shop-item-wrapper/admin-shop-item-wrapper.component';
 import { PacksEditComponent } from './pages/packs/packs-edit/packs-edit.component';
+import { DecksComponent } from './pages/decks/decks.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +38,6 @@ import { PacksEditComponent } from './pages/packs/packs-edit/packs-edit.componen
     SleevesComponent,
     PlayersComponent,
     AiOpponentsComponent,
-    AiDecksComponent,
     AdminItemWrapperComponent,
     CardsEditComponent,
     FileUploadComponent,
@@ -49,6 +48,7 @@ import { PacksEditComponent } from './pages/packs/packs-edit/packs-edit.componen
     AdminEditEffectComponent,
     AdminShopItemWrapperComponent,
     PacksEditComponent,
+    DecksComponent,
   ],
   imports: [
     SharedModule,

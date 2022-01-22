@@ -1,3 +1,9 @@
+$name-size-small: 2.4rem;
+$info-size-small: 3.4rem;
+$info-font-size-small: 1.6rem;
+$effect-name-size-small: 1.6rem;
+$effect-desc-size-small: 1.2rem;
+
 $name-size-md: 3.4rem;
 $info-size-md: 5rem;
 $info-font-size-md: 2.2rem;
@@ -172,7 +178,93 @@ $effect-desc-size-big: 2.2rem;
 
   &.size{
     &-small{
+      @include rect(20rem, 30rem);
 
+      &:hover, &.show-name{
+        & .card-front{
+          &__info{
+            height: calc(100% - 2 *#{$name-size-small});
+          }
+        }
+      }
+
+      & .card-front{
+        &__info-con{
+          @include rect(100%, calc(100% + #{$name-size-small}));
+        }
+
+        &__info{
+          height: calc(100% - #{$name-size-small});
+          padding: .4rem;
+        }
+
+        &__name{
+          @include rect(100%, #{$name-size-small});
+          font-size: 1.2rem;
+        }
+
+        &__cost, &__effect, &__energy{
+          @include square($info-size-small);
+        }
+
+        &__cost, &__strength, &__energy{
+          font-size: $info-font-size-small;
+        }
+
+        &__effect{
+          &__img{
+            @include square(calc(#{$info-size-small} * 0.68));
+          }
+
+          &__modal{
+            padding: .8rem .6rem;
+
+            & .card-front__effect{
+              margin-bottom: calc(#{$info-size-small} * 0.3);
+            }
+
+            &__name{
+              font-size: $effect-name-size-small;
+              margin-bottom: .6rem;
+              line-height: 1.4;
+            }
+      
+            &__desc{
+              font-size: $effect-desc-size-small;
+              line-height: 1.4;
+            }
+
+            &__close{
+              @include square(calc(#{$info-size-small} / 2));
+              @include abs($r: $name-size-small, $t: $name-size-small);
+            }
+          }
+        }
+
+        &__strength{
+          @include square($info-size-small);
+      
+          &__bg{
+            &::before{
+              border-width: calc(#{$info-size-small} / 2);
+              top: calc(-#{$info-size-small} / 2);
+            }
+      
+            &::after{
+              top: calc(#{$info-size-small} / 2);
+              border-width: calc(#{$info-size-small} / 2);
+            }
+          }
+        }
+      
+        &:hover, &.show-name{
+          & .card-front{
+            &__info{
+              height: calc(100% - 2 *#{$name-size-small});
+            }
+          }
+        }
+      }
     }
 
     &-medium{

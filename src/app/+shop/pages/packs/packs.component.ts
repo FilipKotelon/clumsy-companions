@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { Pack } from '@core/packs/packs.types';
 import { PacksService } from '@core/packs/packs.service';
-import { PlayerService } from '@app/core/player/player.service';
+import { PlayerService } from '@core/player/player.service';
 
 @Component({
   selector: 'app-packs',

@@ -1,6 +1,5 @@
-import { Store } from '@ngrx/store';
-import { take, map, catchError } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { combineLatest, Observable } from 'rxjs';
 
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -12,8 +11,6 @@ import { MessageService } from '@core/message/message.service';
 
 import { CardQueryParams } from './cards.types';
 
-import * as fromStore from '@core/store/reducer';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -22,11 +19,54 @@ export class CardsService {
     private filesSvc: FilesService,
     private fireStore: AngularFirestore,
     private messageSvc: MessageService,
-    private router: Router,
-    private store: Store<fromStore.AppState>
+    private router: Router
   ) { }
 
   getCards = (params?: CardQueryParams): Observable<Card[]> => {
+    if(params && params.ids?.length) {
+      const docRefs = params.ids.map(id => this.fireStore.collection<DbCard>('cards').doc(id).get());
+
+      return combineLatest(docRefs).pipe(
+        map(cardDocs => {
+          return cardDocs.map(doc => {
+            return {
+              ...doc.data(),
+              id: doc.id
+            };
+          })
+        }),
+        map(cards => {
+          let finalCards = cards;
+          
+          if(params){
+            if(params.set){
+              finalCards = finalCards.filter(card => card.setId === params.set);
+            }
+
+            if(params.type){
+              finalCards = finalCards.filter(card => card.type === params.type);
+            }
+
+            if(params.availableInGame !== undefined){
+              finalCards = finalCards.filter(card => card.availableInGame === params.availableInGame);
+            }
+
+            if(params.name){
+              finalCards = finalCards.filter(card => card.name.includes(params.name));
+            }
+          }
+  
+          return finalCards;
+        }),
+        catchError(error => {
+          console.log(error);
+          this.messageSvc.displayError('Cards could not be loaded.');
+  
+          return [];
+        })
+      );
+    }
+
     return this.fireStore.collection<DbCard>('cards', ref => {
       let query: CollectionReference | Query = ref;
 
@@ -39,7 +79,7 @@ export class CardsService {
           query = query.where('type', '==', params.type);
         }
 
-        if(params.availableInGame){
+        if(params.availableInGame !== undefined){
           query = query.where('availableInGame', '==', params.availableInGame);
         }
       }
@@ -113,7 +153,7 @@ export class CardsService {
       .catch(error => {
         console.log(error);
   
-        this.messageSvc.displayError('An error occurred while updating the set.');
+        this.messageSvc.displayError('An error occurred while updating the card.');
       })
   }
 
