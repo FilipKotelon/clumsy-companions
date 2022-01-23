@@ -1,0 +1,25 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+.deck{
+  @include d-flex($ai: flex-end);
+  @include rect(32rem, 48rem);
+  position: relative;
+
+  &__thumbnail{
+    @include abs(0, 0);
+    @include img-cover;
+    z-index: 0;
+  }
+
+  &__name{
+    @include d-flex($center: true);
+    background-color: $main;
+    width: 100%;
+    padding: .6rem;
+    color: $white;
+    position: relative;
+    z-index: 1;
+  }
+}

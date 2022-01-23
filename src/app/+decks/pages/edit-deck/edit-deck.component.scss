@@ -64,12 +64,16 @@
     @include rect(100%, 18vh);
     z-index: 30;
     background-color: $black;
-    padding: 2.6rem 3rem;
-    overflow: hidden;
     @include transition;
 
+    &__inner{
+      padding: 2.6rem 3rem;
+      overflow: hidden;
+      height: 100%;
+    }
+
     &.expanded{
-      height: 80vh;
+      height: 70vh;
 
       & .deck-builder__deck__cards{  
         overflow: auto;
@@ -118,11 +122,48 @@
       }
 
       &__amount{
+        @include d-flex($ai: center);
         margin-right: 2.4rem;
-        color: $white;
+        
+        &__info{
+          color: $white;
+          margin-right: 1.2rem;
 
-        &.wrong{
-          color: $red;
+          &.wrong{
+            color: $red;
+          }
+        }
+
+        &__hint{
+          position: relative;
+
+          &:hover{
+            & .deck-builder__deck__controls__amount__hint__info{
+              opacity: 1;
+              visibility: visible;
+            }
+          }
+
+          &__button{
+            @include circle(3rem);
+            background-color: $white;
+            cursor: pointer;
+            padding-top: .3rem;
+          }
+
+          &__info{
+            @include abs-center-x;
+            top: calc(100% + .6rem);
+            background-color: $white;
+            padding: .4rem .6rem;
+            border-radius: .3rem;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 20;
+            @include transition;
+            font-size: 1.4rem;
+            width: 20rem;
+          }
         }
       }
 
@@ -130,10 +171,27 @@
         @include d-flex($ai: center);
 
         & button{
-          &:not(:last-child){
+          &:not(:last-of-type){
             margin-right: 1.2rem;
           }
         }
+      }
+    }
+
+    &__validation{
+      @include abs($r: 3rem, $b: calc(100% - .6rem));
+      background-color: $red;
+      color: $white;
+      border-radius: .3rem;
+      padding: .3rem;
+      width: 30rem;
+      
+      &__inner{
+        max-height: 14rem;
+        padding: .4rem 1rem;
+        overflow-y: auto;
+        overflow-x: visible;
+        @include scrollbar($color: $white, $bg: $red, $w: .6rem, $rounded: true);
       }
     }
 

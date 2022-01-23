@@ -43,6 +43,7 @@
       <app-deck-card-wrapper
         *ngFor="let card of cardOptions"
         [amount]="getCardAmount(card)"
+        [maxAmount]="getCardMaxAmount(card)"
         (decreasedAmount)="onDecreaseCardAmount(card)"
         (increasedAmount)="onIncreaseCardAmount(card)"
         (removed)="onRemoveCard(card)"
@@ -58,75 +59,99 @@
       class="deck-builder__deck"
       [ngClass]="{'expanded': deckExpanded}"
     >
-
-      <div class="deck-builder__deck__controls">
-        <div class="deck-builder__deck__controls__left">
+    
+      <div
+        *ngIf="validationMsgs.length"
+        class="deck-builder__deck__validation"
+      >
+        <div class="deck-builder__deck__validation__inner">
           <div
-            class="deck-builder__deck__controls__open-details"
-            (click)="openDetails()"
+            *ngFor="let msg of validationMsgs"
+            @fadeInOut
           >
+            &bull; {{ msg }}
+          </div>
+        </div>
+      </div>
+
+      <div class="deck-builder__deck__inner">
+        <div class="deck-builder__deck__controls">
+          <div class="deck-builder__deck__controls__left">
             <div
-              *ngIf="detailsErrorsCount"
-              class="deck-builder__deck__controls__open-details__errors"
+              class="deck-builder__deck__controls__open-details"
+              (click)="openDetails()"
             >
-              {{ detailsErrorsCount }}
+              <div
+                *ngIf="detailsErrorsCount"
+                class="deck-builder__deck__controls__open-details__errors"
+              >
+                {{ detailsErrorsCount }}
+              </div>
+              <img src="assets/img/icons/cog-white.svg" alt="Open deck details">
             </div>
-            <img src="assets/img/icons/cog-white.svg" alt="Open deck details">
+            <div class="deck-builder__deck__controls__name">
+              <input
+                type="text"
+                [formControl]="form.controls.name"
+                formControlName="name"
+                placeholder="Your deck's name..."
+              >
+            </div>
           </div>
-          <div class="deck-builder__deck__controls__name">
-            <input
-              type="text"
-              [formControl]="form.controls.name"
-              formControlName="name"
-              placeholder="Your deck's name..."
-            >
-          </div>
-        </div>
-
-        <div
-          class="deck-builder__deck__controls__expand"
-          (click)="deckExpanded ? collapseDeck() : expandDeck()"
-        >
-          {{ deckExpanded ? 'Collapse' : 'Expand'}}
-        </div>
-
-        <div class="deck-builder__deck__controls__actions">
+  
           <div
-            class="deck-builder__deck__controls__amount medium-text"
-            [ngClass]="{'wrong': !hasAcceptableAmountOfCards}"
+            class="deck-builder__deck__controls__expand"
+            (click)="deckExpanded ? collapseDeck() : expandDeck()"
           >
-            {{ addedCards.length }} Card{{ addedCards.length === 1 ? '' : 's' }}
+            {{ deckExpanded ? 'Collapse' : 'Expand'}}
           </div>
-          <button type="button" class="admin-button blue" (click)="onOpenCancelPopup()">
-            Cancel
-          </button>
-          <button *ngIf="editMode" type="button" class="admin-button red" (click)="onOpenDeletePopup()">
-            Delete
-          </button>
-          <button
-            type="button"
-            class="admin-button green"
-            (click)="onSubmit()"
+  
+          <div class="deck-builder__deck__controls__actions">
+            <div class="deck-builder__deck__controls__amount medium-text">
+              <div
+                class="deck-builder__deck__controls__amount__info"
+                [ngClass]="{'wrong': !hasAcceptableAmountOfCards}"
+              >
+                {{ addedCards.length }} Card{{ addedCards.length === 1 ? '' : 's' }}
+              </div>
+              <div class="deck-builder__deck__controls__amount__hint">
+                <div class="deck-builder__deck__controls__amount__hint__button">?</div>
+                <div class="deck-builder__deck__controls__amount__hint__info">{{ cardsAmountInfo }}</div>
+              </div>
+            </div>
+            <button type="button" class="admin-button blue" (click)="onOpenCancelPopup()">
+              Cancel
+            </button>
+            <button *ngIf="editMode" type="button" class="admin-button red" (click)="onOpenDeletePopup()">
+              Delete
+            </button>
+            <button
+              type="button"
+              class="admin-button green"
+              (click)="onSubmit()"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+  
+        <div class="deck-builder__deck__cards">
+          <app-deck-card-wrapper
+            *ngFor="let card of uniqueAddedCards"
+            [amount]="getCardAmount(card)"
+            [maxAmount]="getCardMaxAmount(card)"
+            (decreasedAmount)="onDecreaseCardAmount(card)"
+            (increasedAmount)="onIncreaseCardAmount(card)"
+            (removed)="onRemoveCard(card)"
           >
-            Save
-          </button>
+            <app-card-front
+              [card]="card"
+              size="small"
+            ></app-card-front>
+          </app-deck-card-wrapper>
         </div>
       </div>
 
-      <div class="deck-builder__deck__cards">
-        <app-deck-card-wrapper
-          *ngFor="let card of uniqueAddedCards"
-          [amount]="getCardAmount(card)"
-          (decreasedAmount)="onDecreaseCardAmount(card)"
-          (increasedAmount)="onIncreaseCardAmount(card)"
-          (removed)="onRemoveCard(card)"
-        >
-          <app-card-front
-            [card]="card"
-            size="small"
-          ></app-card-front>
-        </app-deck-card-wrapper>
-      </div>
 
     </div>
 

@@ -19,7 +19,7 @@ export class DecksService {
     private router: Router
   ) { }
 
-  getDecks = (params?: DeckQueryParams): Observable<Deck> => {
+  getDecks = (params?: DeckQueryParams): Observable<Deck[]> => {
     if(params && params.ids?.length){
       const docRefs = params.ids.map(id => this.fireStore.collection<DeckMainData>('decks').doc(id).get());
 
@@ -94,7 +94,7 @@ export class DecksService {
     }).then(deckDoc => {
       if(!assignToPlayer) {
         this.messageSvc.displayInfo('Deck created successfully!');
-        this.router.navigate([`/admin/cards/edit/${deckDoc.id}`]);
+        this.router.navigate([`/admin/decks/edit/${deckDoc.id}`]);
       } else {
         this.playerSvc.assignDeck(deckDoc.id, () => {
           this.messageSvc.displayInfo('Deck saved!');

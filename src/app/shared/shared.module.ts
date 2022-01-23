@@ -18,6 +18,7 @@ import { BigNumberPipe } from './pipes/big-number/big-number.pipe';
 import { PackComponent } from './components/pack/pack.component';
 import { NumberStepControlComponent } from './components/controls/number-step-control/number-step-control.component';
 import { GiftModalComponent } from './components/gift-modal/gift-modal.component';
+import { DeckComponent } from './components/deck/deck.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { GiftModalComponent } from './components/gift-modal/gift-modal.component
     PackComponent,
     NumberStepControlComponent,
     GiftModalComponent,
+    DeckComponent,
   ],
   imports: [
     CommonModule,
@@ -61,6 +63,7 @@ import { GiftModalComponent } from './components/gift-modal/gift-modal.component
     PackComponent,
     NumberStepControlComponent,
     GiftModalComponent,
+    DeckComponent
   ]
 })
 export class SharedModule { }

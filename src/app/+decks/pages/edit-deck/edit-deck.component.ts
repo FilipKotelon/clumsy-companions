@@ -5,7 +5,7 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
 
-import { Card, CardQueryParams } from '@core/cards/cards.types';
+import { Card, CardQueryParams, CardType } from '@core/cards/cards.types';
 import { CardsService } from '@core/cards/cards.service';
 import { Deck, DeckMainData, DECK_SETTINGS } from '@core/decks/decks.types';
 import { DecksService } from '@core/decks/decks.service';
@@ -30,6 +30,7 @@ export class EditDeckComponent extends EditableOrNew {
   deletePopupOpen: boolean;
   deckExpanded = false;
   detailsOpen = false;
+  formSubmitted = false;
   inAdmin = false;
   setOptions: SelectControlOption[] = [];
   setSelectOpen = false;
@@ -54,6 +55,14 @@ export class EditDeckComponent extends EditableOrNew {
     super(route);
   }
 
+  get canSubmit(): boolean {
+    return this.form.valid && this.hasAcceptableAmountOfCards && !!this.sleeveId && !!this.thumbnailCardId;
+  }
+
+  get cardsAmountInfo(): string {
+    return `A deck can have between ${DECK_SETTINGS.MIN_CARDS} and ${DECK_SETTINGS.MAX_CARDS} cards.`;
+  }
+
   get detailsErrorsCount(): number {
     let count = 0;
 
@@ -75,6 +84,35 @@ export class EditDeckComponent extends EditableOrNew {
 
       return prev;
     }, []);
+  }
+
+  get validationMsgs(): string[] {
+    const msgs: string[] = [];
+    const controls = this.form.controls;
+
+    const name = controls.name.value;
+
+    if(!this.hasAcceptableAmountOfCards && this.formSubmitted){
+      msgs.push(`This deck has a wrong amount of cards (should be between ${DECK_SETTINGS.MIN_CARDS} and ${DECK_SETTINGS.MAX_CARDS}).`);
+    }
+
+    if(!name && this.formSubmitted){
+      msgs.push(`Please name the deck.`);
+    }
+
+    if(!this.setId && this.formSubmitted){
+      msgs.push(`Please choose a card set.`);
+    }
+
+    if(!this.thumbnailCardId && this.formSubmitted){
+      msgs.push(`Please choose the deck thumbnail in details (next to the name).`);
+    }
+
+    if(!this.sleeveId && this.formSubmitted){
+      msgs.push(`Please choose the deck sleeve in details (next to the name).`);
+    }
+
+    return msgs;
   }
 
   init = (): void => {
@@ -131,7 +169,13 @@ export class EditDeckComponent extends EditableOrNew {
   }
 
   onSubmit = (): void => {
+    this.formSubmitted = true;
 
+    if(this.canSubmit){
+      const deck = this.getDeck();
+
+      this.decksSvc.createDeck(deck, !this.inAdmin);
+    }
   }
 
   getCards = (): void => {
@@ -159,6 +203,14 @@ export class EditDeckComponent extends EditableOrNew {
 
   getCardAmount = (card: Card): number => {
     return this.addedCards.filter(addedCard => addedCard.id === card.id).length;
+  }
+
+  getCardMaxAmount = (card: Card): number => {
+    if(card.type === CardType.Food) return Infinity;
+    if(card.cost > 6) return 3;
+    if(card.cost > 4) return 4;
+    if(card.cost > 2) return 5;
+    return 6;
   }
 
   getDeck = (): DeckMainData => {
