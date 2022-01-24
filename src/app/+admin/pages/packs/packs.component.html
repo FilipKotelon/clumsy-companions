@@ -5,22 +5,19 @@
   </div>
   
   <div class="item-grid">
-    <ng-container *ngFor="let pack of packs">
-  
-      <app-admin-shop-item-wrapper
-        [shopProduct]="pack"
+    <app-admin-shop-item-wrapper
+      *ngFor="let pack of packs"
+      [shopProduct]="pack"
+    >
+      <app-admin-item-wrapper
+        (deleted)="onOpenDeletePopup(pack.id)"
+        editLink="/admin/packs/edit/{{ pack.id }}"
       >
-        <app-admin-item-wrapper
-          (deleted)="onOpenDeletePopup(pack.id)"
-          editLink="/admin/packs/edit/{{ pack.id }}"
-        >
-          <app-pack
-            [pack]="pack"
-          ></app-pack>
-        </app-admin-item-wrapper>
-      </app-admin-shop-item-wrapper>
-  
-    </ng-container>
+        <app-pack
+          [pack]="pack"
+        ></app-pack>
+      </app-admin-item-wrapper>
+    </app-admin-shop-item-wrapper>
   </div>
 
   <app-accept-popup

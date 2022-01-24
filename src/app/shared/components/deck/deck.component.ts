@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CardsService } from '@core/cards/cards.service';
 import { Deck } from '@core/decks/decks.types';
 import { SleevesService } from '@core/sleeves/sleeves.service';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-deck',
@@ -11,14 +12,21 @@ import { SleevesService } from '@core/sleeves/sleeves.service';
 export class DeckComponent implements OnInit {
   @Input() deck: Deck;
 
+  sleeveImgUrl = '';
   thumbnailImgUrl = '';
 
   constructor(
-    private cardsSvc: CardsService
+    private cardsSvc: CardsService,
+    private sleevesSvc: SleevesService
   ) { }
 
   ngOnInit(): void {
-    this.cardsSvc.getCard(this.deck.thumbnailCardId).subscribe(card => {
+    combineLatest([
+      this.sleevesSvc.getSleeve(this.deck.sleeveId),
+      this.cardsSvc.getCard(this.deck.thumbnailCardId)
+    ])
+    .subscribe(([sleeve, card]) => {
+      this.sleeveImgUrl = sleeve.imgUrl;
       this.thumbnailImgUrl = card.imgUrl;
     });
   }

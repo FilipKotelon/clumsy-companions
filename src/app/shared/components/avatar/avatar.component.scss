@@ -1,0 +1,11 @@
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+.avatar{
+  @include circle(30rem);
+  overflow: hidden;
+
+  &__img{
+    @include square(100%);
+  }
+}

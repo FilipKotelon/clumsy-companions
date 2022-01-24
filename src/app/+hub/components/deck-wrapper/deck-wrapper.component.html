@@ -1,0 +1,19 @@
+<div class="hub-deck-wrapper">
+  <div class="hub-deck-wrapper__overlay">
+    <a 
+      [routerLink]="editLink" 
+      class="admin-button set green"
+    >
+      Edit
+    </a>
+    <div 
+      (click)="onDelete()" 
+      class="admin-button set black"
+    >
+      Delete
+    </div>
+  </div>
+  <div class="hub-deck-wrapper__deck">
+    <ng-content></ng-content>
+  </div>
+</div>

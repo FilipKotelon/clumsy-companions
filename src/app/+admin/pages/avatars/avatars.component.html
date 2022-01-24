@@ -1,1 +1,32 @@
-<p>avatars works!</p>
+<div class="admin-list-page">
+  <div class="admin-title-con">
+    <h1 class="medium-title color-main">Avatars</h1>
+    <a routerLink="/admin/avatars/new" class="admin-button set green">Add new</a>
+  </div>
+  
+  <div class="item-grid">
+    <app-admin-shop-item-wrapper
+      *ngFor="let avatar of avatars"
+      [shopProduct]="avatar"
+    >
+      <app-admin-item-wrapper
+        (deleted)="onOpenDeletePopup(avatar.id)"
+        editLink="/admin/avatars/edit/{{ avatar.id }}"
+      >
+        <app-avatar
+          [avatar]="avatar"
+        ></app-avatar>
+      </app-admin-item-wrapper>
+    </app-admin-shop-item-wrapper>
+  </div>
+
+  <app-accept-popup
+    msg="Do you want to delete this avatar?"
+    acceptMsg="Delete"
+    acceptBtnClass="red"
+    declineBtnClass="black"
+    [open]="deletePopupOpen"
+    (declined)="closeDeletePopup()"
+    (accepted)="deleteAvatar()"
+  ></app-accept-popup>
+</div>

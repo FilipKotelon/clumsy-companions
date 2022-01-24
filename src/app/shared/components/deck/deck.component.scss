@@ -6,20 +6,56 @@
   @include d-flex($ai: flex-end);
   @include rect(32rem, 48rem);
   position: relative;
+  overflow: hidden;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.06);
+
+  &__card, &__thumbnail{
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: calc(100% - .8rem);
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.06);
+  }
 
   &__thumbnail{
     @include abs(0, 0);
-    @include img-cover;
-    z-index: 0;
+    object-fit: cover;
+    z-index: 5;
   }
 
   &__name{
     @include d-flex($center: true);
-    background-color: $main;
+    background-color: $white;
     width: 100%;
     padding: .6rem;
-    color: $white;
     position: relative;
-    z-index: 1;
+    z-index: 6;
+  }
+
+  &__card{
+
+    &--1{
+      left: .2rem;
+      top: .2rem;
+      z-index: 4;
+    }
+
+    &--2{
+      left: .4rem;
+      top: .4rem;
+      z-index: 3;
+    }
+
+    &--3{
+      left: .6rem;
+      top: .6rem;
+      z-index: 2;
+    }
+
+    &--4{
+      left: .8rem;
+      top: .8rem;
+      z-index: 1;
+    }
   }
 }

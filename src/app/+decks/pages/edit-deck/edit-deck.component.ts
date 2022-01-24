@@ -78,7 +78,8 @@ export class EditDeckComponent extends EditableOrNew {
 
   get uniqueAddedCards(): Card[] {
     return this.addedCards.reduce((prev, cur) => {
-      if(!prev.includes(cur)){
+      const prevToIds = prev.map(prev => prev.id);
+      if(!prevToIds.includes(cur.id)){
         prev.push(cur);
       }
 
@@ -119,6 +120,7 @@ export class EditDeckComponent extends EditableOrNew {
     this.listenIfInAdmin();
     this.getSetOptions();
     this.getSleevesOptions();
+    this.initForm('', '');
 
     if(this.id){
       this.loadDeck().subscribe(deck => {
@@ -126,7 +128,6 @@ export class EditDeckComponent extends EditableOrNew {
         this.getCards();
       })
     } else {
-      this.initForm('', '');
       this.openSetSelect();
     }
   }
@@ -164,6 +165,10 @@ export class EditDeckComponent extends EditableOrNew {
         tap(deck => {
           this.thumbnailCardId = deck.thumbnailCardId;
           this.sleeveId = deck.sleeveId;
+
+          this.cardsSvc.getCards({ ids: deck.cardIds }).subscribe(cards => {
+            this.addedCards = cards;
+          })
         })
       );
   }
@@ -206,7 +211,7 @@ export class EditDeckComponent extends EditableOrNew {
   }
 
   getCardMaxAmount = (card: Card): number => {
-    if(card.type === CardType.Food) return Infinity;
+    if(card.type === CardType.Food) return DECK_SETTINGS.MIN_CARDS - 5;
     if(card.cost > 6) return 3;
     if(card.cost > 4) return 4;
     if(card.cost > 2) return 5;
@@ -315,7 +320,8 @@ export class EditDeckComponent extends EditableOrNew {
   deleteDeck = (): void => {
     this.decksSvc.deleteDeck(
       this.id,
-      this.inAdmin ? '/admin/decks' : 'hub/decks'
+      this.inAdmin ? '/admin/decks' : 'hub/decks',
+      !this.inAdmin
     );
     this.closeDeletePopup();
   }

@@ -19,6 +19,7 @@ import { PackComponent } from './components/pack/pack.component';
 import { NumberStepControlComponent } from './components/controls/number-step-control/number-step-control.component';
 import { GiftModalComponent } from './components/gift-modal/gift-modal.component';
 import { DeckComponent } from './components/deck/deck.component';
+import { AvatarComponent } from './components/avatar/avatar.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { DeckComponent } from './components/deck/deck.component';
     NumberStepControlComponent,
     GiftModalComponent,
     DeckComponent,
+    AvatarComponent,
   ],
   imports: [
     CommonModule,
@@ -63,7 +65,8 @@ import { DeckComponent } from './components/deck/deck.component';
     PackComponent,
     NumberStepControlComponent,
     GiftModalComponent,
-    DeckComponent
+    DeckComponent,
+    AvatarComponent
   ]
 })
 export class SharedModule { }

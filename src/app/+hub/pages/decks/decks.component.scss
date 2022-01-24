@@ -1,0 +1,27 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+.new-deck {
+  @include d-flex($center: true, $dir: column);
+  @include rect(32rem, 48rem);
+  border-radius: .3rem;
+  background-color: $main;
+  cursor: pointer;
+  padding: 1.5rem;
+  text-align: center;
+  @include transition;
+
+  &:hover {
+    opacity: .9;
+  }
+
+  &, & a {
+    color: $white;
+  }
+
+  &__icon {
+    font-size: 8rem;
+    margin-bottom: 1.4rem;
+  }
+}

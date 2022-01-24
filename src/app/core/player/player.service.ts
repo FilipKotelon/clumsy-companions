@@ -16,6 +16,7 @@ import { LoadingService } from '../loading/loading.service';
 import { Deck } from '@core/decks/decks.types';
 import { Sleeve } from '@core/sleeves/sleeves.types';
 import { SleevesService } from '@core/sleeves/sleeves.service';
+import { DecksService } from '@core/decks/decks.service';
 
 @Injectable({
   providedIn: 'root'
@@ -70,6 +71,14 @@ export class PlayerService {
     );
   }
 
+  getDecksIds = (): Observable<string[]> => {
+    return this.getPlayer().pipe(
+      switchMap(player => {
+        return of(player.decksIds);
+      })
+    );
+  }
+
   getOwnedCardsIds = (): Observable<string[]> => {
     return this.getPlayer().pipe(
       switchMap(player => {
@@ -89,6 +98,8 @@ export class PlayerService {
   getOwnedPacks = (): Observable<PackWithAmount[]> => {
     return this.getOwnedPacksIds().pipe(
       switchMap(packsIds => {
+        if(!packsIds.length) return of([]);
+
         //Sort them so they always appear in the same order
         const sortedPacksIds = packsIds.sort((a, b) => {
           if(a < b) return -1;
@@ -201,13 +212,13 @@ export class PlayerService {
       });
   }
 
-  assignDeck = (deckId: string, callback?: Function) => {
+  assignDeck = (deckId: string, callback?: Function): void => {
     this.getPlayer()
       .pipe(take(1))
       .subscribe(player => {
         const decksIds = [...player.decksIds, deckId];
 
-        return this.playerDocRef
+        this.playerDocRef
           .update({ decksIds })
           .then(() => {
             if(callback) callback();
@@ -216,5 +227,22 @@ export class PlayerService {
             this.messageSvc.displayError('Something went wrong while assigning the deck to your account. If it is missing from your account, inform us immediately.');
           })
       });
+  }
+
+  removeDeck = (deckId: string, callback?: Function) => {
+    this.getPlayer()
+      .pipe(take(1))
+      .subscribe(player => {
+        const decksIds = player.decksIds.filter(playerDeckId => playerDeckId !== deckId);
+
+        this.playerDocRef
+          .update({ decksIds })
+          .then(() => {
+            if(callback) callback();
+          })
+          .catch(e => {
+            this.messageSvc.displayError('Something went wrong while removing the deck from your account.');
+          })
+      })
   }
 }

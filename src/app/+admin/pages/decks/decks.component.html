@@ -5,11 +5,15 @@
   </div>
   
   <div class="item-grid">
-    <ng-container *ngFor="let deck of decks">
+    <app-admin-item-wrapper
+      *ngFor="let deck of decks"
+      (deleted)="onOpenDeletePopup(deck.id)"
+      editLink="/admin/decks/edit/{{ deck.id }}"
+    >
       <app-deck
         [deck]="deck"
       ></app-deck>
-    </ng-container>
+    </app-admin-item-wrapper>
   </div>
 
   <app-accept-popup

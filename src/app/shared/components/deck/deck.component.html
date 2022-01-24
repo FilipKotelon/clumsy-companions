@@ -2,6 +2,12 @@
   <img
     [src]="thumbnailImgUrl"
     [alt]="deck.name"
-    class="deck__thumbnail">
+    class="deck__thumbnail"
+  >
+  <img
+    *ngFor="let i of [1, 2, 3, 4]"
+    class="deck__card deck__card--{{i}}"
+    [src]="sleeveImgUrl"
+  >
   <div class="deck__name">{{ deck.name }}</div>
 </div>

@@ -5,22 +5,19 @@
   </div>
   
   <div class="item-grid">
-    <ng-container *ngFor="let sleeve of sleeves">
-  
-      <app-admin-shop-item-wrapper
-        [shopProduct]="sleeve"
+    <app-admin-shop-item-wrapper
+      *ngFor="let sleeve of sleeves"
+      [shopProduct]="sleeve"
+    >
+      <app-admin-item-wrapper
+        (deleted)="onOpenDeletePopup(sleeve.id)"
+        editLink="/admin/sleeves/edit/{{ sleeve.id }}"
       >
-        <app-admin-item-wrapper
-          (deleted)="onOpenDeletePopup(sleeve.id)"
-          editLink="/admin/sleeves/edit/{{ sleeve.id }}"
-        >
-          <app-card-sleeve
-            [sleeveImgUrl]="sleeve.imgUrl"
-          ></app-card-sleeve>
-        </app-admin-item-wrapper>
-      </app-admin-shop-item-wrapper>
-  
-    </ng-container>
+        <app-card-sleeve
+          [sleeveImgUrl]="sleeve.imgUrl"
+        ></app-card-sleeve>
+      </app-admin-item-wrapper>
+    </app-admin-shop-item-wrapper>
   </div>
 
   <app-accept-popup

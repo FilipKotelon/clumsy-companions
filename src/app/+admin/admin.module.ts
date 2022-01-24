@@ -25,6 +25,8 @@ import { AdminShopItemWrapperComponent } from './components/admin-shop-item-wrap
 import { PacksEditComponent } from './pages/packs/packs-edit/packs-edit.component';
 import { DecksComponent } from './pages/decks/decks.component';
 import { SleevesEditComponent } from './pages/sleeves/sleeves-edit/sleeves-edit.component';
+import { AvatarsEditComponent } from './pages/avatars/avatars-edit/avatars-edit.component';
+import { AiOpponentsEditComponent } from './pages/ai-opponents/ai-opponents-edit/ai-opponents-edit.component';
 
 @NgModule({
   declarations: [
@@ -51,6 +53,8 @@ import { SleevesEditComponent } from './pages/sleeves/sleeves-edit/sleeves-edit.
     PacksEditComponent,
     DecksComponent,
     SleevesEditComponent,
+    AvatarsEditComponent,
+    AiOpponentsEditComponent,
   ],
   imports: [
     SharedModule,

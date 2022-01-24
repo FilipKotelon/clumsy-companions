@@ -30,11 +30,13 @@ export class DecksService {
               ...deckDoc.data(),
               id: deckDoc.id
             }
-          })
+          });
 
           if(params.global !== undefined){
             decks = decks.filter(deck => deck.global === params.global);
           }
+
+          return decks;
         }),
         catchError(error => {
           console.log(error);
@@ -121,13 +123,17 @@ export class DecksService {
       })
   }
 
-  deleteDeck = (id: string, redirectPath?: string) => {
+  deleteDeck = (id: string, redirectPath?: string, removeFromPlayer = false) => {
     this.fireStore.collection<DeckMainData>('decks').doc(id).delete()
       .then(() => {
         this.messageSvc.displayInfo('The deck was deleted successfully!');
 
         if(redirectPath){
           this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([redirectPath]));
+        }
+
+        if(removeFromPlayer){
+          this.playerSvc.removeDeck(id);
         }
       })
       .catch(error => {
