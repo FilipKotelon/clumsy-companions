@@ -1,0 +1,22 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+::ng-deep{
+  .fade-carousel{
+    position: relative;
+
+    &-items{
+      position: relative;
+    }
+
+    &-item{
+      @include abs(0, 0);
+      @include square(100%);
+    }
+
+    &-arrow{
+      @include abs-center-y()
+    }
+  }
+}

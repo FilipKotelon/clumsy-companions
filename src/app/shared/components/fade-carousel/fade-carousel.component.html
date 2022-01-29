@@ -1,0 +1,20 @@
+<div class="fade-carousel{{ ' ' + className }}">
+  <div
+    (click)="prevItem()"
+    class="fade-carousel-arrow fade-carousel-arrow--left"
+  >
+    <img src="assets/img/icons/arrow-left-green-bold.svg" alt="Previous">
+  </div>
+  <div
+    #itemsContainer
+    class="fade-carousel-items"
+  >
+    <ng-content></ng-content>
+  </div>
+  <div
+    (click)="nextItem()"
+    class="fade-carousel-arrow fade-carousel-arrow--right"
+  >
+    <img src="assets/img/icons/arrow-right-green-bold.svg" alt="Next">
+  </div>
+</div>

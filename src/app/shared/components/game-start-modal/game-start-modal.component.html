@@ -1,0 +1,62 @@
+<div
+  *ngIf="open"
+  class="game-start-modal"
+>
+  <div class="game-start-modal__content">
+
+    <img
+      src="assets/img/icons/close.svg"
+      alt="Close"
+      class="game-start-modal__close"
+      (click)="close()"
+    >
+
+    <app-fade-carousel
+      className="game-start-modal__decks"
+      [itemsLength]="availableDecks.length"
+      [initIndex]="deckIndex"
+      (changedItem)="changeCurrentDeck($event)"
+    >
+      <div
+        *ngFor="let deck of availableDecks"
+        class="fade-carousel-item"
+      >
+        <app-deck
+          [deck]="deck"
+        ></app-deck>
+      </div>
+    </app-fade-carousel>
+
+    <div class="game-start-modal__vs">VS</div>
+
+    <app-fade-carousel
+      className="game-start-modal__opponents"
+      [itemsLength]="aiOpponents.length"
+      (changedItem)="changeOpponent($event)"
+    >
+      <div
+        *ngFor="let opponent of aiOpponents"
+        class="fade-carousel-item"
+      >
+        <div class="game-start-modal__opponents__item">
+          <img
+            [src]="opponent.imgUrl"
+            [alt]="opponent.name"
+            class="game-start-modal__opponents__item__img"
+          >
+          <div class="game-start-modal__opponents__item__name">
+            {{ opponent.name }}
+          </div>
+        </div>
+      </div>
+    </app-fade-carousel>
+
+    <div
+      (click)="play()"
+      class="gift-modal__main__close page-button"
+    >
+      Play
+    </div>
+
+  </div>
+</div>

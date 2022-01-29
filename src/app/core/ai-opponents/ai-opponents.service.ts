@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFirestore, CollectionReference, Query } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 import { AvatarMainData } from '@core/avatars/avatars.types';
 import { MessageService } from '@core/message/message.service';
 import { combineLatest, Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { AIOpponent, AIOpponentMainData, AIOpponentWithThumbnail } from './ai-opponents.types';
+import { AIOpponent, AIOpponentMainData, AIOpponentQueryParams, AIOpponentWithThumbnail } from './ai-opponents.types';
 
 @Injectable({
   providedIn: 'root'
@@ -17,8 +17,16 @@ export class AiOpponentsService {
     private router: Router
   ) { }
 
-  getAIOpponents = (): Observable<AIOpponent[]> => {
-    return this.fireStore.collection<AIOpponentMainData>('ai-opponents').get().pipe(
+  getAIOpponents = (params?: AIOpponentQueryParams): Observable<AIOpponent[]> => {
+    return this.fireStore.collection<AIOpponentMainData>('ai-opponents', ref => {
+      let query: CollectionReference | Query = ref;
+
+      if(params && params.playable !== null) {
+        query = query.where('playable', '==', params.playable);
+      }
+
+      return query;
+    }).get().pipe(
       map(aiOpponentDocs => {
         return aiOpponentDocs.docs.map(aiOpponentDoc => {
           return {

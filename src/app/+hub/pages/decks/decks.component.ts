@@ -24,7 +24,7 @@ export class DecksComponent implements OnInit {
   ngOnInit(): void {
     this.playerSvc.getDecksIds().pipe(
       switchMap(decksIds => {
-        if(decksIds.length){
+        if(decksIds && decksIds.length){
           return this.decksSvc.getDecks({ ids: decksIds });
         } else {
           return of([]);

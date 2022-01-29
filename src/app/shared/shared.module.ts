@@ -20,6 +20,8 @@ import { NumberStepControlComponent } from './components/controls/number-step-co
 import { GiftModalComponent } from './components/gift-modal/gift-modal.component';
 import { DeckComponent } from './components/deck/deck.component';
 import { AvatarComponent } from './components/avatar/avatar.component';
+import { GameStartModalComponent } from './components/game-start-modal/game-start-modal.component';
+import { FadeCarouselComponent } from './components/fade-carousel/fade-carousel.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +43,8 @@ import { AvatarComponent } from './components/avatar/avatar.component';
     GiftModalComponent,
     DeckComponent,
     AvatarComponent,
+    GameStartModalComponent,
+    FadeCarouselComponent,
   ],
   imports: [
     CommonModule,
@@ -66,7 +70,8 @@ import { AvatarComponent } from './components/avatar/avatar.component';
     NumberStepControlComponent,
     GiftModalComponent,
     DeckComponent,
-    AvatarComponent
+    AvatarComponent,
+    FadeCarouselComponent,
   ]
 })
 export class SharedModule { }

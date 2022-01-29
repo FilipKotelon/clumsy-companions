@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { HubComponent } from './hub.component';
 import { DecksComponent } from './pages/decks/decks.component';
+import { HomeComponent } from './pages/home/home.component';
 import { PacksComponent } from './pages/packs/packs.component';
 
 let routes: Routes = [
@@ -14,23 +15,31 @@ let routes: Routes = [
     },
     children: [
       {
+        path: '',
+        component: HomeComponent,
+        pathMatch: 'full',
+        data: {
+          animation: '11'
+        }
+      },
+      {
         path: 'shop',
         loadChildren: () => import('@shop/shop.module').then(m => m.ShopModule),
         data: {
-          animation: '11'
+          animation: '12'
         }
       },
       {
         path: 'packs',
         component: PacksComponent,
         data: {
-          animation: '12'
+          animation: '13'
         }
       },
       {
         path: 'decks',
         data: {
-          animation: '13'
+          animation: '14'
         },
         children: [
           {
@@ -38,21 +47,21 @@ let routes: Routes = [
             component: DecksComponent,
             pathMatch: 'full',
             data: {
-              animation: '131'
+              animation: '141'
             }
           },
           {
             path: 'new',
             loadChildren: () => import('@decks/decks.module').then(m => m.DecksModule),
             data: {
-              animation: '132'
+              animation: '142'
             }
           },
           {
             path: 'edit/:id',
             loadChildren: () => import('@decks/decks.module').then(m => m.DecksModule),
             data: {
-              animation: '133'
+              animation: '143'
             }
           }
         ]

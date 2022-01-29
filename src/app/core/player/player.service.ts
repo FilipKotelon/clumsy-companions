@@ -79,6 +79,14 @@ export class PlayerService {
     );
   }
 
+  getCurrentDeckId = (): Observable<string> => {
+    return this.getPlayer().pipe(
+      switchMap(player => {
+        return of(player.currentDeckId);
+      })
+    );
+  }
+
   getOwnedCardsIds = (): Observable<string[]> => {
     return this.getPlayer().pipe(
       switchMap(player => {
@@ -216,10 +224,22 @@ export class PlayerService {
     this.getPlayer()
       .pipe(take(1))
       .subscribe(player => {
-        const decksIds = [...player.decksIds, deckId];
+        let decksIds = [];
+
+        if(player.decksIds && player.decksIds.length) {
+          decksIds = [...player.decksIds, deckId];
+        } else {
+          decksIds = [deckId];
+        }
+
+        const playerUpdateData: Partial<Player> = { decksIds };
+
+        if(decksIds.length === 1) {
+          playerUpdateData.currentDeckId = deckId;
+        }
 
         this.playerDocRef
-          .update({ decksIds })
+          .update(playerUpdateData)
           .then(() => {
             if(callback) callback();
           })
@@ -244,5 +264,19 @@ export class PlayerService {
             this.messageSvc.displayError('Something went wrong while removing the deck from your account.');
           })
       })
+  }
+
+  chooseCurrentDeck = (id: string): void => {
+    this.getDecksIds().subscribe(decksIds => {
+      if(decksIds.includes(id)){
+        this.playerDocRef.update({
+          currentDeckId: id
+        })
+        .catch(e => {
+          console.log(e);
+          this.messageSvc.displayError('An error occurred while changing the current deck!');
+        })
+      }
+    });
   }
 }

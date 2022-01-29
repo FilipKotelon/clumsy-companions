@@ -15,3 +15,7 @@ export interface AIOpponent extends AIOpponentMainData {
 export interface AIOpponentWithThumbnail extends AIOpponentMainData {
   imgUrl: string;
 }
+
+export interface AIOpponentQueryParams {
+  playable?: boolean;
+}

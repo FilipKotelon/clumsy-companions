@@ -1,0 +1,66 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-basic";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+.hub-home-page{
+  @include flex-row-4(4rem);
+
+  &__block{
+    @include d-flex($dir: column, $jc: flex-end);
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+
+    &:hover{
+      & .hub-home-page__block{
+        &__img{
+          filter: brightness(1.1);
+        }
+
+        &__desc{
+          &::after{
+            transform: rotate(-10deg) translateY(-3.2rem);
+          }
+        }
+      }
+    }
+
+    &__img{
+      @include abs(0, 0);
+      z-index: 0;
+      @include transition;
+      @include img-cover;
+    }
+
+    &__desc{
+      @include d-flex($center: true, $dir: column);
+      position: relative;
+      z-index: 1;
+      color: $white;
+      padding: 3.2rem;
+
+      & h2{
+        margin-bottom: 3rem;
+      }
+
+      & p{
+        margin-bottom: 0;
+      }
+
+      &::after{
+        @include default-after;
+        @include transition;
+        z-index: -1;
+        transform-origin: left top;
+        background-color: $main;
+        width: 200%;
+        height: 200%;
+        left: -20%;
+        top: 3.2rem;
+        transform: rotate(-10deg);
+      }
+    }
+  }
+}

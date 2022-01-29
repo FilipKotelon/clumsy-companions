@@ -7,6 +7,7 @@ import { PacksComponent } from './pages/packs/packs.component';
 import { PackWrapperComponent } from './components/pack-wrapper/pack-wrapper.component';
 import { DecksComponent } from './pages/decks/decks.component';
 import { DeckWrapperComponent } from './components/deck-wrapper/deck-wrapper.component';
+import { HomeComponent } from './pages/home/home.component';
 
 
 
@@ -17,7 +18,8 @@ import { DeckWrapperComponent } from './components/deck-wrapper/deck-wrapper.com
     PacksComponent,
     PackWrapperComponent,
     DecksComponent,
-    DeckWrapperComponent
+    DeckWrapperComponent,
+    HomeComponent
   ],
   imports: [
     SharedModule,
