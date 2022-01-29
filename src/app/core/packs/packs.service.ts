@@ -11,6 +11,7 @@ import { Gift } from '@core/gift/gift.types';
 import { MessageService } from '@core/message/message.service';
 
 import { Pack, PackMainData, PACKS_SETTINGS } from './packs.types';
+import { SelectControlOption } from '@shared/components/controls/select-control/select-control.types';
 
 @Injectable({
   providedIn: 'root'
@@ -71,12 +72,30 @@ export class PacksService {
           return {
             ...packDoc.data(),
             id: packDoc.id
-          }
+          };
         } else {
           return null;
         }
       })
     );
+  }
+
+  getPacksSelectOptions = (): Observable<SelectControlOption[]> => {
+    return this.getPacks()
+      .pipe(
+        map(packs => {
+          return [
+            {
+              key: '',
+              value: 'Select pack'
+            },
+            ...packs.map(pack => ({
+              key: pack.id,
+              value: pack.name
+            }))
+          ];
+        })
+      )
   }
 
   createPack = (data: PackMainData): void => {

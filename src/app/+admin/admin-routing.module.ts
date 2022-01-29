@@ -16,6 +16,7 @@ import { PacksEditComponent } from './pages/packs/packs-edit/packs-edit.componen
 import { DecksComponent } from './pages/decks/decks.component';
 import { SleevesEditComponent } from './pages/sleeves/sleeves-edit/sleeves-edit.component';
 import { AvatarsEditComponent } from './pages/avatars/avatars-edit/avatars-edit.component';
+import { AiOpponentsEditComponent } from './pages/ai-opponents/ai-opponents-edit/ai-opponents-edit.component';
 
 let routes: Routes = [
   {
@@ -188,10 +189,33 @@ let routes: Routes = [
       },
       {
         path: 'ai-opponents',
-        component: AiOpponentsComponent,
         data: {
           animation: '8'
-        }
+        },
+        children: [
+          {
+            path: '',
+            component: AiOpponentsComponent,
+            pathMatch: 'full',
+            data: {
+              animation: '81'
+            },
+          },
+          {
+            path: 'new',
+            component: AiOpponentsEditComponent,
+            data: {
+              animation: '82'
+            },
+          },
+          {
+            path: 'edit/:id',
+            component: AiOpponentsEditComponent,
+            data: {
+              animation: '83'
+            },
+          },
+        ]
       },
       {
         path: 'decks',

@@ -14,6 +14,12 @@
     position: relative;
     z-index: 100;
 
+    &--wide{
+      @include d-flex($dir: column);
+      width: 73rem;
+      padding: 3rem;
+    }
+
     &__upload{
       @include abs(0, 0);
       @include square(100%);
@@ -30,6 +36,52 @@
       & .card-front__info{
         &__left, &__right{
           pointer-events: all;
+        }
+      }
+    }
+
+    &__select{
+      @include d-flex($dir: column, $ai: flex-start);
+      margin-bottom: 3rem;
+
+      &__title{
+        margin-bottom: 1.6rem;
+      }
+
+      &__list{
+        @include d-flex();
+        @include m-not-last(1.8rem, r);
+        padding: .8rem .6rem 3rem;
+        @include scrollbar($color: $main, $bg: $white-dimmed, $w: .6rem, $rounded: false);
+        max-width: 100%;
+        overflow: auto;
+
+        &::-webkit-scrollbar{
+          height: .6rem;
+        }
+
+        & .admin-form__display__select__list__item{
+          @include transition;
+          padding: 1rem;
+          cursor: pointer;
+          border: 1px solid transparent;
+
+          &.selected{
+            border-color: $main;
+          }
+
+          &--round{
+            @include circle(20rem);
+          }
+
+          & .avatar{
+            @include square(19rem);
+          }
+
+          & .deck {
+            @include rect(16rem, 24rem);
+            color: $black;
+          }
         }
       }
     }

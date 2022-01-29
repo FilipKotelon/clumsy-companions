@@ -1,1 +1,32 @@
-<p>ai-opponents works!</p>
+<div class="admin-list-page">
+  <div class="admin-title-con">
+    <h1 class="medium-title color-main">AI Opponents</h1>
+    <a routerLink="/admin/ai-opponents/new" class="admin-button set green">Add new</a>
+  </div>
+  
+  <div class="item-grid">
+  
+    <app-admin-item-wrapper
+      *ngFor="let aiOpponent of aiOpponents"
+      (deleted)="onOpenDeletePopup(aiOpponent.id)"
+      editLink="/admin/ai-opponents/edit/{{ aiOpponent.id }}"
+    >
+      <app-simple-list-item
+        shape="rectangle"
+        [name]="aiOpponent.name"
+        [imgUrl]="aiOpponent.imgUrl"
+      ></app-simple-list-item>
+    </app-admin-item-wrapper>
+
+  </div>
+
+  <app-accept-popup
+    msg="Do you want to delete this opponent?"
+    acceptMsg="Delete"
+    acceptBtnClass="red"
+    declineBtnClass="black"
+    [open]="deletePopupOpen"
+    (declined)="closeDeletePopup()"
+    (accepted)="deleteAIOpponent()"
+  ></app-accept-popup>
+</div>
