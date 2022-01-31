@@ -3,14 +3,17 @@ import { AiOpponentsService } from '@core/ai-opponents/ai-opponents.service';
 import { AIOpponentWithThumbnail } from '@core/ai-opponents/ai-opponents.types';
 import { DecksService } from '@core/decks/decks.service';
 import { Deck } from '@core/decks/decks.types';
+import { GameConnectorService } from '@core/game/game-connector/game-connector.service';
 import { PlayerService } from '@core/player/player.service';
+import { fadeInOut } from '@shared/animations/component-animations';
 import { combineLatest, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-game-start-modal',
   templateUrl: './game-start-modal.component.html',
-  styleUrls: ['./game-start-modal.component.scss']
+  styleUrls: ['./game-start-modal.component.scss'],
+  animations: [fadeInOut]
 })
 export class GameStartModalComponent implements OnInit {
   @Input() open = false;
@@ -24,6 +27,7 @@ export class GameStartModalComponent implements OnInit {
   constructor(
     private aiOpponentsSvc: AiOpponentsService,
     private decksSvc: DecksService,
+    private gameConnectorSvc: GameConnectorService,
     private playerSvc: PlayerService
   ) { }
 
@@ -66,6 +70,10 @@ export class GameStartModalComponent implements OnInit {
 
   changeOpponent = (index: number): void => {
     this.curOpponentIndex = index;
+  }
+
+  close = (): void => {
+    this.gameConnectorSvc.closeGameStartModal();
   }
 
   play = (): void => {

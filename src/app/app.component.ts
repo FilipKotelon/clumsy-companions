@@ -10,6 +10,7 @@ import * as fromStore from '@core/store/reducer';
 import * as AppLoadingSelectors from '@core/loading/store/loading.selectors';
 import * as AuthSelectors from '@core/auth/store/auth.selectors';
 import * as AuthActions from '@core/auth/store/auth.actions';
+import { GameConnectorService } from '@core/game/game-connector/game-connector.service';
 
 @Component({
   selector: 'app-root',
@@ -21,8 +22,8 @@ import * as AuthActions from '@core/auth/store/auth.actions';
 })
 export class AppComponent implements OnInit, OnDestroy {
   storeLoadingSub: Subscription;
-  storeAuthSub: Subscription;
   tasks: LoadingTask[];
+
   isLoading = false;
 
   constructor(private store: Store<fromStore.AppState>){}
@@ -33,21 +34,20 @@ export class AppComponent implements OnInit, OnDestroy {
       this.isLoading = tasks.length > 0;
     })
     
-    this.storeAuthSub = this.store.select(AuthSelectors.selectAuth).pipe(
+    this.store.select(AuthSelectors.selectAuth).pipe(
       take(1),
       map(authState => authState)
     ).subscribe((authState) => {
       if(!authState.user && this.tasks.indexOf('AUTH_PROCESS') < 0){
         this.store.dispatch(
           new AuthActions.AutoLogin()
-        )
+        );
       }
-    })
+    });
   }
 
   ngOnDestroy(): void {
     this.storeLoadingSub.unsubscribe();
-    this.storeAuthSub.unsubscribe();
   }
 
   prepareRoute = (outlet: RouterOutlet) => {

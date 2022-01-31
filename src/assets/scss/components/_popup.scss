@@ -38,9 +38,8 @@
     @include d-flex($dir: column, $ai: center);
     position: relative;
     z-index: 1;
-    max-width: 540px;
+    max-width: 54rem;
     background-color: $white;
-    border: 1px solid $main;
     padding: 3.6rem 3rem;
   }
 

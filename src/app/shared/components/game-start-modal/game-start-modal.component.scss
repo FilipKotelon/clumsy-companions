@@ -1,0 +1,97 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+.game-start-modal{
+  @include fix(0, 0);
+  @include square(100%);
+  @include d-flex($center: true);
+  z-index: 10000;
+
+  &__bg{
+    @include abs(0, 0);
+    @include square(100%);
+    background: $white-dimmed-transparent;
+    z-index: 0;
+    cursor: pointer;
+  }
+
+  &__content{
+    @include d-flex($dir: column, $ai: center);
+    position: relative;
+    z-index: 1;
+    width: 92rem;
+    max-width: 100%;
+    background-color: $white;
+    padding: 3.2rem;
+  }
+
+  &__close{
+    @include abs($r: 1.5rem, $t: 1.5rem);
+    @include square(1.8rem);
+    cursor: pointer;
+  }
+
+  &__main{
+    @include d-flex($ai: center);
+
+    &__decks-con, &__opponents-con{
+      width: 24rem;
+    }
+
+    &__decks-con{
+      position: relative;
+    }
+
+    &__decks-title{
+      @include abs($l: 0, $b: calc(100% + 1rem));
+      text-align: center;
+      width: 100%;
+    }
+
+    &__vs{
+      margin: 0 7.5rem;
+    }
+  }
+}
+
+::ng-deep{
+  .game-start-modal{
+    & .game-start-modal__main{
+      &__decks, &__opponents{
+        @include rect(24rem, 36rem);
+      }
+
+      &__decks{
+        & .deck{
+          @include rect(24rem, 36rem);
+        }
+      }
+
+      &__opponents{
+        @include d-flex($center: true);
+
+        & .fade-carousel-items{
+          @include square(24rem);
+        }
+      }
+
+      & .game-start-modal__opponents{
+        &__item{
+          @include d-flex($ai: center, $dir: column);
+          position: relative;
+          text-align: center;
+
+          &__img{
+            @include circle(24rem);
+          }
+
+          &__name{
+            @include abs($l: 0, $t: calc(100% + 2rem));
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}

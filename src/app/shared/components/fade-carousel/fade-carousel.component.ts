@@ -1,13 +1,13 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-fade-carousel',
   templateUrl: './fade-carousel.component.html',
   styleUrls: ['./fade-carousel.component.scss']
 })
-export class FadeCarouselComponent implements OnInit {
+export class FadeCarouselComponent implements OnInit, AfterViewInit {
   @Input() className: string;
-  @Input() initIndex = 0;
+  @Input() initIndex: number;
   @Input() itemsLength: number;
   
   @Output() changedItem = new EventEmitter<number>();
@@ -17,7 +17,11 @@ export class FadeCarouselComponent implements OnInit {
   curIndex: number;
 
   ngOnInit(): void {
-    this.curIndex = this.initIndex;
+    this.curIndex = this.initIndex ? this.initIndex : 0;
+  }
+
+  ngAfterViewInit(): void {
+    this.onChange();
   }
   
   onChange = (): void => {
@@ -29,15 +33,17 @@ export class FadeCarouselComponent implements OnInit {
     });
 
     if(item){
-      item.classList.add('selected');
+      setTimeout(() => {
+        item.classList.add('selected');
+      }, 100);
     }
   }
 
   prevItem = (): void => {
     if (this.curIndex - 1 < 0) {
-      this.curIndex--;
-    } else {
       this.curIndex = this.itemsLength - 1;
+    } else {
+      this.curIndex--;
     }
 
     this.changedItem.emit(this.curIndex);
@@ -45,10 +51,10 @@ export class FadeCarouselComponent implements OnInit {
   }
 
   nextItem = (): void => {
-    if (this.curIndex + 1 < this.itemsLength) {
-      this.curIndex--;
-    } else {
+    if (this.curIndex + 1 >= this.itemsLength) {
       this.curIndex = 0;
+    } else {
+      this.curIndex++;
     }
 
     this.changedItem.emit(this.curIndex);

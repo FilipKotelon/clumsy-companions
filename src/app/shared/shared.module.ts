@@ -71,6 +71,7 @@ import { FadeCarouselComponent } from './components/fade-carousel/fade-carousel.
     GiftModalComponent,
     DeckComponent,
     AvatarComponent,
+    GameStartModalComponent,
     FadeCarouselComponent,
   ]
 })

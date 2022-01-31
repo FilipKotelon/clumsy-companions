@@ -1,7 +1,12 @@
 <div
   *ngIf="open"
+  @fadeInOut
   class="game-start-modal"
 >
+  <div
+    class="game-start-modal__bg"
+    (click)="close()"
+  ></div>
   <div class="game-start-modal__content">
 
     <img
@@ -11,45 +16,52 @@
       (click)="close()"
     >
 
-    <app-fade-carousel
-      className="game-start-modal__decks"
-      [itemsLength]="availableDecks.length"
-      [initIndex]="deckIndex"
-      (changedItem)="changeCurrentDeck($event)"
-    >
-      <div
-        *ngFor="let deck of availableDecks"
-        class="fade-carousel-item"
-      >
-        <app-deck
-          [deck]="deck"
-        ></app-deck>
-      </div>
-    </app-fade-carousel>
-
-    <div class="game-start-modal__vs">VS</div>
-
-    <app-fade-carousel
-      className="game-start-modal__opponents"
-      [itemsLength]="aiOpponents.length"
-      (changedItem)="changeOpponent($event)"
-    >
-      <div
-        *ngFor="let opponent of aiOpponents"
-        class="fade-carousel-item"
-      >
-        <div class="game-start-modal__opponents__item">
-          <img
-            [src]="opponent.imgUrl"
-            [alt]="opponent.name"
-            class="game-start-modal__opponents__item__img"
+    <div class="game-start-modal__main">
+      <div class="game-start-modal__main__decks-con">
+        <div class="game-start-modal__main__decks-title medium-text">You and your deck:</div>
+        <app-fade-carousel
+          className="game-start-modal__main__decks"
+          [itemsLength]="availableDecks.length"
+          [initIndex]="deckIndex"
+          (changedItem)="changeCurrentDeck($event)"
+        >
+          <div
+            *ngFor="let deck of availableDecks"
+            class="fade-carousel-item"
           >
-          <div class="game-start-modal__opponents__item__name">
-            {{ opponent.name }}
+            <app-deck
+              [deck]="deck"
+            ></app-deck>
           </div>
-        </div>
+        </app-fade-carousel>
       </div>
-    </app-fade-carousel>
+  
+      <div class="game-start-modal__main__vs medium-title color-main">VS</div>
+  
+      <div class="game-start-modal__main__opponents-con">
+        <app-fade-carousel
+          className="game-start-modal__main__opponents"
+          [itemsLength]="aiOpponents.length"
+          (changedItem)="changeOpponent($event)"
+        >
+          <div
+            *ngFor="let opponent of aiOpponents"
+            class="fade-carousel-item"
+          >
+            <div class="game-start-modal__opponents__item">
+              <img
+                [src]="opponent.imgUrl"
+                [alt]="opponent.name"
+                class="game-start-modal__opponents__item__img"
+              >
+              <div class="game-start-modal__opponents__item__name">
+                {{ opponent.name }}
+              </div>
+            </div>
+          </div>
+        </app-fade-carousel>
+      </div>
+    </div>
 
     <div
       (click)="play()"

@@ -1,0 +1,40 @@
+.fade-carousel{
+  position: relative;
+
+  &-items{
+    position: relative;
+  }
+
+  &-item{
+    @include abs(0, 0);
+    @include square(100%);
+    opacity: 0;
+    visibility: hidden;
+    @include transition;
+
+    &.selected{
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  &-arrow{
+    @include abs-center-y();
+    @include circle(3rem);
+    background-color: $white;
+    z-index: 10;
+    cursor: pointer;
+
+    &--left{
+      left: -1.5rem;
+    }
+
+    &--right{
+      right: -1.5rem;
+    }
+
+    & img{
+      width: 2rem;
+    }
+  }
+}
