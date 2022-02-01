@@ -16,6 +16,11 @@
     cursor: pointer;
   }
 
+  &__title{
+    text-align: center;
+    margin-bottom: 6rem;
+  }
+
   &__content{
     @include d-flex($dir: column, $ai: center);
     position: relative;
@@ -34,6 +39,7 @@
 
   &__main{
     @include d-flex($ai: center);
+    margin-bottom: 4rem;
 
     &__decks-con, &__opponents-con{
       width: 24rem;
@@ -52,6 +58,10 @@
     &__vs{
       margin: 0 7.5rem;
     }
+  }
+
+  &__play{
+    width: 17rem;
   }
 }
 

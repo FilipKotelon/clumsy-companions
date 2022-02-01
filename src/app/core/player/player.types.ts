@@ -13,3 +13,8 @@ export class Player {
     public lossCount: number
   ) {}
 }
+
+export const PLAYER_SETTINGS = {
+  BASE_ENERGY: 20,
+  BASE_FOOD: 0
+}

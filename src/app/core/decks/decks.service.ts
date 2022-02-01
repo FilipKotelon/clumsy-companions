@@ -75,7 +75,7 @@ export class DecksService {
     )
   }
 
-  getDeck = (id: string) => {
+  getDeck = (id: string): Observable<Deck> => {
     return this.fireStore.collection<DeckMainData>('decks').doc(id).get().pipe(
       map(deckDoc => {
         if(deckDoc.data()){
@@ -90,7 +90,7 @@ export class DecksService {
     )
   }
 
-  createDeck = (data: DeckMainData, assignToPlayer = true) => {
+  createDeck = (data: DeckMainData, assignToPlayer = true): void => {
     this.fireStore.collection<DeckMainData>('decks').add({
       ...data
     }).then(deckDoc => {
@@ -110,7 +110,7 @@ export class DecksService {
     })
   }
 
-  updateDeck = (id: string, data: DeckMainData) => {
+  updateDeck = (id: string, data: DeckMainData): void => {
     this.fireStore.collection<DeckMainData>('decks').doc(id)
       .update(data)
       .then(() => {
@@ -123,7 +123,7 @@ export class DecksService {
       })
   }
 
-  deleteDeck = (id: string, redirectPath?: string, removeFromPlayer = false) => {
+  deleteDeck = (id: string, redirectPath?: string, removeFromPlayer = false): void => {
     this.fireStore.collection<DeckMainData>('decks').doc(id).delete()
       .then(() => {
         this.messageSvc.displayInfo('The deck was deleted successfully!');

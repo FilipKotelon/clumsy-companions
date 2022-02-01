@@ -40,9 +40,9 @@ export class CardEffectComponent implements OnInit {
     let additional = '';
 
     if(type === CardEffectType.AuraEffect){
-      if(action === GameEffectActionType.GAME_EFFECT_AURA_BUFF_ALLIES || action === GameEffectActionType.GAME_EFFECT_AURA_BUFF_ALLIES_EXCEPT){
+      if(action === GameEffectActionType.AURA_BUFF_ALLIES || action === GameEffectActionType.AURA_BUFF_ALLIES_EXCEPT){
         additional = '-buff';
-      } else if(action === GameEffectActionType.GAME_EFFECT_AURA_DEBUFF_ENEMIES || action === GameEffectActionType.GAME_EFFECT_AURA_DEBUFF_ALL_EXCEPT){
+      } else if(action === GameEffectActionType.AURA_DEBUFF_ENEMIES || action === GameEffectActionType.AURA_DEBUFF_ALL_EXCEPT){
         additional = '-debuff';
       }
     }

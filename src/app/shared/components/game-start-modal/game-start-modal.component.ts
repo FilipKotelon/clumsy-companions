@@ -74,6 +74,7 @@ export class GameStartModalComponent implements OnInit {
 
   close = (): void => {
     this.gameConnectorSvc.closeGameStartModal();
+    this.playerSvc.chooseCurrentDeck(this.availableDecks[this.curDeckIndex].id);
   }
 
   play = (): void => {

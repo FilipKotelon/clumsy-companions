@@ -25,6 +25,8 @@
     "@ngrx/store-devtools": "^13.0.2",
     "firebase": "^9.1.3",
     "firebase-admin": "^10.0.0",
+    "immer": "^9.0.12",
+    "ngrx-immer": "^2.0.0",
     "ngx-scrollbar": "^9.0.0",
     "rxjs": "~6.6.0",
     "stream-browserify": "^3.0.0",

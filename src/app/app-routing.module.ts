@@ -36,6 +36,14 @@ let routes: Routes = [
     data: {
       anmimation: '4'
     }
+  },
+  {
+    path: 'game',
+    loadChildren: () => import('@game/game.module').then(m => m.GameModule),
+    canActivate: [LoggedInGuard],
+    data: {
+      anmimation: '5'
+    }
   }
 ];
 

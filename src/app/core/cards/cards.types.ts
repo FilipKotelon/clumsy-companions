@@ -32,7 +32,7 @@ export interface CardEffect {
   readonly name: string;
   readonly description: string;
   readonly type: CardEffectType;
-  readonly action: GameEffectActionType;
+  readonly action: string;
   readonly values: EffectValues;
 }
 
@@ -72,7 +72,7 @@ export const FOOD_CARD_EFFECT: CardEffect = {
   name: 'Food',
   description: 'This card adds 1 Food to your resources.',
   type: CardEffectType.AuraEffect,
-  action: GameEffectActionType.GAME_EFFECT_ADD_FOOD,
+  action: GameEffectActionType.ADD_FOOD,
   values: {
     main: 1,
     strength: null,

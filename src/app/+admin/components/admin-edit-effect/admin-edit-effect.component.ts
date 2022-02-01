@@ -1,11 +1,10 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { getCardEffectNameFromType } from '@core/cards/cards.helpers';
 import { fadeInOut } from '@shared/animations/component-animations';
 
 import { CardEffectType } from '@core/cards/cards.types';
-import { getCardActionNameFromType } from '@core/game/game.helpers';
-import { GameEffectActionType } from '@core/game/store/game.effect.actions';
+import { GameEffectActionType, GAME_EFFECTS_MAP } from '@core/game/store/game.effect.actions';
 import { SelectControlOption } from '@shared/components/controls/select-control/select-control.types';
 
 @Component({
@@ -33,7 +32,7 @@ export class AdminEditEffectComponent {
       },
       ...Object.values(GameEffectActionType).map(type => ({
         key: type,
-        value: getCardActionNameFromType(type)
+        value: GAME_EFFECTS_MAP[type].name
       }))
     ];
 

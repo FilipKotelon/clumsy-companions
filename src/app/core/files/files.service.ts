@@ -70,5 +70,5 @@ export class FilesService {
     return this.getRandomFileId() + '_' + fileName.split(/(\\|\/)/g).pop();
   }
 
-  getRandomFileId = () => Math.random().toString(36).substr(2, 9);
+  getRandomFileId = () => Math.random().toString(36).substring(2, 11);
 }

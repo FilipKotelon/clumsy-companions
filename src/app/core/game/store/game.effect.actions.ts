@@ -1,14 +1,10 @@
-import { Action } from '@ngrx/store';
+import { Action, createAction, props } from '@ngrx/store';
 
 import { CardEffectType, CardType } from '@core/cards/cards.types';
-import { EffectValues } from '@core/game/game.types';
+import { AuraPayload, EffectValues } from '@core/game/game.types';
+import { ActionCreator } from '@ngrx/store/src/models';
 
 /* Actions triggered by cards and everything within the TCG system */
-
-export interface AuraPayload {
-  originId: string;
-  values: EffectValues;
-}
 
 export interface GameEffectAction extends Action {
   readonly type: GameEffectActionType;
@@ -16,288 +12,339 @@ export interface GameEffectAction extends Action {
   readonly cardTypes: CardType[];
 }
 
+export interface GameEffect {
+  readonly cardEffectTypes: CardEffectType[];
+  readonly cardTypes: CardType[];
+  getAction: ActionCreator<GameEffectActionType>;
+  readonly name: string;
+  readonly onExecutionMsg?: string;
+}
+
+export interface GameEffectMap {
+  [key: string]: GameEffect;
+}
+
 //#region Action types
 
 export enum GameEffectActionType {
   //#region Destroy
-  GAME_EFFECT_DESTROY_TARGET = '[Game Effect] Destroy Target',
-  GAME_EFFECT_DESTROY_ALL = '[Game Effect] Destroy All',
-  GAME_EFFECT_DESTROY_ALL_EXCEPT = '[Game Effect] Destroy All Except',
+  DESTROY_TARGET = '[Game Effect] Destroy Target',
+  DESTROY_ALL = '[Game Effect] Destroy All',
+  DESTROY_ALL_EXCEPT = '[Game Effect] Destroy All Except',
   //#endregion
 
   //#region Damage
-  GAME_EFFECT_DAMAGE_TARGET = '[Game Effect] Damage Target',
-  GAME_EFFECT_DAMAGE_ENEMIES = '[Game Effect] Damage Enemies',
-  GAME_EFFECT_DAMAGE_ALL = '[Game Effect] Damage All',
-  GAME_EFFECT_DAMAGE_ALL_EXCEPT = '[Game Effect] Damage All Except',
+  DAMAGE_TARGET = '[Game Effect] Damage Target',
+  DAMAGE_ENEMIES = '[Game Effect] Damage Enemies',
+  DAMAGE_ALL = '[Game Effect] Damage All',
+  DAMAGE_ALL_EXCEPT = '[Game Effect] Damage All Except',
   //#endregion
 
   //#region Buff
-  GAME_EFFECT_BUFF_TARGET = '[Game Effect] Buff Target',
-  GAME_EFFECT_BUFF_ALLIES = '[Game Effect] Buff Allies',
+  BUFF_TARGET = '[Game Effect] Buff Target',
+  BUFF_ALLIES = '[Game Effect] Buff Allies',
   //#endregion
 
   //#region Debuff
-  GAME_EFFECT_DEBUFF_TARGET = '[Game Effect] Debuff Target',
-  GAME_EFFECT_DEBUFF_ENEMIES = '[Game Effect] Debuff Enemies',
+  DEBUFF_TARGET = '[Game Effect] Debuff Target',
+  DEBUFF_ENEMIES = '[Game Effect] Debuff Enemies',
   //#endregion
 
   //#region Auras
-  GAME_EFFECT_AURA_BUFF_ALLIES = '[Game Effect] Aura Buff Allies',
-  GAME_EFFECT_AURA_BUFF_ALLIES_EXCEPT = '[Game Effect] Aura Buff Allies Except',
-  GAME_EFFECT_AURA_DEBUFF_ENEMIES = '[Game Effect] Aura Debuff Enemies',
-  GAME_EFFECT_AURA_DEBUFF_ALL_EXCEPT = '[Game Effect] Aura Debuff All Except',
+  AURA_BUFF_ALLIES = '[Game Effect] Aura Buff Allies',
+  AURA_BUFF_ALLIES_EXCEPT = '[Game Effect] Aura Buff Allies Except',
+  AURA_DEBUFF_ENEMIES = '[Game Effect] Aura Debuff Enemies',
+  AURA_DEBUFF_ALL_EXCEPT = '[Game Effect] Aura Debuff All Except',
   //#endregion
 
   //#region Heal
-  GAME_EFFECT_HEAL_PLAYER = '[Game Effect] Heal Player',
+  HEAL_PLAYER = '[Game Effect] Heal Player',
   //#endregion
 
   //#region Food
-  GAME_EFFECT_ADD_FOOD = '[Game Effect] Add Food',
+  ADD_FOOD = '[Game Effect] Add Food',
   //#endregion Food
 }
 
 //#endregion Action Types
 
 //#region Actions
+const getGameEffectsMap = (): GameEffectMap => ({
+  //#region Destroy
+  [GameEffectActionType.DESTROY_TARGET]: {
+    cardEffectTypes: [
+      CardEffectType.OnEnterEffect,
+      CardEffectType.OnExitEffect
+    ],
+    cardTypes: [
+      CardType.Charm,
+      CardType.Trick
+    ],
+    getAction: createAction(
+      GameEffectActionType.DESTROY_TARGET,
+      props<{ targetId: string }>()
+    ),
+    name: 'Destroy a companion',
+    onExecutionMsg: 'Choose a companion to destroy.'
+  },
 
-//#region Destroy
-export class GameEffectDestroyTarget implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_DESTROY_TARGET;
-  readonly cardEffectTypes = [
-    CardEffectType.OnEnterEffect,
-    CardEffectType.OnExitEffect
-  ];
-  readonly cardTypes = [
-    CardType.Charm,
-    CardType.Trick
-  ];
+  [GameEffectActionType.DESTROY_ALL]: {
+    cardEffectTypes: [
+      CardEffectType.OnEnterEffect,
+      CardEffectType.OnExitEffect
+    ],
+    cardTypes: [
+      CardType.Charm,
+      CardType.Trick
+    ],
+    getAction: createAction(GameEffectActionType.DESTROY_ALL),
+    name: 'Destroy all companions'
+  },
 
-  constructor( payload: { targetId: string }) {}
-}
+  [GameEffectActionType.DESTROY_ALL_EXCEPT]: {
+    cardEffectTypes: [
+      CardEffectType.OnEnterEffect,
+      CardEffectType.OnExitEffect
+    ],
+    cardTypes: [
+      CardType.Companion
+    ],
+    getAction: createAction(
+      GameEffectActionType.DESTROY_ALL_EXCEPT,
+      props<{ targetId: string }>()
+    ),
+    name: 'Destroy all companions but this one'
+  },
+  //#endregion
+  
+  //#region Damage
+  [GameEffectActionType.DAMAGE_TARGET]: {
+    cardEffectTypes: [
+      CardEffectType.OnEnterEffect,
+      CardEffectType.OnExitEffect
+    ],
+    cardTypes: [
+      CardType.Charm,
+      CardType.Companion,
+      CardType.Trick
+    ],
+    getAction: createAction(
+      GameEffectActionType.DAMAGE_TARGET,
+      props<{ damage: number, targetId: string }>()
+    ),
+    name: 'Damage a companion or player',
+    onExecutionMsg: 'Choose the target you want to damage'
+  },
 
-export class GameEffectDestroyAll implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_DESTROY_ALL;
-  readonly cardEffectTypes = [
-    CardEffectType.OnEnterEffect,
-    CardEffectType.OnExitEffect
-  ];
-  readonly cardTypes = [
-    CardType.Charm,
-    CardType.Trick
-  ];
-}
+  [GameEffectActionType.DAMAGE_ENEMIES]: {
+    cardEffectTypes: [
+      CardEffectType.OnEnterEffect,
+      CardEffectType.OnExitEffect
+    ],
+    cardTypes: [
+      CardType.Charm,
+      CardType.Companion,
+      CardType.Trick
+    ],
+    getAction: createAction(
+      GameEffectActionType.DAMAGE_ENEMIES,
+      props<{ damage: number }>()
+    ),
+    name: 'Damage enemies'
+  },
 
-export class GameEffectDestroyAllExcept implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_DESTROY_ALL_EXCEPT;
-  readonly cardEffectTypes = [
-    CardEffectType.OnEnterEffect,
-    CardEffectType.OnExitEffect
-  ];
-  readonly cardTypes = [
-    CardType.Companion
-  ];
+  [GameEffectActionType.DAMAGE_ALL]: {
+    cardEffectTypes: [
+      CardEffectType.OnEnterEffect,
+      CardEffectType.OnExitEffect
+    ],
+    cardTypes: [
+      CardType.Charm,
+      CardType.Companion,
+      CardType.Trick
+    ],
+    getAction: createAction(
+      GameEffectActionType.DAMAGE_ALL,
+      props<{ damage: number }>()
+    ),
+    name: 'Damage all companions'
+  },
 
-  constructor( payload: { targetId: string }) {}
-}
-//#endregion
+  [GameEffectActionType.DAMAGE_ALL_EXCEPT]: {
+    cardEffectTypes: [
+      CardEffectType.OnEnterEffect,
+      CardEffectType.OnExitEffect
+    ],
+    cardTypes: [
+      CardType.Companion
+    ],
+    getAction: createAction(
+      GameEffectActionType.DAMAGE_ALL_EXCEPT,
+      props<{ damage: number, targetId: string }>()
+    ),
+    name: 'Damage all companions but this one'
+  },
+  //#endregion
 
-//#region Damage
-export class GameEffectDamageTarget implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_DAMAGE_TARGET;
-  readonly cardEffectTypes = [
-    CardEffectType.OnEnterEffect,
-    CardEffectType.OnExitEffect
-  ];
-  readonly cardTypes = [
-    CardType.Charm,
-    CardType.Companion,
-    CardType.Trick
-  ];
+  //#region Buff
+  [GameEffectActionType.BUFF_TARGET]: {
+    cardEffectTypes: [
+      CardEffectType.OnEnterEffect
+    ],
+    cardTypes: [
+      CardType.Charm,
+      CardType.Trick
+    ],
+    getAction: createAction(
+      GameEffectActionType.BUFF_TARGET,
+      props<{ ownerId: string, values: EffectValues, targetId: string }>()
+    ),
+    name: 'Buff target until end of turn',
+    onExecutionMsg: 'Choose a companion to receive this effect until end of turn.'
+  },
 
-  constructor( payload: { damage: number, targetId: string }) {}
-}
+  [GameEffectActionType.BUFF_ALLIES]: {
+    cardEffectTypes: [
+      CardEffectType.OnEnterEffect
+    ],
+    cardTypes: [
+      CardType.Charm,
+      CardType.Trick
+    ],
+    getAction: createAction(
+      GameEffectActionType.BUFF_ALLIES,
+      props<{ ownerId: string, values: EffectValues }>()
+    ),
+    name: 'Buff allies until end of turn'
+  },
+  //#endregion
 
-export class GameEffectDamageEnemies implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_DAMAGE_ENEMIES;
-  readonly cardEffectTypes = [
-    CardEffectType.OnEnterEffect,
-    CardEffectType.OnExitEffect
-  ];
-  readonly cardTypes = [
-    CardType.Charm,
-    CardType.Companion,
-    CardType.Trick
-  ];
+  //#region Debuff
+  [GameEffectActionType.DEBUFF_TARGET]: {
+    cardEffectTypes: [
+      CardEffectType.OnEnterEffect
+    ],
+    cardTypes: [
+      CardType.Charm,
+      CardType.Trick
+    ],
+    getAction: createAction(
+      GameEffectActionType.DEBUFF_TARGET,
+      props<{ ownerId: string, values: EffectValues, targetId: string }>()
+    ),
+    name: 'Debuff target until end of turn',
+    onExecutionMsg: 'Choose a companion to receive this effect until end of turn.'
+  },
+  
+  [GameEffectActionType.DEBUFF_ENEMIES]: {
+    cardEffectTypes: [
+      CardEffectType.OnEnterEffect
+    ],
+    cardTypes: [
+      CardType.Charm,
+      CardType.Trick
+    ],
+    getAction: createAction(
+      GameEffectActionType.DEBUFF_ENEMIES,
+      props<{ ownerId: string, values: EffectValues }>()
+    ),
+    name: 'Debuff enemies until end of turn'
+  },
+  //#endregion
+  
+  //#region Auras
+  [GameEffectActionType.AURA_BUFF_ALLIES]: {
+    cardEffectTypes: [
+      CardEffectType.AuraEffect
+    ],
+    cardTypes: [
+      CardType.Companion
+    ],
+    getAction: createAction(
+      GameEffectActionType.AURA_BUFF_ALLIES,
+      props<AuraPayload>()
+    ),
+    name: 'Buff allies'
+  },
 
-  constructor( payload: { damage: number }) {}
-}
+  [GameEffectActionType.AURA_BUFF_ALLIES_EXCEPT]: {
+    cardEffectTypes: [
+      CardEffectType.AuraEffect
+    ],
+    cardTypes: [
+      CardType.Companion
+    ],
+    getAction: createAction(
+      GameEffectActionType.AURA_BUFF_ALLIES_EXCEPT,
+      props<AuraPayload>()
+    ),
+    name: 'Buff your other companions'
+  },
 
-export class GameEffectDamageAll implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_DAMAGE_ALL;
-  readonly cardEffectTypes = [
-    CardEffectType.OnEnterEffect,
-    CardEffectType.OnExitEffect
-  ];
-  readonly cardTypes = [
-    CardType.Charm,
-    CardType.Companion,
-    CardType.Trick
-  ];
+  [GameEffectActionType.AURA_DEBUFF_ENEMIES]: {
+    cardEffectTypes: [
+      CardEffectType.AuraEffect
+    ],
+    cardTypes: [
+      CardType.Companion
+    ],
+    getAction: createAction(
+      GameEffectActionType.AURA_DEBUFF_ENEMIES,
+      props<AuraPayload>()
+    ),
+    name: 'Debuff enemies'
+  },
 
-  constructor( payload: { damage: number }) {}
-}
+  [GameEffectActionType.AURA_DEBUFF_ALL_EXCEPT]: {
+    cardEffectTypes: [
+      CardEffectType.AuraEffect
+    ],
+    cardTypes: [
+      CardType.Companion
+    ],
+    getAction: createAction(
+      GameEffectActionType.AURA_DEBUFF_ALL_EXCEPT,
+      props<AuraPayload>()
+    ),
+    name: 'Debuff all companions but this one'
+  },
+  //#endregion
 
-export class GameEffectDamageAllExcept implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_DAMAGE_ALL_EXCEPT;
-  readonly cardEffectTypes = [
-    CardEffectType.OnEnterEffect,
-    CardEffectType.OnExitEffect
-  ];
-  readonly cardTypes = [
-    CardType.Companion
-  ];
+  //#region Heal
+  [GameEffectActionType.HEAL_PLAYER]: {
+    cardEffectTypes: [
+      CardEffectType.OnEnterEffect,
+      CardEffectType.OnExitEffect
+    ],
+    cardTypes: [
+      CardType.Charm,
+      CardType.Companion,
+      CardType.Trick
+    ],
+    getAction: createAction(
+      GameEffectActionType.HEAL_PLAYER,
+      props<{ amount: number }>()
+    ),
+    name: 'Heal player'
+  },
+  //#endregion
 
-  constructor( payload: { damage: number, excludedTargetId: string }) {}
-}
-//#endregion
-
-//#region Buff
-export class GameEffectBuffTarget implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_BUFF_TARGET;
-  readonly cardEffectTypes = [
-    CardEffectType.OnEnterEffect
-  ];
-  readonly cardTypes = [
-    CardType.Charm,
-    CardType.Trick
-  ];
-
-  constructor( payload: { values: EffectValues, targetId: string }) {}
-}
-
-export class GameEffectBuffAllies implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_BUFF_ALLIES;
-  readonly cardEffectTypes = [
-    CardEffectType.OnEnterEffect
-  ];
-  readonly cardTypes = [
-    CardType.Charm,
-    CardType.Trick
-  ];
-
-  constructor( payload: { values: EffectValues }) {}
-}
-//#endregion
-
-//#region Debuff
-export class GameEffectDebuffTarget implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_DEBUFF_TARGET;
-  readonly cardEffectTypes = [
-    CardEffectType.OnEnterEffect
-  ];
-  readonly cardTypes = [
-    CardType.Charm,
-    CardType.Trick
-  ];
-
-  constructor( payload: { values: EffectValues, targetId: string }) {}
-}
-
-export class GameEffectDebuffEnemies implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_DEBUFF_ENEMIES;
-  readonly cardEffectTypes = [
-    CardEffectType.OnEnterEffect
-  ];
-  readonly cardTypes = [
-    CardType.Charm,
-    CardType.Trick
-  ];
-
-  constructor( payload: { values: EffectValues }) {}
-}
-//#endregion
-
-//#region Auras
-export class GameEffectAuraBuffAllies implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_AURA_BUFF_ALLIES;
-  readonly cardEffectTypes = [
-    CardEffectType.AuraEffect
-  ];
-  readonly cardTypes = [
-    CardType.Companion
-  ];
-
-  constructor( payload: AuraPayload ) {}
-}
-
-export class GameEffectAuraBuffAlliesExcept implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_AURA_BUFF_ALLIES_EXCEPT;
-  readonly cardEffectTypes = [
-    CardEffectType.AuraEffect
-  ];
-  readonly cardTypes = [
-    CardType.Companion
-  ];
-
-  constructor( payload: AuraPayload ) {}
-}
-
-export class GameEffectAuraDebuffEnemies implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_AURA_DEBUFF_ENEMIES;
-  readonly cardEffectTypes = [
-    CardEffectType.AuraEffect
-  ];
-  readonly cardTypes = [
-    CardType.Companion
-  ];
-
-  constructor( payload: AuraPayload ) {}
-}
-
-export class GameEffectAuraDebuffAllExcept implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_AURA_DEBUFF_ALL_EXCEPT;
-  readonly cardEffectTypes = [
-    CardEffectType.AuraEffect
-  ];
-  readonly cardTypes = [
-    CardType.Companion
-  ];
-
-  constructor( payload: AuraPayload ) {}
-}
-//#endregion
-
-//#region Heal
-export class GameEffectHealPlayer implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_HEAL_PLAYER;
-  readonly cardEffectTypes = [
-    CardEffectType.OnEnterEffect,
-    CardEffectType.OnExitEffect
-  ];
-  readonly cardTypes = [
-    CardType.Charm,
-    CardType.Companion,
-    CardType.Trick
-  ]
-
-  constructor( payload: number ) {}
-}
-//#endregion
-
-//#region Food
-export class GameEffectAddFood implements GameEffectAction {
-  readonly type = GameEffectActionType.GAME_EFFECT_ADD_FOOD;
-  readonly cardEffectTypes = [
-    CardEffectType.AuraEffect
-  ];
-  readonly cardTypes = [
-    CardType.Food
-  ]
-
-  constructor( payload: number = 1 ) {}
-}
-//#endregion
-
+  //#region Food
+  [GameEffectActionType.ADD_FOOD]: {
+    cardEffectTypes: [
+      CardEffectType.AuraEffect
+    ],
+    cardTypes: [
+      CardType.Food
+    ],
+    getAction: createAction(
+      GameEffectActionType.ADD_FOOD,
+      props<{ amount: number }>()
+    ),
+    name: 'Add Food'
+  },
+  //#endregion
+});
 //#endregion Actions
+
+export const GAME_EFFECTS_MAP = getGameEffectsMap();
