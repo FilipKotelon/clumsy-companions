@@ -22,6 +22,7 @@ import { DeckComponent } from './components/deck/deck.component';
 import { AvatarComponent } from './components/avatar/avatar.component';
 import { GameStartModalComponent } from './components/game-start-modal/game-start-modal.component';
 import { FadeCarouselComponent } from './components/fade-carousel/fade-carousel.component';
+import { CardComponent } from './components/card/card.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { FadeCarouselComponent } from './components/fade-carousel/fade-carousel.
     AvatarComponent,
     GameStartModalComponent,
     FadeCarouselComponent,
+    CardComponent,
   ],
   imports: [
     CommonModule,
@@ -73,6 +75,7 @@ import { FadeCarouselComponent } from './components/fade-carousel/fade-carousel.
     AvatarComponent,
     GameStartModalComponent,
     FadeCarouselComponent,
+    CardComponent,
   ]
 })
 export class SharedModule { }

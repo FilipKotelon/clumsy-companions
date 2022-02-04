@@ -15,15 +15,16 @@ import { PlayerService } from '@core/player/player.service';
 
 import * as GameStateActions from '@core/game/store/game.state.actions';
 import * as fromStore from '@core/store/reducer';
-import { map } from '@firebase/util';
 import { switchMap } from 'rxjs/operators';
-import { GAME_EFFECTS_MAP } from '../store/game.effect.actions';
+import { GameEffectMap, getGameEffectsMap } from '../store/game.effect.actions';
 import { Router } from '@angular/router';
+import { SleevesService } from '@core/sleeves/sleeves.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameConnectorService {
+  gameEffectsMap: GameEffectMap;
   gameStartModalOpen$ = new Subject<boolean>();
 
   constructor(
@@ -33,8 +34,11 @@ export class GameConnectorService {
     private gameLoaderSvc: GameLoaderService,
     private playerSvc: PlayerService,
     private router: Router,
+    private sleeveSvc: SleevesService,
     private store: Store<fromStore.AppState>
-  ) { }
+  ) {
+    this.gameEffectsMap = getGameEffectsMap();
+  }
 
   closeGameStartModal = (): void => {
     this.gameStartModalOpen$.next(false);
@@ -66,9 +70,9 @@ export class GameConnectorService {
     }, []);
   }
 
-  mapToInGameCards = (cards: Card[], ownerId: string): InGameCard[] => {
-    return cards.map(card => {
-      const { setId, availableInGame, effects, ...inGameCardData } = card;
+  mapToInGameCards = (uniqueCards: Card[], cardsIds: string[], ownerId: string): InGameCard[] => {
+    return cardsIds.map(cardId => {
+      const { setId, availableInGame, effects, ...inGameCardData } = uniqueCards.find(uCard => uCard.id === cardId);
 
       return {
         ...inGameCardData,
@@ -91,41 +95,39 @@ export class GameConnectorService {
       const { action, ...inGameCardEffect } = effect;
 
       return {
-        ...effect,
-        action: GAME_EFFECTS_MAP[action]
+        ...inGameCardEffect,
+        action: this.gameEffectsMap[action]
       };
     }));
   }
 
   getPlayerData = (player: Player, playerDeck: Deck): Observable<InGamePlayer> => {
-    return this.playerSvc.getPlayer()
+    const avatarImgUrl$ = this.avatarsSvc.getAvatar(player.currentAvatarId)
       .pipe(
-        switchMap(player => {
-          const avatarImgUrl$ = this.avatarsSvc.getAvatar(player.currentAvatarId)
-            .pipe(
-              switchMap(avatar => {
-                return of(avatar.imgUrl);
-              })
-            );
-          const deckCards$ = this.cardsSvc.getCards({ ids: this.getUniqueCardIds(playerDeck.cardIds) });
-    
-          return combineLatest([
-            avatarImgUrl$,
-            deckCards$
-          ]).pipe(
-            switchMap(([ avatarImgUrl, deckCards ]) => {
-              const playerId = this.gameLoaderSvc.getUniqueObjectId();
-              return of({
-                ...this.getStartInGamePlayerData(),
-                avatarImgUrl,
-                deck: this.mapToInGameCards(deckCards, playerId),
-                username: player.username,
-                gameObjectId: playerId
-              })
-            })
-          )
-        }
-      )
+        switchMap(avatar => of(avatar.imgUrl))
+      );
+    const deckCards$ = this.cardsSvc.getCards({ ids: this.getUniqueCardIds(playerDeck.cardIds) });
+    const deckSleeveImgUrl$ = this.sleeveSvc.getSleeve(playerDeck.sleeveId)
+      .pipe(
+        switchMap(sleeve => of(sleeve.imgUrl))
+      );
+
+    return combineLatest([
+      avatarImgUrl$,
+      deckCards$,
+      deckSleeveImgUrl$
+    ]).pipe(
+      switchMap(([ avatarImgUrl, deckCards, deckSleeveImgUrl ]) => {
+        const playerId = this.gameLoaderSvc.getUniqueObjectId();
+        return of({
+          ...this.getStartInGamePlayerData(),
+          avatarImgUrl,
+          deck: this.mapToInGameCards(deckCards, playerDeck.cardIds, playerId),
+          username: player.username,
+          gameObjectId: playerId,
+          deckSleeveImgUrl
+        })
+      })
     );
   }
 
@@ -135,24 +137,28 @@ export class GameConnectorService {
         switchMap(deck => {
           const avatarImgUrl$ = this.avatarsSvc.getAvatar(opponent.avatarId)
             .pipe(
-              switchMap(avatar => {
-                return of(avatar.imgUrl);
-              })
+              switchMap(avatar => of(avatar.imgUrl))
             );
           const deckCards$ = this.cardsSvc.getCards({ ids: this.getUniqueCardIds(deck.cardIds) });
+          const deckSleeveImgUrl$ = this.sleeveSvc.getSleeve(deck.sleeveId)
+            .pipe(
+              switchMap(sleeve => of(sleeve.imgUrl))
+            );
 
           return combineLatest([
             avatarImgUrl$,
-            deckCards$
+            deckCards$,
+            deckSleeveImgUrl$
           ]).pipe(
-            switchMap(([ avatarImgUrl, deckCards ]) => {
+            switchMap(([ avatarImgUrl, deckCards, deckSleeveImgUrl ]) => {
               const opponentId = this.gameLoaderSvc.getUniqueObjectId();
               return of({
                 ...this.getStartInGamePlayerData(),
                 avatarImgUrl,
-                deck: this.mapToInGameCards(deckCards, opponentId),
+                deck: this.mapToInGameCards(deckCards, deck.cardIds, opponentId),
                 username: opponent.name,
-                gameObjectId: opponentId
+                gameObjectId: opponentId,
+                deckSleeveImgUrl
               })
             })
           )
@@ -166,10 +172,15 @@ export class GameConnectorService {
 
     combineLatest([
       this.getPlayerData(data.player, data.playerDeck),
-      this.getOpponentData(data.opponent),
-      this.gameLoaderSvc.loadingFinished$
-    ]).subscribe(([player, opponent, loaded]) => {
-      
+      this.getOpponentData(data.opponent)
+    ]).subscribe(([player, opponent]) => {
+      this.store.dispatch(GameStateActions.gameLoadPlayers({ player, opponent }));
+      //It should load the images for the cards and their sleeves plus the 2 avatars and the background
+      this.gameLoaderSvc.setRequiredRegistrations(player.deck.length * 2 + opponent.deck.length * 2 + 3)
+
+      this.gameLoaderSvc.loadingFinished$.subscribe(loadingFinished => {
+        console.log(loadingFinished);
+      })
     })
   }
 }

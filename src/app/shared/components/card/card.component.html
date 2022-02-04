@@ -1,0 +1,20 @@
+<div
+  class="full-card"
+  [id]="card.gameObjectId"
+>
+  <div class="full-card-inner">
+    <div class="full-card-front">
+      <app-card-front
+        [card]="card"
+        [reportLoad]="reportLoad"
+        [size]="size"
+      ></app-card-front>
+    </div>
+    <div class="full-card-sleeve">
+      <app-card-sleeve
+        [sleeveImgUrl]="sleeveImgUrl"
+        [reportLoad]="reportLoad"
+      ></app-card-sleeve>
+    </div>
+  </div>
+</div>

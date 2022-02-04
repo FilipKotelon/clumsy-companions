@@ -8,7 +8,9 @@
   <img 
     [src]="card.imgUrl" 
     [alt]="card.name" 
-    class="card-front__img">
+    class="card-front__img"
+    (load)="reportLoad ? reportLoadedObject(cardLoadId) : null"
+  >
 
   <div class="card-front__info-con">
 

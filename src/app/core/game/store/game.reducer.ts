@@ -3,8 +3,10 @@ import { immerOn } from 'ngrx-immer/store';
 
 import { GameActiveEffects, InGamePlayer } from '@core/game/game.types';
 
-import { GameEffectAction, GAME_EFFECTS_MAP } from './game.effect.actions';
+import { GameEffectAction, getGameEffectsMap } from './game.effect.actions';
 import * as GameStateActions from '@core/game/store/game.state.actions';
+
+const gameEffectsMap = getGameEffectsMap();
 
 export interface State {
   initialLoading: boolean;
@@ -43,7 +45,7 @@ export const gameReducer = createReducer(
     }
   ),
   immerOn(
-    GameStateActions.gameLoadEnd,
+    GameStateActions.gameLoadPlayers,
     (draft, action) => {
       draft.initialLoading = false;
       draft.preparingForGame = true;
@@ -51,41 +53,13 @@ export const gameReducer = createReducer(
       draft.player = action.player;
       draft.opponent = action.opponent;
     }
+  ),
+  immerOn(
+    GameStateActions.gameLoadEnd,
+    (draft, action) => {
+      draft.initialLoading = false;
+      draft.preparingForGame = true;
+      draft.gameStarted = false;
+    }
   )
 )
-
-// export function authReducer ( state = initState, action: AuthActions.AuthActions ): State {
-//   switch(action.type){
-
-//     case AuthActions.AUTH_SUCCESS :
-//       return {
-//         ...state,
-//         user: action.payload.user
-//       }
-      
-//     case AuthActions.LOGOUT :
-//       return {
-//         ...state,
-//         user: null
-//       }
-
-//     case AuthActions.REFRESH_TOKEN :
-//       const user = new User(
-//         state.user.email,
-//         state.user.id,
-//         state.user.dbId,
-//         state.user.role,
-//         action.payload.token,
-//         action.payload.expirationTime
-//       );
-
-//       return {
-//         ...state,
-//         user
-//       }
-
-//     default:
-//       return state;
-      
-//   }
-// }

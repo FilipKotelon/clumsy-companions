@@ -17,7 +17,7 @@ export class FadeCarouselComponent implements OnInit, AfterViewInit {
   curIndex: number;
 
   ngOnInit(): void {
-    this.curIndex = this.initIndex ? this.initIndex : 0;
+    this.curIndex = this.initIndex || 0;
   }
 
   ngAfterViewInit(): void {

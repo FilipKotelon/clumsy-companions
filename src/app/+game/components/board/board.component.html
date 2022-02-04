@@ -1,0 +1,85 @@
+<div
+  *ngIf="player && opponent"
+  class="game-board"
+>
+  <img
+    src="assets/img/photos/game-background.png"
+    alt="Game background"
+    class="game-board__bg-img"
+    (load)="reportLoadedObject(boardBgLoadId)"
+  >
+  <div class="game-board__player-field opponent">
+    <div class="game-board__cards-area">
+
+    </div>
+    <div class="game-board__player-area">
+      <div class="game-board__player-hud">
+        <app-player-hud
+          [avatarImgUrl]="opponent.avatarImgUrl"
+          [baseFood]="opponent.baseFood"
+          [currentFood]="opponent.currentFood"
+          [energy]="opponent.energy"
+          [gameObjectId]="opponent.gameObjectId"
+          [username]="opponent.username"
+        ></app-player-hud>
+      </div>
+      <div class="game-board__player-hand">
+        <app-hand
+          [flipped]="true"
+        ></app-hand>
+      </div>
+      <div class="game-board__player-side">
+        <div class="game-board__player-side__cards-area">
+          <div class="game-board__player-side__sleepyard">
+            <app-sleepyard></app-sleepyard>
+          </div>
+          <div class="game-board__player-side__deck">
+            <app-game-deck
+              [cards]="opponent.deck"
+              [sleeveImgUrl]="opponent.deckSleeveImgUrl"
+            ></app-game-deck>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="game-board__player-field">
+    <div class="game-board__cards-area">
+
+    </div>
+    <div class="game-board__player-area">
+      <div class="game-board__player-hud">
+        <app-player-hud
+          [avatarImgUrl]="player.avatarImgUrl"
+          [baseFood]="player.baseFood"
+          [currentFood]="player.currentFood"
+          [energy]="player.energy"
+          [gameObjectId]="player.gameObjectId"
+          [username]="player.username"
+        ></app-player-hud>
+      </div>
+      <div class="game-board__player-hand">
+        <app-hand></app-hand>
+      </div>
+      <div class="game-board__player-side">
+        <div class="game-board__game-hud">
+          <button class="game-board__game-hud__turn-phase-btn">End turn</button>
+          <div class="game-board__game-hud__turn-phase-bar">
+            <app-turn-phase-bar></app-turn-phase-bar>
+          </div>
+        </div>
+        <div class="game-board__player-side__cards-area">
+          <div class="game-board__player-side__sleepyard">
+            <app-sleepyard></app-sleepyard>
+          </div>
+          <div class="game-board__player-side__deck">
+            <app-game-deck
+              [cards]="player.deck"
+              [sleeveImgUrl]="player.deckSleeveImgUrl"
+            ></app-game-deck>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

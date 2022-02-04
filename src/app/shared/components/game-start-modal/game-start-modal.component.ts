@@ -7,7 +7,7 @@ import { GameConnectorService } from '@core/game/game-connector/game-connector.s
 import { PlayerService } from '@core/player/player.service';
 import { fadeInOut } from '@shared/animations/component-animations';
 import { combineLatest, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-game-start-modal',
@@ -22,6 +22,7 @@ export class GameStartModalComponent implements OnInit {
   availableDecks: Deck[] = [];
   curDeckIndex = 0;
   curOpponentIndex = 0;
+  initDeckIndex = 0;
   playerDeck: Deck = null;
 
   constructor(
@@ -39,6 +40,7 @@ export class GameStartModalComponent implements OnInit {
     );
 
     const decks$ = this.playerSvc.getDecksIds().pipe(
+      take(1),
       switchMap(decksIds => {
         if(decksIds && decksIds.length){
           return this.decksSvc.getDecks({ ids: decksIds });
@@ -48,7 +50,7 @@ export class GameStartModalComponent implements OnInit {
       })
     );
 
-    const curDeckId$ = this.playerSvc.getCurrentDeckId();
+    const curDeckId$ = this.playerSvc.getCurrentDeckId().pipe(take(1));
 
     combineLatest([
       aiOpponents$,
@@ -59,7 +61,8 @@ export class GameStartModalComponent implements OnInit {
       this.availableDecks = decks;
 
       const deckIndex = this.availableDecks.map(deck => deck.id).indexOf(curDeckId);
-      this.curDeckIndex = deckIndex >= 0 ? deckIndex : 0;
+      this.curDeckIndex = deckIndex || 0;
+      this.initDeckIndex = deckIndex || 0;
     });
     
   }
@@ -79,5 +82,16 @@ export class GameStartModalComponent implements OnInit {
 
   play = (): void => {
     this.playerSvc.chooseCurrentDeck(this.availableDecks[this.curDeckIndex].id);
+
+    this.playerSvc.getPlayer()
+      .pipe(
+        take(1)
+      ).subscribe(player => {
+        this.gameConnectorSvc.startGame({
+          player,
+          playerDeck: this.availableDecks[this.curDeckIndex],
+          opponent: this.aiOpponents[this.curOpponentIndex]
+        });
+      });
   }
 }

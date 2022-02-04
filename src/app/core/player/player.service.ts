@@ -267,7 +267,9 @@ export class PlayerService {
   }
 
   chooseCurrentDeck = (id: string): void => {
-    this.getDecksIds().subscribe(decksIds => {
+    this.getDecksIds().pipe(
+      take(1)
+    ).subscribe(decksIds => {
       if(decksIds.includes(id)){
         this.playerDocRef.update({
           currentDeckId: id

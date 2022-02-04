@@ -1,0 +1,185 @@
+.game-page{
+  @include rect(100%, 100vh);
+  position: relative;
+  overflow: hidden;
+}
+
+.game-page-loading{
+  @include fix(0, 0);
+  @include square(100%);
+  z-index: 99999;
+}
+
+.game-loading{
+  @include square(100%);
+  @include d-flex($center: true);
+  background-color: $main;
+  color: $white;
+
+  &__info{
+    @include d-flex($dir: column, $center: true);
+
+    &__bar{
+      @include rect(100%, 4rem);
+      border-radius: 2rem;
+      border: .3rem solid $white;
+      padding: .3rem;
+      margin-top: 6rem;
+
+      &__fill{
+        width: 0%;
+        height: 100%;
+        background-color: $white;
+        border-radius: 2rem;
+        @include transition;
+      }
+    }
+  }
+}
+
+.game-page-main{
+  @include square(100%);
+  position: relative;
+}
+
+.game-settings-opener{
+  @include fix($r: 0, $t: 0);
+  @include square(6rem);
+  @include d-flex($center: true);
+  padding-left: 1rem;
+  padding-bottom: 1rem;
+  z-index: 2200;
+  cursor: pointer;
+
+  &:hover{
+    &::after{
+      transform: scale(1.12);
+    }
+  }
+
+  &::after{
+    @include default-after;
+    @include assign-position($l: 0, $b: 0);
+    @include circle(12rem);
+    background-color: $white;
+    z-index: 0;
+    transition: all .3s;
+  }
+
+  & img{
+    position: relative;
+    z-index: 1;
+    @include square(3.2rem);
+  }
+}
+
+.game-settings{
+  @include fix(0, 0);
+  @include square(100%);
+  z-index: 2000;
+}
+
+.game-overlay{
+  @include fix(0, 0);
+  @include square(100%);
+  z-index: 1000;
+}
+
+.game-board{
+  @include d-flex($dir: column);
+  @include square(100%);
+  position: relative;
+
+  &__bg-img{
+    @include abs(0, 0);
+    @include img-cover;
+  }
+
+  &__player-field{
+    @include rect(100%, 50%);
+    position: relative;
+  }
+
+  &__player-area{
+    @include d-flex($jc: space-between, $ai: flex-end);
+  }
+}
+
+// Cards
+.game-page{
+  & .full-card{
+    @include rect($card-game-width, $card-game-height);
+    transform-origin: top left;
+  }
+
+  .game-deck{
+    @include rect(12rem, 18rem);
+    position: relative;
+  
+    & .full-card{
+      @include abs();
+      transform: scaleCardTo(12rem);
+      box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.25);
+
+      & .full-card-inner{
+        transform: rotateY(180deg);
+      }
+    }
+
+    & app-card{
+      &:nth-child(1){
+        & .full-card{
+          @include assign-position($l: 0, $t: 0);
+        }
+      }
+
+      &:nth-child(2){
+        & .full-card{
+          @include assign-position($l: -.1rem, $t: -.1rem);
+        }
+      }
+
+      &:nth-child(3){
+        & .full-card{
+          @include assign-position($l: -.2rem, $t: -.2rem);
+        }
+      }
+
+      &:nth-child(4){
+        & .full-card{
+          @include assign-position($l: -.3rem, $t: -.3rem);
+        }
+      }
+
+      &:nth-child(5){
+        & .full-card{
+          @include assign-position($l: -.4rem, $t: -.4rem);
+        }
+      }
+
+      &:nth-child(6){
+        & .full-card{
+          @include assign-position($l: -.5rem, $t: -.5rem);
+        }
+      }
+
+      &:nth-child(7){
+        & .full-card{
+          @include assign-position($l: -.6rem, $t: -.6rem);
+        }
+      }
+
+      &:nth-child(8){
+        & .full-card{
+          @include assign-position($l: -.7rem, $t: -.7rem);
+        }
+      }
+
+      &:nth-child(9){
+        & .full-card{
+          @include assign-position($l: -.8rem, $t: -.8rem);
+        }
+      }
+    }
+  }
+}

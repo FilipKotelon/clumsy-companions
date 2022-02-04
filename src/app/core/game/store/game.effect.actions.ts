@@ -69,7 +69,7 @@ export enum GameEffectActionType {
 //#endregion Action Types
 
 //#region Actions
-const getGameEffectsMap = (): GameEffectMap => ({
+export const getGameEffectsMap = (): GameEffectMap => ({
   //#region Destroy
   [GameEffectActionType.DESTROY_TARGET]: {
     cardEffectTypes: [
@@ -346,5 +346,3 @@ const getGameEffectsMap = (): GameEffectMap => ({
   //#endregion
 });
 //#endregion Actions
-
-export const GAME_EFFECTS_MAP = getGameEffectsMap();

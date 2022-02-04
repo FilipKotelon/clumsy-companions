@@ -4,7 +4,7 @@ import { getCardEffectNameFromType } from '@core/cards/cards.helpers';
 import { fadeInOut } from '@shared/animations/component-animations';
 
 import { CardEffectType } from '@core/cards/cards.types';
-import { GameEffectActionType, GAME_EFFECTS_MAP } from '@core/game/store/game.effect.actions';
+import { GameEffectActionType, getGameEffectsMap } from '@core/game/store/game.effect.actions';
 import { SelectControlOption } from '@shared/components/controls/select-control/select-control.types';
 
 @Component({
@@ -32,7 +32,7 @@ export class AdminEditEffectComponent {
       },
       ...Object.values(GameEffectActionType).map(type => ({
         key: type,
-        value: GAME_EFFECTS_MAP[type].name
+        value: getGameEffectsMap()[type].name
       }))
     ];
 

@@ -24,7 +24,7 @@
         <app-fade-carousel
           className="game-start-modal__main__decks"
           [itemsLength]="availableDecks.length"
-          [initIndex]="deckIndex"
+          [initIndex]="initDeckIndex"
           (changedItem)="changeCurrentDeck($event)"
         >
           <div

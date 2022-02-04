@@ -50,7 +50,7 @@ export interface GameStartRawData {
   opponent: AIOpponent;
 }
 
-export interface GameStartData {
+export interface PlayerOpponentBundle {
   player: InGamePlayer;
   opponent: InGamePlayer;
 }
@@ -98,6 +98,7 @@ export interface InGamePlayer extends InGamePLayerBaseData {
   readonly gameObjectId: string;
   readonly username: string;
   deck: InGameCard[];
+  deckSleeveImgUrl: string;
 }
 
 export enum TurnPhaseType {

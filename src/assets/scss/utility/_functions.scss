@@ -1,0 +1,5 @@
+@use "sass:math";
+
+@function scaleCardTo($w) {
+  @return scale(math.div($w, $card-game-width));
+}

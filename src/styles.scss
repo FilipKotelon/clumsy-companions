@@ -1,4 +1,5 @@
 @import "./assets/scss/utility/variables";
+@import "./assets/scss/utility/functions";
 @import "./assets/scss/utility/mixins/mixins-basic";
 @import "./assets/scss/utility/mixins/mixins-flex";
 @import "./assets/scss/utility/mixins/mixins-other";
@@ -14,8 +15,9 @@
 @import "./assets/scss/components/popup";
 
 @import "./assets/scss/layout/admin";
-@import "./assets/scss/layout/item-grid";
+@import "./assets/scss/layout/game";
 @import "./assets/scss/layout/hub";
+@import "./assets/scss/layout/item-grid";
 @import "./assets/scss/layout/shop";
 @import "./assets/scss/layout/slide-section";
 

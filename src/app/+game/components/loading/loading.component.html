@@ -1,0 +1,14 @@
+<div
+  *ngIf="isLoading"
+  @fadeInOut
+  class="game-loading"
+>
+  <div class="game-loading__info">
+    <div class="big-title">
+      Your game is loading...
+    </div>
+    <div class="game-loading__info__bar">
+      <div class="game-loading__info__bar__fill" [style]="'width: ' + loadingPercentage + '%;'"></div>
+    </div>
+  </div>
+</div>

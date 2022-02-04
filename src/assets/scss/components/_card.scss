@@ -16,6 +16,28 @@ $info-font-size-big: 3.4rem;
 $effect-name-size-big: 2.6rem;
 $effect-desc-size-big: 2.2rem;
 
+.full-card{
+  perspective: 1000px;
+
+  &-inner{
+    @include square(100%);
+    position: relative;
+    transform-style: preserve-3d;
+    @include transition;
+  }
+
+  &-front, &-sleeve{
+    @include abs(0, 0);
+    @include square(100%);
+    -webkit-backface-visibility: hidden; /* Safari */
+    backface-visibility: hidden;
+  }
+
+  &-sleeve{
+    transform: rotateY(180deg);
+  }
+}
+
 .card-front{
   position: relative;
   overflow: hidden;

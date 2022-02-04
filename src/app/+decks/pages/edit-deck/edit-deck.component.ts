@@ -2,8 +2,8 @@ import { EditableOrNew } from '@admin/utility/editable-or-new.class';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { filter, tap } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
+import { filter, take, tap } from 'rxjs/operators';
 
 import { Card, CardQueryParams, CardType } from '@core/cards/cards.types';
 import { CardsService } from '@core/cards/cards.service';
@@ -164,6 +164,7 @@ export class EditDeckComponent extends EditableOrNew {
       .pipe(
         tap(deck => {
           this.thumbnailCardId = deck.thumbnailCardId;
+          this.setId = deck.setId;
           this.sleeveId = deck.sleeveId;
 
           this.cardsSvc.getCards({ ids: deck.cardIds }).subscribe(cards => {
@@ -179,7 +180,11 @@ export class EditDeckComponent extends EditableOrNew {
     if(this.canSubmit){
       const deck = this.getDeck();
 
-      this.decksSvc.createDeck(deck, !this.inAdmin);
+      if(this.editMode){
+        this.decksSvc.updateDeck(this.id, deck);
+      } else {
+        this.decksSvc.createDeck(deck, !this.inAdmin);
+      }
     }
   }
 
@@ -191,6 +196,9 @@ export class EditDeckComponent extends EditableOrNew {
         });
     } else {
       this.playerSvc.getOwnedCardsIds()
+        .pipe(
+          take(1)
+        )
         .subscribe(cardsIds => {
           const params: CardQueryParams = { set: this.setId, availableInGame: true };
 
@@ -241,7 +249,7 @@ export class EditDeckComponent extends EditableOrNew {
     if(this.inAdmin){
       sleeves$ = this.sleevesSvc.getSleeves();
     } else {
-      sleeves$ = this.playerSvc.getOwnedSleeves();
+      sleeves$ = this.playerSvc.getOwnedSleeves().pipe(take(1));
     }
 
     sleeves$.subscribe(sleeves => {

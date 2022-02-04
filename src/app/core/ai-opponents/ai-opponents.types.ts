@@ -12,7 +12,7 @@ export interface AIOpponent extends AIOpponentMainData {
   id: string;
 }
 
-export interface AIOpponentWithThumbnail extends AIOpponentMainData {
+export interface AIOpponentWithThumbnail extends AIOpponent {
   imgUrl: string;
 }
 
