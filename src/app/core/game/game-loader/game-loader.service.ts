@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { Store } from '@ngrx/store';
+
+import * as fromStore from '@core/store/reducer';
+import * as GameStateActions from '@core/game/store/game.state.actions';
+import * as GameSelectors from '@core/game/store/game.selectors';
 
 @Injectable({
   providedIn: 'root'
@@ -9,13 +14,16 @@ export class GameLoaderService {
   private loadingQueueRegisteredAmount = 0;
   private loadingQueueRequiredRegistrations: number;
 
-  loadingFinished$ = new Subject<boolean>();
+  loadingFinished$: Observable<boolean>;
   loadingPercentage$ = new Subject<string>();
 
+  constructor(private store: Store<fromStore.AppState>) {
+    this.loadingFinished$ = this.store.select(GameSelectors.selectIsLoaded);
+  }
+
   checkLoadingStatus = (): void => {
-    console.log(this.loadingQueueRequiredRegistrations, this.loadingQueueRegisteredAmount);
     if(!this.loadingQueue.length && this.loadingQueueRequiredRegistrations === this.loadingQueueRegisteredAmount) {
-      this.loadingFinished$.next(true);
+      this.store.dispatch(GameStateActions.gameLoadEnd());
     }
   }
 

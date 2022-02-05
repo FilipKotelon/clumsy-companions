@@ -6,6 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./hand-picker.component.scss']
 })
 export class HandPickerComponent implements OnInit {
+  shuffled = false;
 
   constructor() { }
 

@@ -1,16 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { InGameCard } from '@core/game/game.types';
 
 @Component({
   selector: 'app-hand',
   templateUrl: './hand.component.html',
   styleUrls: ['./hand.component.scss']
 })
-export class HandComponent implements OnInit {
+export class HandComponent {
+  @Input() cards: InGameCard[] = [];
   @Input() flipped = false;
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+  @Input() sleeveImgUrl: string;
 }

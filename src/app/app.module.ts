@@ -20,6 +20,7 @@ import { AppComponent } from './app.component';
 
 import * as fromStore from '@core/store/reducer';
 import { AuthEffects } from '@core/auth/store/auth.effects';
+import { GameStateEffects } from '@core/game/store/game-state.effects';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,7 @@ import { AuthEffects } from '@core/auth/store/auth.effects';
     AngularFireStorageModule,
     AppRoutingModule,
     StoreModule.forRoot(fromStore.appReducer),
-    EffectsModule.forRoot([AuthEffects]),
+    EffectsModule.forRoot([AuthEffects, GameStateEffects]),
     StoreDevtoolsModule.instrument({
       maxAge: 25,
       autoPause: true

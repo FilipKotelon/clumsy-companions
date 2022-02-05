@@ -1,1 +1,13 @@
-<p>hand-picker works!</p>
+<div class="game-hand-picker">
+  <div class="game-overlay-title medium-title">
+    <span *ngIf="!shuffled">Here's your first draw!</span>
+    <span *ngIf="shuffled">Here's your second draw!</span>
+  </div>
+  <div class="game-overlay-desc">
+    <span *ngIf="!shuffled">If you like it, keep it! If not, you can shuffle your deck and try again but only once!</span>
+    <span *ngIf="shuffled">Hopefully this hand is better because you have no other choice now!</span>
+  </div>
+  <div class="game-hand-picker__cards">
+    
+  </div>
+</div>

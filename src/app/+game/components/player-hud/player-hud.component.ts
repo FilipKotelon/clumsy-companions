@@ -26,7 +26,7 @@ export class PlayerHudComponent extends ObjectLoadReporter implements OnInit {
   }
 
   get energyPercentage(): string {
-    let percentage = ((7 / PLAYER_SETTINGS.BASE_ENERGY) * 100);
+    let percentage = ((this.energy / PLAYER_SETTINGS.BASE_ENERGY) * 100);
     percentage = percentage > 100 ? 100 : percentage;
     return (percentage).toFixed(2);
   }

@@ -1,1 +1,9 @@
-<p>hand works!</p>
+<div class="player-hand">
+  <app-card
+    *ngFor="let card of cards"
+    [card]="card"
+    [sleeveImgUrl]="sleeveImgUrl"
+    [reportLoad]="!loaded"
+    size="big"
+  ></app-card>
+</div>

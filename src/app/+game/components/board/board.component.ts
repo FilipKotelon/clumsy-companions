@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, OnInit } from '@angular/core';
 import { GameLoaderService } from '@core/game/game-loader/game-loader.service';
 import { GameStateService } from '@core/game/game-state/game-state.service';
 import { InGamePlayer } from '@core/game/game.types';
@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss']
 })
-export class BoardComponent extends ObjectLoadReporter implements OnInit, AfterViewInit {
+export class BoardComponent extends ObjectLoadReporter implements OnInit {
   boardBgLoadId: string;
   playersSub: Subscription;
 
@@ -26,12 +26,10 @@ export class BoardComponent extends ObjectLoadReporter implements OnInit, AfterV
 
   ngOnInit(): void {
     this.boardBgLoadId = this.gameLoaderSvc.registerLoadingObject();
-  }
-
-  ngAfterViewInit(): void {
+    
     this.playersSub = this.gameStateSvc.getPlayers()
-      .subscribe(({ player, opponent }) => {
-        if(player && opponent) {
+      .subscribe(({ player, opponent, loaded }) => {
+        if(loaded) {
           this.player = player;
           this.opponent = opponent;
         }

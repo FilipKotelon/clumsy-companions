@@ -55,6 +55,12 @@ export interface PlayerOpponentBundle {
   opponent: InGamePlayer;
 }
 
+export interface PlayerOpponentLoadInfo extends PlayerOpponentBundle {
+  loaded: boolean;
+}
+
+export type PlayerKey = 'player' | 'opponent';
+
 export interface InGameCardEffect {
   readonly name: string;
   readonly description: string;
@@ -86,7 +92,7 @@ export interface InGameCard {
 export interface InGamePLayerBaseData {
   readonly baseFood: number;
   hand: InGameCard[];
-  sleepyard: InGameCard[];
+  sleepyard: SleepyardCard[];
   cardsInPlay: InGameCard[];
   energy: number;
   currentFood: number;
@@ -99,6 +105,10 @@ export interface InGamePlayer extends InGamePLayerBaseData {
   readonly username: string;
   deck: InGameCard[];
   deckSleeveImgUrl: string;
+}
+
+export interface SleepyardCard extends InGameCard {
+  turnsLeft: number;
 }
 
 export enum TurnPhaseType {

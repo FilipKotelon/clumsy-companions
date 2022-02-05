@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./game-deck.component.scss']
 })
 export class GameDeckComponent implements OnInit {
-  @Input() cards: InGameCard[];
+  @Input() cards: InGameCard[] = [];
   @Input() sleeveImgUrl: string;
 
   gameLoadedSub: Subscription;
@@ -18,17 +18,16 @@ export class GameDeckComponent implements OnInit {
   constructor(private gameLoaderSvc: GameLoaderService) { }
 
   get cardsInDeck(): InGameCard[] {
-    return this.loaded
-      ? [...this.cards].reverse().slice(-9)
-      : [...this.cards].reverse();
+    return this.cards
+      ? this.loaded
+        ? [...this.cards].reverse().slice(-9)
+        : [...this.cards].reverse()
+      : [];
   }
 
   ngOnInit(): void {
     this.gameLoadedSub = this.gameLoaderSvc.loadingFinished$.subscribe(loaded => {
-      if(loaded){
-        this.loaded = loaded;
-        this.gameLoadedSub.unsubscribe();
-      }
+      this.loaded = loaded;
     })
   }
 

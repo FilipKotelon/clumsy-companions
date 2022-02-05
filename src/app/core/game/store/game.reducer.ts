@@ -3,29 +3,51 @@ import { immerOn } from 'ngrx-immer/store';
 
 import { GameActiveEffects, InGamePlayer } from '@core/game/game.types';
 
-import { GameEffectAction, getGameEffectsMap } from './game.effect.actions';
+import * as GameEffectActions from './game.effect.actions';
 import * as GameStateActions from '@core/game/store/game.state.actions';
+import { shuffleCards } from '../game.helpers';
 
-const gameEffectsMap = getGameEffectsMap();
+const getEmptyPlayer = (): InGamePlayer => {
+  return {
+    baseFood: null,
+    hand: [],
+    sleepyard: [],
+    cardsInPlay: [],
+    energy: null,
+    currentFood: null,
+    hasTurn: null,
+    avatarImgUrl: null,
+    gameObjectId: null,
+    username: null,
+    deck: [],
+    deckSleeveImgUrl: null
+  }
+}
 
 export interface State {
   initialLoading: boolean;
+  playersLoaded: boolean;
   preparingForGame: boolean;
+  playersHandsChosen: boolean;
+  firstPlayerChosen: boolean;
   gameStarted: boolean;
   player: InGamePlayer;
   opponent: InGamePlayer;
   turn: number;
   turnPhaseIndex: number;
-  effectsQueue: GameEffectAction[];
+  effectsQueue: GameEffectActions.GameEffectAction[];
   activeEffects: GameActiveEffects;
 }
 
 const gameStateFactory = (data: Partial<State> = {}): State => ({
-  initialLoading: false,
+  initialLoading: true,
+  playersLoaded: false,
   preparingForGame: false,
+  playersHandsChosen: false,
+  firstPlayerChosen: false,
   gameStarted: false,
-  player: null,
-  opponent: null,
+  player: getEmptyPlayer(),
+  opponent: getEmptyPlayer(),
   turn: 1,
   turnPhaseIndex: 0,
   effectsQueue: [],
@@ -41,15 +63,13 @@ export const gameReducer = createReducer(
   immerOn(
     GameStateActions.gameLoadStart,
     (draft, action) => {
-      draft = gameStateFactory({ initialLoading: true });
+      draft = gameStateFactory();
     }
   ),
   immerOn(
     GameStateActions.gameLoadPlayers,
     (draft, action) => {
-      draft.initialLoading = false;
-      draft.preparingForGame = true;
-      draft.gameStarted = false;
+      draft.playersLoaded = true;
       draft.player = action.player;
       draft.opponent = action.opponent;
     }
@@ -59,7 +79,13 @@ export const gameReducer = createReducer(
     (draft, action) => {
       draft.initialLoading = false;
       draft.preparingForGame = true;
-      draft.gameStarted = false;
+    }
+  ),
+
+  immerOn(
+    GameEffectActions.gameShuffleDeck,
+    (draft, action) => {
+      draft[action.playerKey].deck = shuffleCards(draft[action.playerKey].deck);
     }
   )
 )

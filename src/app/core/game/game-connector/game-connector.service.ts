@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subject } from 'rxjs';
 
 import { AIOpponent } from '@core/ai-opponents/ai-opponents.types';
@@ -19,6 +19,8 @@ import { switchMap } from 'rxjs/operators';
 import { GameEffectMap, getGameEffectsMap } from '../store/game.effect.actions';
 import { Router } from '@angular/router';
 import { SleevesService } from '@core/sleeves/sleeves.service';
+import { GamePlayerService } from '../game-player/game-player.service';
+import { shuffleCards } from '../game.helpers';
 
 @Injectable({
   providedIn: 'root'
@@ -122,7 +124,7 @@ export class GameConnectorService {
         return of({
           ...this.getStartInGamePlayerData(),
           avatarImgUrl,
-          deck: this.mapToInGameCards(deckCards, playerDeck.cardIds, playerId),
+          deck: shuffleCards(this.mapToInGameCards(deckCards, playerDeck.cardIds, playerId)),
           username: player.username,
           gameObjectId: playerId,
           deckSleeveImgUrl
@@ -155,7 +157,7 @@ export class GameConnectorService {
               return of({
                 ...this.getStartInGamePlayerData(),
                 avatarImgUrl,
-                deck: this.mapToInGameCards(deckCards, deck.cardIds, opponentId),
+                deck: shuffleCards(this.mapToInGameCards(deckCards, deck.cardIds, opponentId)),
                 username: opponent.name,
                 gameObjectId: opponentId,
                 deckSleeveImgUrl
@@ -166,21 +168,21 @@ export class GameConnectorService {
       )
   }
 
-  startGame = (data: GameStartRawData): void => {
-    this.store.dispatch(GameStateActions.gameLoadStart());
-    this.router.navigate(['/game/']);
-
-    combineLatest([
+  loadPlayers = (data: GameStartRawData): Observable<Action> => {
+    return combineLatest([
       this.getPlayerData(data.player, data.playerDeck),
       this.getOpponentData(data.opponent)
-    ]).subscribe(([player, opponent]) => {
-      this.store.dispatch(GameStateActions.gameLoadPlayers({ player, opponent }));
-      //It should load the images for the cards and their sleeves plus the 2 avatars and the background
-      this.gameLoaderSvc.setRequiredRegistrations(player.deck.length * 2 + opponent.deck.length * 2 + 3)
+    ]).pipe(
+      switchMap(([player, opponent]) => {
+        //It should load the images for the cards and their sleeves plus the 2 avatars and the background
+        this.gameLoaderSvc.setRequiredRegistrations(player.deck.length * 2 + opponent.deck.length * 2 + 3)
 
-      this.gameLoaderSvc.loadingFinished$.subscribe(loadingFinished => {
-        console.log(loadingFinished);
+        return of(GameStateActions.gameLoadPlayers({ player, opponent }));
       })
-    })
+    )
+  }
+
+  startGame = (data: GameStartRawData): void => {
+    this.store.dispatch(GameStateActions.gameLoadStart(data));
   }
 }

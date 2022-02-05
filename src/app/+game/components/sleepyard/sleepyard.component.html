@@ -1,1 +1,12 @@
-<p>sleepyard works!</p>
+<div class="game-sleepyard">
+  <img
+    *ngIf="cards.length"
+    [src]="cards[0].imgUrl"
+    [alt]="cards[0].name"
+    class="game-sleepyad__next-card"
+  >
+  <div class="game-sleepyard__overlay">
+    <img src="assets/img/icons/sleep.svg" alt="Sleepyard">
+  </div>
+  <div class="game-sleepyard__queue"></div>
+</div>

@@ -3,5 +3,12 @@
   @fadeInOut
   class="game-overlay"
 >
-
+  <div class="game-overlay__content">
+    <app-hand-picker
+      [open]="!playerHandsChosen"
+    ></app-hand-picker>
+    <app-coin-flip
+      [open]="playerHandsChosen && !firstPlayerChosen"
+    ></app-coin-flip>
+  </div>
 </div>

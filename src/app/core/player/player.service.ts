@@ -34,7 +34,9 @@ export class PlayerService {
     private sleevesSvc: SleevesService
   ) {
     this.authSvc.getUser().subscribe(user => {
-      this.playerDocRef = this.fireStore.collection<DbUser>('users').doc(user.dbId);
+      if(user){
+        this.playerDocRef = this.fireStore.collection<DbUser>('users').doc(user.dbId);
+      }
     });
   }
 

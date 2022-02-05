@@ -28,7 +28,6 @@ export class LoadingComponent implements OnInit, OnDestroy {
     });
 
     this.loadingPercentageSub = this.gameLoaderSvc.loadingPercentage$.subscribe(loadingPercentage => {
-      console.log(loadingPercentage);
       this.loadingPercentage = loadingPercentage;
     });
   }
