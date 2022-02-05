@@ -16,5 +16,6 @@ export class Player {
 
 export const PLAYER_SETTINGS = {
   BASE_ENERGY: 20,
-  BASE_FOOD: 0
+  BASE_FOOD: 0,
+  BASE_CARDS_IN_HAND: 7
 }

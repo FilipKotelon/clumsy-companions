@@ -81,11 +81,28 @@ export const gameReducer = createReducer(
       draft.preparingForGame = true;
     }
   ),
+  immerOn(
+    GameStateActions.gameChoosePlayersHands,
+    (draft, action) => {
+      draft.player.hand.push(...draft.player.deck.splice(-7));
+      draft.opponent.hand.push(...draft.opponent.deck.splice(-7));
+
+      draft.playersHandsChosen = true;
+    }
+  ),
 
   immerOn(
     GameEffectActions.gameShuffleDeck,
     (draft, action) => {
       draft[action.playerKey].deck = shuffleCards(draft[action.playerKey].deck);
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameDrawXCards,
+    (draft, action) => {
+      for(let i = 0; i < action.amount; i++){
+        draft[action.playerKey].hand.push(draft[action.playerKey].deck.pop());
+      }
     }
   )
 )

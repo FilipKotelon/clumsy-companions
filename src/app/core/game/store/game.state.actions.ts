@@ -8,7 +8,8 @@ export enum GameStateActionType {
   END = '[Game] End',
   LOAD_START = '[Game] Load Start',
   LOAD_PLAYERS = '[Game] Load Players',
-  LOAD_END = '[Game] Load End'
+  LOAD_END = '[Game] Load End',
+  CHOOSE_HANDS = '[Game] Choose Hands'
 }
 
 export const gameStart = createAction(GameStateActionType.START);
@@ -27,4 +28,8 @@ export const gameLoadPlayers = createAction(
 
 export const gameLoadEnd = createAction(
   GameStateActionType.LOAD_END
+);
+
+export const gameChoosePlayersHands = createAction(
+  GameStateActionType.CHOOSE_HANDS
 );

@@ -2,12 +2,33 @@
 @import "utility/mixins/mixins-other";
 @import "utility/mixins/mixins-flex";
 
-.page-button, .admin-button{
+.page-button, .admin-button, .game-button{
   @include d-flex($center: true);
   text-align: center;
   cursor: pointer;
-  color: $white;
   @include transition;
+}
+
+.page-button, .admin-button{
+  color: $white;
+}
+
+.admin-button, .game-button{
+  &.black{
+    background-color: $black;
+  }
+
+  &.blue{
+    background-color: $blue;
+  }
+
+  &.red{
+    background-color: $red;
+  }
+
+  &.green{
+    background-color: $main;
+  }
 }
 
 .page-button{
@@ -44,26 +65,25 @@
     }
   }
 
-  &.black{
-    background-color: $black;
-  }
-
-  &.blue{
-    background-color: $blue;
-  }
-
-  &.red{
-    background-color: $red;
-  }
-
-  &.green{
-    background-color: $main;
-  }
-
   @media(hover: hover){
     &:hover{
       opacity: .8;
       color: $white;
     }
+  }
+}
+
+.game-button{
+  height: 6rem;
+  font-size: 2.2rem;
+  border-radius: 3rem;
+  padding: 0 3rem;
+
+  &.white{
+    background-color: $white;
+  }
+
+  &.black, &.green, &.blue, &.red{
+    color: $white;
   }
 }

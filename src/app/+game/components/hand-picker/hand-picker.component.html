@@ -1,13 +1,38 @@
-<div class="game-hand-picker">
+<div
+  *ngIf="open"
+  @fadeInOut
+  class="game-hand-picker"
+>
   <div class="game-overlay-title medium-title">
     <span *ngIf="!shuffled">Here's your first draw!</span>
     <span *ngIf="shuffled">Here's your second draw!</span>
   </div>
-  <div class="game-overlay-desc">
+  <div class="game-overlay-desc medium-text">
     <span *ngIf="!shuffled">If you like it, keep it! If not, you can shuffle your deck and try again but only once!</span>
     <span *ngIf="shuffled">Hopefully this hand is better because you have no other choice now!</span>
   </div>
-  <div class="game-hand-picker__cards">
-    
+  <div class="game-hand-picker__cards folded-cards">
+    <app-card
+      *ngFor="let card of cards"
+      [card]="card"
+      [sleeveImgUrl]="sleeveImgUrl"
+      [reportLoad]="!loaded"
+      size="big"
+    ></app-card>
+  </div>
+  <div class="game-hand-picker__buttons">
+    <button
+      *ngIf="!shuffled"
+      class="game-button white"
+      (click)="shuffle()"
+    >
+      Shuffle and draw again
+    </button>
+    <button
+      class="game-button green"
+      (click)="continue()"
+    >
+      Start the game
+    </button>
   </div>
 </div>

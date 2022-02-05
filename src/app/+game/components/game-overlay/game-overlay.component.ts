@@ -14,23 +14,28 @@ export class GameOverlayComponent implements OnInit {
   isFirstPlayerChosenSub: Subscription;
   isPreparingSub: Subscription;
 
-  playerHandsChosen = false;
+  coinFlipOpen = false;
   firstPlayerChosen = false;
   open = false;
+  playerHandsChosen = false;
 
   constructor(private gameStateSvc: GameStateService) { }
 
   ngOnInit(): void {
     this.isPreparingSub = this.gameStateSvc.getIsPreparing().subscribe(isPreparing => {
-      console.log(isPreparing);
       this.open = isPreparing;
     });
 
     this.arePlayerHandsChosenSub = this.gameStateSvc.getArePlayersHandsChosen().subscribe(handsChosen => {
       this.playerHandsChosen = handsChosen;
+      if(handsChosen){
+        setTimeout(() => {
+          this.coinFlipOpen = true;
+        }, 600);
+      }
     });
 
-    this.isFirstPlayerChosenSub = this.gameStateSvc.getIFirstPlayerChosen().subscribe(playerChosen => {
+    this.isFirstPlayerChosenSub = this.gameStateSvc.getIsFirstPlayerChosen().subscribe(playerChosen => {
       this.firstPlayerChosen = playerChosen;
     });
   }

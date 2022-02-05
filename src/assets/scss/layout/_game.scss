@@ -79,7 +79,47 @@
 .game-overlay{
   @include fix(0, 0);
   @include square(100%);
+  @include d-flex($center: true);
   z-index: 1000;
+  background-color: rgba(0, 0, 0, .6);
+  color: $white;
+
+  &__content{
+    @include d-flex($dir: column, $ai: center);
+    text-align: center;
+  }
+
+  &-title{
+    margin-bottom: 2.6rem;
+  }
+}
+
+.game-hand-picker{
+  @include d-flex($dir: column, $ai: center);
+
+  &__buttons{
+    @include d-flex($ai: center);
+
+    & .game-button{
+      width: 30rem;
+
+      &:not(:last-child){
+        margin-right: 7rem;
+      }
+    }
+  }
+
+  &__cards{
+    margin: 10rem 0 12rem;
+
+    & app-card{
+      @include rect(24rem, 36rem);
+    }
+
+    & .full-card{
+      transform: scaleCardTo(24rem);
+    }
+  }
 }
 
 .game-board{
@@ -123,9 +163,18 @@
 
 // Cards
 .game-page{
-  & .full-card{
-    @include rect($card-game-width, $card-game-height);
-    transform-origin: top left;
+  & app-card{
+    & .full-card{
+      @include rect($card-game-width, $card-game-height);
+    }
+
+    & .full-card{
+      transform-origin: top left;
+    }
+
+    & .card-front__name{
+      font-size: 2.2rem;
+    }
   }
 
   & .game-deck, .game-sleepyard{
@@ -134,10 +183,13 @@
   }
 
   & .game-deck{
-    & .full-card{
+    & app-card{
       @include abs();
-      transform: scaleCardTo(12rem);
-      box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.25);
+
+      & .full-card{
+        transform: scaleCardTo(12rem);
+        box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.25);
+      }
 
       & .full-card-inner{
         transform: rotateY(180deg);
@@ -146,57 +198,39 @@
 
     & app-card{
       &:nth-child(1){
-        & .full-card{
-          @include assign-position($l: 0, $t: 0);
-        }
+        @include assign-position($l: 0, $t: 0);
       }
 
       &:nth-child(2){
-        & .full-card{
-          @include assign-position($l: -.1rem, $t: -.1rem);
-        }
+        @include assign-position($l: -.1rem, $t: -.1rem);
       }
 
       &:nth-child(3){
-        & .full-card{
-          @include assign-position($l: -.2rem, $t: -.2rem);
-        }
+        @include assign-position($l: -.2rem, $t: -.2rem);
       }
 
       &:nth-child(4){
-        & .full-card{
-          @include assign-position($l: -.3rem, $t: -.3rem);
-        }
+        @include assign-position($l: -.3rem, $t: -.3rem);
       }
 
       &:nth-child(5){
-        & .full-card{
-          @include assign-position($l: -.4rem, $t: -.4rem);
-        }
+        @include assign-position($l: -.4rem, $t: -.4rem);
       }
 
       &:nth-child(6){
-        & .full-card{
-          @include assign-position($l: -.5rem, $t: -.5rem);
-        }
+        @include assign-position($l: -.5rem, $t: -.5rem);
       }
 
       &:nth-child(7){
-        & .full-card{
-          @include assign-position($l: -.6rem, $t: -.6rem);
-        }
+        @include assign-position($l: -.6rem, $t: -.6rem);
       }
 
       &:nth-child(8){
-        & .full-card{
-          @include assign-position($l: -.7rem, $t: -.7rem);
-        }
+        @include assign-position($l: -.7rem, $t: -.7rem);
       }
 
       &:nth-child(9){
-        & .full-card{
-          @include assign-position($l: -.8rem, $t: -.8rem);
-        }
+        @include assign-position($l: -.8rem, $t: -.8rem);
       }
     }
   }
@@ -217,6 +251,30 @@
       @include abs($l: calc(100% - 2rem), $t: -2rem);
       @include rect(4rem, calc(100% + 2rem));
       overflow: hidden;
+    }
+  }
+}
+
+.folded-cards{
+  @include d-flex($ai: flex-end, $dir: row-reverse);
+  height: 36rem;
+  perspective: 1000px;
+
+  & app-card{
+    @include rect(24rem, 36rem);
+    @include transition;
+    position: relative;
+    margin-left: -6rem;
+    margin-right: -6rem;
+    z-index: 0;
+
+    &:hover{
+      @include rect(32rem, 48rem);
+      z-index: 1;
+
+      & .full-card{
+        transform: scaleCardTo(32rem);
+      }
     }
   }
 }

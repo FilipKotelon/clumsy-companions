@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 
 import * as fromStore from '@core/store/reducer';
 import * as GameSelectors from '@core/game/store/game.selectors';
+import * as GameStateActions from '@core/game/store/game.state.actions';
 
 import { PlayerOpponentLoadInfo } from '../game.types';
 
@@ -27,7 +28,11 @@ export class GameStateService {
     return this.store.select(GameSelectors.selectArePlayersHandsChosen);
   }
 
-  getIFirstPlayerChosen = (): Observable<boolean> => {
+  getIsFirstPlayerChosen = (): Observable<boolean> => {
     return this.store.select(GameSelectors.selectIsFirstPlayerChosen);
+  }
+
+  choosePlayerHands = (): void => {
+    this.store.dispatch(GameStateActions.gameChoosePlayersHands());
   }
 }

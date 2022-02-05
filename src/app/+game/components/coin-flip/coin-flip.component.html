@@ -1,1 +1,12 @@
-<p>coin-flip works!</p>
+<div
+  *ngIf="open"
+  @fadeInOut
+  class="game-coin-flip"
+>
+  <div class="game-overlay-title medium-title">
+    Silence!
+  </div>
+  <div class="game-overlay-desc medium-text">
+    Let Game Master George decide who shall begin!
+  </div>
+</div>
