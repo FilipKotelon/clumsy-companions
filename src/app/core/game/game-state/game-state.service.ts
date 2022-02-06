@@ -6,7 +6,7 @@ import * as fromStore from '@core/store/reducer';
 import * as GameSelectors from '@core/game/store/game.selectors';
 import * as GameStateActions from '@core/game/store/game.state.actions';
 
-import { PlayerOpponentLoadInfo } from '../game.types';
+import { PlayerKey, PlayerOpponentLoadInfo } from '../game.types';
 
 @Injectable({
   providedIn: 'root'
@@ -34,5 +34,9 @@ export class GameStateService {
 
   choosePlayerHands = (): void => {
     this.store.dispatch(GameStateActions.gameChoosePlayersHands());
+  }
+
+  chooseFirstPlayer = (playerKey: PlayerKey): void => {
+    this.store.dispatch(GameStateActions.gameChooseFirstPlayer({ playerKey }));
   }
 }

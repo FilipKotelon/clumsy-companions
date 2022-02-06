@@ -63,7 +63,11 @@ export const gameReducer = createReducer(
   immerOn(
     GameStateActions.gameLoadStart,
     (draft, action) => {
-      draft = gameStateFactory();
+      const cleanState = gameStateFactory();
+
+      Object.keys(cleanState).forEach(key => {
+        draft[key] = cleanState[key];
+      })
     }
   ),
   immerOn(
@@ -88,6 +92,19 @@ export const gameReducer = createReducer(
       draft.opponent.hand.push(...draft.opponent.deck.splice(-7));
 
       draft.playersHandsChosen = true;
+    }
+  ),
+  immerOn(
+    GameStateActions.gameChooseFirstPlayer,
+    (draft, action) => {
+      draft.firstPlayerChosen = true;
+    }
+  ),
+  immerOn(
+    GameStateActions.gameStart,
+    (draft, action) => {
+      draft.preparingForGame = false;
+      draft.gameStarted = true;
     }
   ),
 

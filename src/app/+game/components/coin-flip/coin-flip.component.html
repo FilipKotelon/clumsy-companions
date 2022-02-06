@@ -9,4 +9,20 @@
   <div class="game-overlay-desc medium-text">
     Let Game Master George decide who shall begin!
   </div>
+  <div class="game-coin-flip__main">
+    <img
+      src="assets/img/photos/game-master-george.png"
+      alt="Game Master George"
+      class="game-coin-flip__main__img"
+    >
+    <div class="game-coin-flip__main__msgs">
+      <div
+        *ngFor="let msg of messages"
+        @fadeInOut
+        class="game-coin-flip__main__msgs__item"
+      >
+        <span [innerHTML]="msg"></span>
+      </div>
+    </div>
+  </div>
 </div>
