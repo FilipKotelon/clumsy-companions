@@ -15,6 +15,7 @@ import { LoadingComponent } from './components/loading/loading.component';
 import { SettingsComponent } from './components/settings/settings.component';
 
 import { GameRoutingModule } from './game-routing.module';
+import { FoldedCardsDirective } from './directives/folded-cards.directive';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { GameRoutingModule } from './game-routing.module';
     HandPickerComponent,
     CoinFlipComponent,
     LoadingComponent,
-    SettingsComponent
+    SettingsComponent,
+    FoldedCardsDirective,
   ],
   imports: [
     SharedModule,

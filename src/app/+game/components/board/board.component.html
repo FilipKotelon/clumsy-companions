@@ -22,7 +22,9 @@
       </div>
       <div class="game-board__player-hand">
         <app-hand
-          [flipped]="true"
+          [cards]="opponent.hand"
+          [opponent]="true"
+          [sleeveImgUrl]="opponent.deckSleeveImgUrl"
         ></app-hand>
       </div>
       <div class="game-board__player-side">
@@ -59,7 +61,10 @@
         ></app-player-hud>
       </div>
       <div class="game-board__player-hand">
-        <app-hand></app-hand>
+        <app-hand
+          [cards]="player.hand"
+          [sleeveImgUrl]="player.deckSleeveImgUrl"
+        ></app-hand>
       </div>
       <div class="game-board__player-side">
         <div class="game-board__game-hud">

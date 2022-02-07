@@ -1,6 +1,11 @@
-<div class="player-hand">
+<div
+  class="player-hand folded-cards"
+  [class.opponent]="opponent"
+  appFoldedCards
+>
   <app-card
     *ngFor="let card of cards"
+    @fadeInOut
     [card]="card"
     [sleeveImgUrl]="sleeveImgUrl"
     [reportLoad]="!loaded"
