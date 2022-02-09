@@ -1,12 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { GameLoaderService } from '@core/game/game-loader/game-loader.service';
 import { InGameCard } from '@core/game/game.types';
+import { fadeInOut } from '@shared/animations/component-animations';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-game-deck',
   templateUrl: './game-deck.component.html',
-  styleUrls: ['./game-deck.component.scss']
+  styleUrls: ['./game-deck.component.scss'],
+  animations: [fadeInOut]
 })
 export class GameDeckComponent implements OnInit {
   @Input() cards: InGameCard[] = [];

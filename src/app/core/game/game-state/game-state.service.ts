@@ -32,6 +32,10 @@ export class GameStateService {
     return this.store.select(GameSelectors.selectIsFirstPlayerChosen);
   }
 
+  getCurrentTurnPhaseIndex = (): Observable<number> => {
+    return this.store.select(GameSelectors.selectCurrentTurnPhaseIndex);
+  }
+
   choosePlayerHands = (): void => {
     this.store.dispatch(GameStateActions.gameChoosePlayersHands());
   }

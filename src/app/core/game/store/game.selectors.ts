@@ -39,3 +39,8 @@ export const selectIsFirstPlayerChosen = createSelector(
   selectGame,
   (state: fromGame.State) => state.firstPlayerChosen
 );
+
+export const selectCurrentTurnPhaseIndex = createSelector(
+  selectGame,
+  (state: fromGame.State) => state.turnPhaseIndex
+);

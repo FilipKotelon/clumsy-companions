@@ -17,6 +17,7 @@
   >
     <app-card
       *ngFor="let card of cards"
+      @fadeInOut
       [card]="card"
       [sleeveImgUrl]="sleeveImgUrl"
       [reportLoad]="!loaded"
@@ -26,6 +27,7 @@
   <div class="game-hand-picker__buttons">
     <button
       *ngIf="!shuffled"
+      @fadeInOut
       class="game-button white"
       (click)="shuffle()"
     >

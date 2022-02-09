@@ -144,3 +144,7 @@ export const TURN_PHASES: TurnPhase[] = [
     name: 'preparation'
   }
 ];
+
+export interface InGameTurnPhase extends TurnPhase {
+  active: boolean;
+}

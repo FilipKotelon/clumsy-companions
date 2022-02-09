@@ -1,6 +1,7 @@
 <div class="game-deck">
   <app-card
     *ngFor="let card of cardsInDeck"
+    @fadeInOut
     [card]="card"
     [sleeveImgUrl]="sleeveImgUrl"
     [reportLoad]="!loaded"

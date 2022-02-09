@@ -35,7 +35,11 @@ export class HandPickerComponent implements OnInit {
 
   shuffle = (): void => {
     this.shuffled = true;
-    this.gamePlayerSvc.shuffleDeck('player');
+    this.cards = [];
+
+    setTimeout(() => {
+      this.gamePlayerSvc.shuffleDeck('player');
+    }, 600);
   }
 
   continue = (): void => {
