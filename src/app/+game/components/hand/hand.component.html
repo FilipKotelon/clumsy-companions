@@ -3,12 +3,27 @@
   [class.opponent]="opponent"
   appFoldedCards
 >
-  <app-card
+  <ng-container
     *ngFor="let card of cards"
-    @fadeInOut
-    [card]="card"
-    [sleeveImgUrl]="sleeveImgUrl"
-    [reportLoad]="!loaded"
-    size="big"
-  ></app-card>
+  >
+    <app-card
+      *ngIf="isCardPlayable(card) && !opponent"
+      @fadeInOut
+      appDraggableCard
+      (played)="playCard(card)"
+      [class.playable]="isCardPlayable(card)"
+      [card]="card"
+      [sleeveImgUrl]="sleeveImgUrl"
+      [reportLoad]="!loaded"
+      size="big"
+    ></app-card>
+    <app-card
+      *ngIf="!isCardPlayable(card) || opponent"
+      @fadeInOut
+      [card]="card"
+      [sleeveImgUrl]="sleeveImgUrl"
+      [reportLoad]="!loaded"
+      size="big"
+    ></app-card>
+  </ng-container>
 </div>

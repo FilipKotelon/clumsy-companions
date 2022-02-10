@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Card, CardEffect, CardEffectType, CardMainData, CardType, CARD_SETTINGS, FOOD_CARD_EFFECT } from '@core/cards/cards.types';
 import { CardsService } from '@core/cards/cards.service';
 import { FilesService } from '@core/files/files.service';
-import { GameEffectActionType } from '@core/game/store/game.effect.actions';
+import { GameEffectActionType } from '@core/game/store/game-effect.actions';
 import { MessageService } from '@core/message/message.service';
 import { Set } from '@core/sets/sets.types';
 import { SetsService } from '@core/sets/sets.service';

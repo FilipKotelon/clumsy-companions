@@ -1,4 +1,4 @@
-import { GameEffectActionType } from '@core/game/store/game.effect.actions';
+import { GameEffectActionType } from '@core/game/store/game-effect.actions';
 import { EffectValues } from '@core/game/game.types';
 
 export enum CardEffectType {

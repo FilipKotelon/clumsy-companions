@@ -2,6 +2,7 @@
   @include rect(100%, 100vh);
   position: relative;
   overflow: hidden;
+  user-select: none;
 }
 
 .game-loading{
@@ -221,7 +222,7 @@
       }
 
       &.active{
-        transform: scale(1.2);
+        transform: scale(1.5);
       }
 
       & img{
@@ -364,6 +365,28 @@
 .player-hand{
   transform: translateY(50%) scale(.8);
   transition: all .3s ease;
+  position: relative;
+  z-index: 500;
+
+  & app-card{
+    outline: .5rem solid transparent;
+
+    &.dragging{
+      z-index: 1000;
+      cursor: grabbing;
+      transition: outline .3s ease;
+      transform: scale(1.4) !important;
+    }
+
+    &.playable{
+      outline-color: $main;
+      cursor: grab;
+    }
+
+    &.will-be-played{
+      outline-color: $yellow;
+    }
+  }
 
   &.opponent{
     transform: translateY(-60%) scale(.6) rotate(180deg);

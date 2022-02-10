@@ -1,11 +1,12 @@
 import { createReducer } from '@ngrx/store';
 import { immerOn } from 'ngrx-immer/store';
 
-import { GameActiveEffects, InGamePlayer } from '@core/game/game.types';
+import { GameActiveEffects, InGameCard, InGamePlayer } from '@core/game/game.types';
 
-import * as GameEffectActions from './game.effect.actions';
-import * as GameStateActions from '@core/game/store/game.state.actions';
+import * as GameEffectActions from './game-effect.actions';
+import * as GameStateActions from '@core/game/store/game-state.actions';
 import { shuffleCards } from '../game.helpers';
+import { CardType } from '@core/cards/cards.types';
 
 const getEmptyPlayer = (): InGamePlayer => {
   return {
@@ -36,6 +37,7 @@ export interface State {
   turn: number;
   turnPhaseIndex: number;
   effectsQueue: GameEffectActions.GameEffectAction[];
+  cardsQueue: InGameCard[];
   activeEffects: GameActiveEffects;
 }
 
@@ -51,6 +53,7 @@ const gameStateFactory = (data: Partial<State> = {}): State => ({
   turn: 1,
   turnPhaseIndex: 0,
   effectsQueue: [],
+  cardsQueue: [],
   activeEffects: {
     auras: [],
     buffs: []
@@ -105,6 +108,24 @@ export const gameReducer = createReducer(
     (draft, action) => {
       draft.preparingForGame = false;
       draft.gameStarted = true;
+    }
+  ),
+  immerOn(
+    GameStateActions.gamePlayCard,
+    (draft, action) => {
+      draft.cardsQueue.push(
+        ...draft[action.playerKey].hand.splice(
+          draft[action.playerKey].hand.findIndex(card => card.gameObjectId === action.card.gameObjectId),
+          1
+        )
+      );
+    }
+  ),
+  immerOn(
+    GameStateActions.gameResolveFood,
+    (draft, action) => {
+      draft[action.playerKey].baseFood += action.amount;
+      draft[action.playerKey].currentFood += action.amount;
     }
   ),
 

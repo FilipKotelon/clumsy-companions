@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { GameLoaderService } from '@core/game/game-loader/game-loader.service';
 import { PLAYER_SETTINGS } from '@core/player/player.types';
 import { ObjectLoadReporter } from '@game/utility/object-load-reporter.class';
@@ -10,7 +10,7 @@ import { fadeInOut } from '@shared/animations/component-animations';
   styleUrls: ['./player-hud.component.scss'],
   animations: [fadeInOut]
 })
-export class PlayerHudComponent extends ObjectLoadReporter implements OnInit {
+export class PlayerHudComponent extends ObjectLoadReporter implements OnInit, OnChanges {
   @Input() avatarImgUrl: string;
   @Input() baseFood: number;
   @Input() currentFood: number;
@@ -33,6 +33,10 @@ export class PlayerHudComponent extends ObjectLoadReporter implements OnInit {
 
   ngOnInit(): void {
     this.avatarLoadId = this.gameLoaderSvc.registerLoadingObject();
-    this.foodTokensToDisplay = new Array(10).fill(1);
+    this.foodTokensToDisplay = new Array(this.currentFood).fill(1);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.foodTokensToDisplay = new Array(changes.currentFood.currentValue).fill(1);
   }
 }

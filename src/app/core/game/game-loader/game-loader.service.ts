@@ -3,7 +3,7 @@ import { Observable, Subject } from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import * as fromStore from '@core/store/reducer';
-import * as GameStateActions from '@core/game/store/game.state.actions';
+import * as GameStateActions from '@core/game/store/game-state.actions';
 import * as GameSelectors from '@core/game/store/game.selectors';
 
 @Injectable({

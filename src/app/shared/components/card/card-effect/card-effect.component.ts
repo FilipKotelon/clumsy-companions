@@ -3,7 +3,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 import { CardType, FOOD_CARD_EFFECT } from '@core/cards/cards.types';
 
 import { CardEffect, CardEffectType } from '@core/cards/cards.types';
-import { GameEffectActionType } from '@core/game/store/game.effect.actions';
+import { GameEffectActionType } from '@core/game/store/game-effect.actions';
 
 import { fadeInOut } from '@shared/animations/component-animations';
 

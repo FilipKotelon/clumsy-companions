@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 
 import * as fromStore from '@core/store/reducer';
 import * as GameSelectors from '@core/game/store/game.selectors';
-import * as GameStateActions from '@core/game/store/game.state.actions';
+import * as GameStateActions from '@core/game/store/game-state.actions';
 
 import { PlayerKey, PlayerOpponentLoadInfo } from '../game.types';
 

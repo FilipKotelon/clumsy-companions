@@ -13,10 +13,10 @@ import { GameStartRawData, InGameCard, InGameCardEffect, InGamePlayer, InGamePLa
 import { Player, PLAYER_SETTINGS } from '@core/player/player.types';
 import { PlayerService } from '@core/player/player.service';
 
-import * as GameStateActions from '@core/game/store/game.state.actions';
+import * as GameStateActions from '@core/game/store/game-state.actions';
 import * as fromStore from '@core/store/reducer';
 import { switchMap } from 'rxjs/operators';
-import { GameEffectMap, getGameEffectsMap } from '../store/game.effect.actions';
+import { GameEffectMap, getGameEffectsMap } from '../store/game-effect.actions';
 import { Router } from '@angular/router';
 import { SleevesService } from '@core/sleeves/sleeves.service';
 import { GamePlayerService } from '../game-player/game-player.service';

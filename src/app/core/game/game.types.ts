@@ -2,7 +2,7 @@ import { AIOpponent } from '@core/ai-opponents/ai-opponents.types';
 import { CardEffectType, CardType } from '@core/cards/cards.types';
 import { Deck } from '@core/decks/decks.types';
 import { Player } from '@core/player/player.types';
-import { GameEffect } from './store/game.effect.actions';
+import { GameEffect } from './store/game-effect.actions';
 
 export interface EffectValues {
   main: number;
@@ -89,6 +89,10 @@ export interface InGameCard {
   tired?: boolean;
 }
 
+export interface SleepyardCard extends InGameCard {
+  turnsLeft: number;
+}
+
 export interface InGamePLayerBaseData {
   readonly baseFood: number;
   hand: InGameCard[];
@@ -105,10 +109,6 @@ export interface InGamePlayer extends InGamePLayerBaseData {
   readonly username: string;
   deck: InGameCard[];
   deckSleeveImgUrl: string;
-}
-
-export interface SleepyardCard extends InGameCard {
-  turnsLeft: number;
 }
 
 export enum TurnPhaseType {
