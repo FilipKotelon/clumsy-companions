@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { switchMap, tap } from 'rxjs/operators';
+import { switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-
-import { GameConnectorService } from '@core/game/game-connector/game-connector.service';
-import * as GameStateActions from '@core/game/store/game-state.actions';
-import * as fromStore from '@core/store/reducer';
-import { CardType } from '@core/cards/cards.types';
 import { map } from '@firebase/util';
 import { of } from 'rxjs';
+
+import { GameConnectorService } from '@core/game/game-connector/game-connector.service';
+
+import * as GameStateActions from '@core/game/store/game-state.actions';
+import * as fromStore from '@core/store/reducer';
+import * as GameSelectors from '@core/game/store/game.selectors';
 
 @Injectable()
 export class GameStateEffects {
@@ -40,19 +41,29 @@ export class GameStateEffects {
 
   playCard$ = createEffect(() => this.actions$.pipe(
     ofType(GameStateActions.gamePlayCard),
-    switchMap(({ type, ...payload }) => {
-      switch(payload.card.type){
-        case CardType.Companion:
-          return;
-        case CardType.Food:
-          return of(GameStateActions.gameResolveFood({ amount: 1, playerKey: payload.playerKey }));
-        case CardType.Charm:
-          return;
-        case CardType.Trick:
-          return;
-        default:
-          break;
+    withLatestFrom(this.store.select(GameSelectors.selectContinuationApproval)),
+    tap(([{ type, ...payload }, approval]) => {
+      console.log(approval);
+      if(approval.opponent && approval.player){
+        this.store.dispatch(GameStateActions.gameResolveCard({ card: payload.card, playerKey: payload.playerKey }));
       }
     })
-  ))
+  ), { dispatch: false })
+
+  resolveCard$ = createEffect(() => this.actions$.pipe(
+    ofType(GameStateActions.gameResolveCard),
+    tap(({ type, ...payload }) => {
+      this.store.dispatch(GameStateActions.gameResolveCardInQueue({ card: payload.card }));
+    })
+  ), { dispatch: false })
+
+  resolveCardInQueue$ = createEffect(() => this.actions$.pipe(
+    ofType(GameStateActions.gameResolveCardInQueue),
+    withLatestFrom(this.store.select(GameSelectors.selectCardsQueue)),
+    tap(([{ type, ...payload }, cardsQueue]) => {
+      if(!cardsQueue.length){
+        this.store.dispatch(GameStateActions.gameResolveCardQueue());
+      }
+    })
+  ), { dispatch: false })
 }

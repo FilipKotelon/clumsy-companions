@@ -4,16 +4,23 @@ import { Deck } from '@core/decks/decks.types';
 import { Player } from '@core/player/player.types';
 import { GameEffect } from './store/game-effect.actions';
 
-export interface EffectValues {
-  main: number;
+export interface CompanionBaseStats {
   strength: number;
   energy: number;
 }
 
-export interface AuraPayload {
-  ownerId: string;
-  originId: string;
+export interface EffectValues extends CompanionBaseStats {
+  main: number;
+}
+
+export interface EffectBasePayload {
+  positive: boolean;
+  playerKey: PlayerKey;
   values: EffectValues;
+}
+
+export interface AuraPayload extends EffectBasePayload {
+  originId: string;
 }
 
 export enum AuraTarget {
@@ -33,8 +40,7 @@ export enum BuffTarget {
   Target = 'target'
 }
 
-export interface BuffData {
-  positive: boolean;
+export interface BuffData extends EffectBasePayload {
   target: BuffTarget;
   targetId?: string;
 }
@@ -77,16 +83,25 @@ export interface InGameCard {
   readonly gameObjectId: string;
   readonly imgUrl: string;
   readonly name: string;
-  readonly ownerId: string;
+  readonly playerKey: PlayerKey;
   readonly type: CardType;
   cost?: number;
-  currentOwnerId: string;
+  currentPlayerKey: string;
   dizzy?: boolean;
   effects?: InGameCardEffect[];
-  effectedPersonallyBy?: InGameCardEffect[];
+  effectedPersonallyBy?: BuffData[];
   energy?: number;
   strength?: number;
   tired?: boolean;
+}
+
+export interface HandCard extends InGameCard {
+  playable: boolean;
+}
+
+export interface CardInPlay extends InGameCard {
+  attacking: boolean;
+  defending: boolean;
 }
 
 export interface SleepyardCard extends InGameCard {
@@ -95,12 +110,13 @@ export interface SleepyardCard extends InGameCard {
 
 export interface InGamePLayerBaseData {
   readonly baseFood: number;
-  hand: InGameCard[];
+  hand: HandCard[];
   sleepyard: SleepyardCard[];
   cardsInPlay: InGameCard[];
   energy: number;
   currentFood: number;
   hasTurn: boolean;
+  playedFoodThisTurn: boolean;
 }
 
 export interface InGamePlayer extends InGamePLayerBaseData {
@@ -147,4 +163,14 @@ export const TURN_PHASES: TurnPhase[] = [
 
 export interface InGameTurnPhase extends TurnPhase {
   active: boolean;
+}
+
+export interface ContinuationApproval {
+  player: boolean;
+  opponent: boolean;
+}
+
+export interface CounterPlayStatus {
+  playerKey: PlayerKey;
+  canCounter: boolean;
 }

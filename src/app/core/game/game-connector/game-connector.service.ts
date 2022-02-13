@@ -9,7 +9,7 @@ import { Card, CardEffect } from '@core/cards/cards.types';
 import { DecksService } from '@core/decks/decks.service';
 import { Deck } from '@core/decks/decks.types';
 import { GameLoaderService } from '@core/game/game-loader/game-loader.service';
-import { GameStartRawData, InGameCard, InGameCardEffect, InGamePlayer, InGamePLayerBaseData } from '@core/game/game.types';
+import { GameStartRawData, InGameCard, InGameCardEffect, InGamePlayer, InGamePLayerBaseData, PlayerKey } from '@core/game/game.types';
 import { Player, PLAYER_SETTINGS } from '@core/player/player.types';
 import { PlayerService } from '@core/player/player.service';
 
@@ -58,7 +58,8 @@ export class GameConnectorService {
       cardsInPlay: [],
       energy: PLAYER_SETTINGS.BASE_ENERGY,
       currentFood: PLAYER_SETTINGS.BASE_FOOD,
-      hasTurn: false
+      hasTurn: false,
+      playedFoodThisTurn: false
     }
   }
 
@@ -72,7 +73,7 @@ export class GameConnectorService {
     }, []);
   }
 
-  mapToInGameCards = (uniqueCards: Card[], cardsIds: string[], ownerId: string): InGameCard[] => {
+  mapToInGameCards = (uniqueCards: Card[], cardsIds: string[], playerKey: PlayerKey): InGameCard[] => {
     return cardsIds.map(cardId => {
       const { setId, availableInGame, effects, ...inGameCardData } = uniqueCards.find(uCard => uCard.id === cardId);
 
@@ -82,8 +83,8 @@ export class GameConnectorService {
         baseEnergy: inGameCardData.energy,
         baseStrength: inGameCardData.strength,
         gameObjectId: this.gameLoaderSvc.getUniqueObjectId(),
-        ownerId,
-        currentOwnerId: ownerId,
+        playerKey,
+        currentPlayerKey: playerKey,
         dizzy: false,
         effects: this.mapToInGameCardEffects(effects),
         effectedPersonallyBy: [],
@@ -124,7 +125,7 @@ export class GameConnectorService {
         return of({
           ...this.getStartInGamePlayerData(),
           avatarImgUrl,
-          deck: shuffleCards(this.mapToInGameCards(deckCards, playerDeck.cardIds, playerId)),
+          deck: shuffleCards(this.mapToInGameCards(deckCards, playerDeck.cardIds, 'player')),
           username: player.username,
           gameObjectId: playerId,
           deckSleeveImgUrl
@@ -157,7 +158,7 @@ export class GameConnectorService {
               return of({
                 ...this.getStartInGamePlayerData(),
                 avatarImgUrl,
-                deck: shuffleCards(this.mapToInGameCards(deckCards, deck.cardIds, opponentId)),
+                deck: shuffleCards(this.mapToInGameCards(deckCards, deck.cardIds, 'opponent')),
                 username: opponent.name,
                 gameObjectId: opponentId,
                 deckSleeveImgUrl

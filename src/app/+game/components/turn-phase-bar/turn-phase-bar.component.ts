@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./turn-phase-bar.component.scss']
 })
 export class TurnPhaseBarComponent implements OnInit {
+  turnPhaseButtonMsg: string;
   turnPhases: InGameTurnPhase[] = [];
   turnPhaseSub: Subscription;
 
@@ -29,10 +30,26 @@ export class TurnPhaseBarComponent implements OnInit {
     }));
 
     this.turnPhaseSub = this.gameStateSvc.getCurrentTurnPhaseIndex().subscribe(index => {
-      this.turnPhases = TURN_PHASES.map((phase, i) => ({
-        ...phase,
-        active: i === index
-      }));
+      let activePhase: TurnPhase = null;
+
+      this.turnPhases = TURN_PHASES.map((phase, i) => {
+        const isActive = i === index;
+
+        if(isActive){
+          activePhase = phase;
+        }
+
+        return {
+          ...phase,
+          active: isActive
+        }
+      });
+
+      this.setButtonMsg(activePhase.name, index);
     })
+  }
+
+  setButtonMsg = (phaseName: string, phaseIndex: number): void => {
+    
   }
 }

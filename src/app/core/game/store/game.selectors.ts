@@ -44,3 +44,13 @@ export const selectCurrentTurnPhaseIndex = createSelector(
   selectGame,
   (state: fromGame.State) => state.turnPhaseIndex
 );
+
+export const selectCardsQueue = createSelector(
+  selectGame,
+  (state: fromGame.State) => state.cardsQueue
+);
+
+export const selectContinuationApproval = createSelector(
+  selectGame,
+  (state: fromGame.State) => state.continuationApproval
+);

@@ -163,21 +163,34 @@
 
   &__player-field{
     @include rect(100%, 50%);
-    @include d-flex($dir: column, $jc: flex-end);
+    @include d-flex($dir: column, $jc: flex-start);
     position: relative;
-    padding: 3rem;
 
     &.opponent{
-      justify-content: flex-start;
+      justify-content: flex-end;
 
       & .game-board__player-area{
+        top: 0;
         align-items: flex-start;
       }
     }
   }
 
+  &__cards-area{
+    padding: 3rem;
+    min-height: 18rem;
+  }
+
   &__player-area{
+    @include abs($l: 0, $b: 0);
+    width: 100%;
     @include d-flex($jc: space-between, $ai: flex-end);
+    padding: 3rem;
+    pointer-events: none;
+
+    & .game-board__player-hud, .player-hand, .game-board__player-side{
+      pointer-events: all;
+    }
   }
 
   &__player-side{
@@ -186,6 +199,20 @@
     &__cards-area{
       @include d-flex($ai: flex-end);
       @include m-not-last(6rem, r);
+    }
+  }
+}
+
+.game-cards-in-play{
+  @include d-flex($jc: center, $ai: flex-end);
+  @include m-not-last(6rem, r);
+
+  & app-card{
+    @include rect(12rem, 18rem);
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.25);
+
+    & .card-front{
+      transform: scaleCardTo(12rem);
     }
   }
 }
@@ -399,5 +426,21 @@
 
   &:hover{
     transform: translateY(3rem) scale(1);
+  }
+}
+
+.game-cards-queue{
+  @include abs-center-y();
+  @include d-flex($center: true);
+  left: 5rem;
+  z-index: 700;
+
+  & app-card{
+    @include rect(30rem, 45rem);
+    margin-right: -10rem;
+
+    & .card-front{
+      transform: scaleCardTo(30rem);
+    }
   }
 }

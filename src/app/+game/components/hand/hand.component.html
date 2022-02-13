@@ -1,28 +1,26 @@
 <div
+  *ngIf="cards.length"
+  @fadeInOut
   class="player-hand folded-cards"
   [class.opponent]="opponent"
   appFoldedCards
 >
-  <ng-container
-    *ngFor="let card of cards"
-  >
+  <ng-container *ngIf="!opponent">
     <app-card
-      *ngIf="isCardPlayable(card) && !opponent"
-      @fadeInOut
+      *ngFor="let card of cards"
       appDraggableCard
       (played)="playCard(card)"
-      [class.playable]="isCardPlayable(card)"
+      [class.playable]="card.playable"
       [card]="card"
       [sleeveImgUrl]="sleeveImgUrl"
-      [reportLoad]="!loaded"
       size="big"
     ></app-card>
+  </ng-container>
+  <ng-container *ngIf="opponent">
     <app-card
-      *ngIf="!isCardPlayable(card) || opponent"
-      @fadeInOut
+      *ngFor="let card of cards"
       [card]="card"
       [sleeveImgUrl]="sleeveImgUrl"
-      [reportLoad]="!loaded"
       size="big"
     ></app-card>
   </ng-container>

@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import * as fromStore from '@core/store/reducer';
 import * as GameSelectors from '@core/game/store/game.selectors';
 import * as GameStateActions from '@core/game/store/game-state.actions';
 
-import { PlayerKey, PlayerOpponentLoadInfo } from '../game.types';
+import { InGameCard, PlayerKey, PlayerOpponentLoadInfo } from '../game.types';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameStateService {
+  cardPlayed$ = new Subject<number>();
+
   constructor(
     private store: Store<fromStore.AppState>
   ) { }
@@ -34,6 +36,10 @@ export class GameStateService {
 
   getCurrentTurnPhaseIndex = (): Observable<number> => {
     return this.store.select(GameSelectors.selectCurrentTurnPhaseIndex);
+  }
+
+  getCardsQueue = (): Observable<InGameCard[]> => {
+    return this.store.select(GameSelectors.selectCardsQueue);
   }
 
   choosePlayerHands = (): void => {

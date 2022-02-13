@@ -1,18 +1,27 @@
-<div class="game-turn-phases">
-  <div class="game-turn-phases__bar">
-    <div
-      class="game-turn-phases__bar__fill"
-      [style]="'width: ' + turnProgressPercentage + '%;'"
-    ></div>
-  </div>
-  <div class="game-turn-phases__phases">
-    <div
-      *ngFor="let phase of turnPhases; let i = index"
-      class="game-turn-phases__phases__item"
-      [class.past]="i < activeTurnPhaseIndex"
-      [class.active]="i === activeTurnPhaseIndex"
-    >
-      <img src="assets/img/icons/phases/{{ phase.name }}.svg" alt="Turn phase {{ phase.name }}">
+<div class="game-turns">
+  <button
+    *ngIf="turnPhaseButtonMsg"
+    @fadeInOut
+    class="game-turn-button"
+  >
+    {{ turnPhaseButtonMsg }}
+  </button>
+  <div class="game-turn-phases">
+    <div class="game-turn-phases__bar">
+      <div
+        class="game-turn-phases__bar__fill"
+        [style]="'width: ' + turnProgressPercentage + '%;'"
+      ></div>
+    </div>
+    <div class="game-turn-phases__phases">
+      <div
+        *ngFor="let phase of turnPhases; let i = index"
+        class="game-turn-phases__phases__item"
+        [class.past]="i < activeTurnPhaseIndex"
+        [class.active]="i === activeTurnPhaseIndex"
+      >
+        <img src="assets/img/icons/phases/{{ phase.name }}.svg" alt="Turn phase {{ phase.name }}">
+      </div>
     </div>
   </div>
 </div>

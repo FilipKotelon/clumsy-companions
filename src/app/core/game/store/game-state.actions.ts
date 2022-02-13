@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { GameStartRawData, InGameCard, PlayerKey, PlayerOpponentBundle } from '../game.types';
+import { GameStartRawData, HandCard, InGameCard, PlayerKey, PlayerOpponentBundle } from '../game.types';
 
 /* Actions changing the state of the game, like starting the game, ending, switching turns, phases */
 
@@ -12,10 +12,9 @@ export enum GameStateActionType {
   CHOOSE_HANDS = '[Game] Choose Hands',
   CHOOSE_FIRST_PLAYER = '[Game] Choose First Player',
   PLAY_CARD = '[Game] Play Card',
-  RESOLVE_COMPANION = '[Game] Resolve Companion',
-  RESOLVE_FOOD = '[Game] Resolve Food',
-  RESOLVE_CHARM = '[Game] Resolve Charm',
-  RESOLVE_TRICK = '[Game] Resolve Trick',
+  RESOLVE_CARD = '[Game] Resolve Card',
+  RESOLVE_CARD_IN_QUEUE = '[Game] Resolve Card In Queue',
+  RESOLVE_CARD_QUEUE = '[Game] Resolve Card Queue'
 }
 
 export const gameStart = createAction(GameStateActionType.START);
@@ -47,25 +46,19 @@ export const gameChooseFirstPlayer = createAction(
 
 export const gamePlayCard = createAction(
   GameStateActionType.PLAY_CARD,
-  props<{ card: InGameCard, playerKey: PlayerKey }>()
+  props<{ card: HandCard, playerKey: PlayerKey }>()
 );
 
-export const gameResolveCompanion = createAction(
-  GameStateActionType.RESOLVE_COMPANION,
-  props<{ card: InGameCard, playerKey: PlayerKey }>()
+export const gameResolveCard = createAction(
+  GameStateActionType.RESOLVE_CARD,
+  props<{ card: HandCard, playerKey: PlayerKey }>()
 );
 
-export const gameResolveFood = createAction(
-  GameStateActionType.RESOLVE_FOOD,
-  props<{ amount: number, playerKey: PlayerKey }>()
+export const gameResolveCardInQueue = createAction(
+  GameStateActionType.RESOLVE_CARD_IN_QUEUE,
+  props<{ card: HandCard }>()
 );
 
-export const gameResolveCharm = createAction(
-  GameStateActionType.RESOLVE_CHARM,
-  props<{ card: InGameCard, playerKey: PlayerKey }>()
-);
-
-export const gameResolveTrick = createAction(
-  GameStateActionType.RESOLVE_TRICK,
-  props<{ card: InGameCard, playerKey: PlayerKey }>()
+export const gameResolveCardQueue = createAction(
+  GameStateActionType.RESOLVE_CARD_QUEUE
 );

@@ -43,7 +43,8 @@ export class CoinFlipComponent implements OnInit, OnChanges, OnDestroy {
       if(this.messages.length < 3) {
         this.messages.push('...');
       } else {
-        const index = Math.floor(Math.random() * 2);
+        // const index = Math.floor(Math.random() * 2);
+        const index = 0;
         const options: PlayerKey[] = ['player', 'opponent'];
         const username = this.players[options[index]].username;
 

@@ -18,16 +18,13 @@
     </div>
   </div>
   <div class="player-hud__tokens">
-    <div
-      *ngIf="foodTokensToDisplay.length"
-      @fadeInOut
-      class="player-hud__tokens__column"
-    >
+    <div class="player-hud__tokens__column">
       <div class="player-hud__tokens__column__info">{{ currentFood + '/' + baseFood }}</div>
       <div
-        *ngFor="let token of foodTokensToDisplay"
+        *ngFor="let token of foodTokensToDisplay; let i = index"
         @fadeInOut
         class="player-hud__tokens__column__token"
+        [class.grey]="i > currentFood || currentFood === 0"
       >
         <img
           src="assets/img/icons/food-token-icon.svg"

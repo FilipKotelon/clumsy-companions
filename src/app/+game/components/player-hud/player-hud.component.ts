@@ -32,11 +32,15 @@ export class PlayerHudComponent extends ObjectLoadReporter implements OnInit, On
   }
 
   ngOnInit(): void {
+    const amountToDisplay = this.baseFood > 0 ? this.baseFood : 1;
     this.avatarLoadId = this.gameLoaderSvc.registerLoadingObject();
-    this.foodTokensToDisplay = new Array(this.currentFood).fill(1);
+    this.foodTokensToDisplay = new Array(amountToDisplay).fill(1);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.foodTokensToDisplay = new Array(changes.currentFood.currentValue).fill(1);
+    if(changes.baseFood){
+      const amountToDisplay = changes.baseFood.currentValue > 0 ? changes.baseFood.currentValue : 1;
+      this.foodTokensToDisplay = new Array(amountToDisplay).fill(1);
+    }
   }
 }

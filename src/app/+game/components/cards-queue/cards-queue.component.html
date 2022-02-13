@@ -1,0 +1,13 @@
+<div
+  *ngIf="cards.length"
+  @fadeInOut
+  class="game-cards-queue"
+>
+  <app-card
+    *ngFor="let card of cards"
+    @fadeInOut
+    [card]="card"
+    [sleeveImgUrl]="sleeveImgUrl"
+    size="big"
+  ></app-card>
+</div>
