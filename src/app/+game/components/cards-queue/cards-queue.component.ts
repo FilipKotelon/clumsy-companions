@@ -14,16 +14,18 @@ export class CardsQueueComponent implements OnInit {
   @Input() cards: InGameCard[] = [];
 
   cardsInQueueSub: Subscription;
+  cardsTimeout: NodeJS.Timeout;
 
   constructor(private gameStateSvc: GameStateService) {}
 
   ngOnInit(): void {
     this.cardsInQueueSub = this.gameStateSvc.getCardsQueue().subscribe(cards => {
-      if(this.cards.length > 0){
-        setTimeout(() => {
+      if(this.cards.length > cards.length){
+        this.cardsTimeout = setTimeout(() => {
           this.cards = cards;
         }, 3000);
       } else {
+        clearTimeout(this.cardsTimeout);
         this.cards = cards;
       }
     });

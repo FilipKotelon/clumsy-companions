@@ -6,7 +6,7 @@ import * as fromStore from '@core/store/reducer';
 import * as GameSelectors from '@core/game/store/game.selectors';
 import * as GameStateActions from '@core/game/store/game-state.actions';
 
-import { InGameCard, PlayerKey, PlayerOpponentLoadInfo } from '../game.types';
+import { ContinuationApproval, CounterPlayStatus, InGameCard, PlayerKey, PlayerOpponentLoadInfo } from '../game.types';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +20,10 @@ export class GameStateService {
 
   getPlayers = (): Observable<PlayerOpponentLoadInfo> => {
     return this.store.select(GameSelectors.selectPlayers);
+  }
+
+  getCurrentPlayerKey = (): Observable<PlayerKey> => {
+    return this.store.select(GameSelectors.selectCurrentPlayerKey);
   }
 
   getIsPreparing = (): Observable<boolean> => {
@@ -40,6 +44,14 @@ export class GameStateService {
 
   getCardsQueue = (): Observable<InGameCard[]> => {
     return this.store.select(GameSelectors.selectCardsQueue);
+  }
+
+  getCounterPlayStatus = (): Observable<CounterPlayStatus> => {
+    return this.store.select(GameSelectors.selectCounterPlayStatus);
+  }
+
+  getContinuationApproval = (): Observable<ContinuationApproval> => {
+    return this.store.select(GameSelectors.selectContinuationApproval);
   }
 
   choosePlayerHands = (): void => {

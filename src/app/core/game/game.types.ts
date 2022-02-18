@@ -112,7 +112,7 @@ export interface InGamePLayerBaseData {
   readonly baseFood: number;
   hand: HandCard[];
   sleepyard: SleepyardCard[];
-  cardsInPlay: InGameCard[];
+  cardsInPlay: CardInPlay[];
   energy: number;
   currentFood: number;
   hasTurn: boolean;
@@ -132,37 +132,62 @@ export enum TurnPhaseType {
   Action = 'action'
 }
 
+export type TurnPhaseName =
+  'preparation-first'
+  | 'attack'
+  | 'defense'
+  | 'damage'
+  | 'preparation-last';
+
 export interface TurnPhase {
   type: TurnPhaseType;
-  name: string;
+  name: TurnPhaseName;
+  iconName: string;
 }
 
 //IMPORTANT: Names in the phases are used as keys to get their icons, keep that in mind when changing
 export const TURN_PHASES: TurnPhase[] = [
   {
     type: TurnPhaseType.Preparation,
-    name: 'preparation'
+    name: 'preparation-first',
+    iconName: 'preparation'
   },
   {
     type: TurnPhaseType.Action,
-    name: 'attack'
+    name: 'attack',
+    iconName: 'attack'
   },
   {
     type: TurnPhaseType.Action,
-    name: 'defense'
+    name: 'defense',
+    iconName: 'defense'
   },
   {
     type: TurnPhaseType.Action,
-    name: 'damage'
+    name: 'damage',
+    iconName: 'damage'
   },
   {
     type: TurnPhaseType.Preparation,
-    name: 'preparation'
+    name: 'preparation-last',
+    iconName: 'preparation'
   }
 ];
 
 export interface InGameTurnPhase extends TurnPhase {
   active: boolean;
+}
+
+export enum TurnPhaseButtonActionType {
+  None,
+  NextPhase,
+  SkipTo,
+  SkipTurn
+}
+
+export interface TurnPhaseButtonActionPayload {
+  type: TurnPhaseButtonActionType;
+  phaseName?: TurnPhaseName;
 }
 
 export interface ContinuationApproval {

@@ -20,6 +20,11 @@ export const selectOpponent = createSelector(
   (state: fromGame.State) => state.opponent
 );
 
+export const selectCurrentPlayerKey = createSelector(
+  selectGame,
+  (state: fromGame.State) => state.currentPlayerKey
+);
+
 export const selectIsLoaded = createSelector(
   selectGame,
   (state: fromGame.State) => !state.initialLoading
@@ -48,6 +53,11 @@ export const selectCurrentTurnPhaseIndex = createSelector(
 export const selectCardsQueue = createSelector(
   selectGame,
   (state: fromGame.State) => state.cardsQueue
+);
+
+export const selectCounterPlayStatus = createSelector(
+  selectGame,
+  (state: fromGame.State) => state.counterPlayStatus
 );
 
 export const selectContinuationApproval = createSelector(
