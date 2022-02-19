@@ -1,29 +1,37 @@
 import { Component, OnInit } from '@angular/core';
+import { GamePlayerService } from '@core/game/game-player/game-player.service';
 import { GameStateService } from '@core/game/game-state/game-state.service';
-import { CardInPlay, ContinuationApproval, CounterPlayStatus, InGameTurnPhase, PlayerKey, PlayerOpponentLoadInfo, TurnPhase, TurnPhaseButtonActionPayload, TURN_PHASES } from '@core/game/game.types';
+import { CardInPlay, ContinuationApproval, CounterPlayStatus, InGameTurnPhase, PlayerKey, PlayerOpponentLoadInfo, TurnPhase, TurnPhaseButtonActionPayload, TurnPhaseButtonActionType, TURN_PHASES } from '@core/game/game.types';
+import { fadeInOut } from '@shared/animations/component-animations';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-turn-phase-bar',
   templateUrl: './turn-phase-bar.component.html',
-  styleUrls: ['./turn-phase-bar.component.scss']
+  styleUrls: ['./turn-phase-bar.component.scss'],
+  animations: [fadeInOut]
 })
 export class TurnPhaseBarComponent implements OnInit {
-  buttonActionPayload: TurnPhaseButtonActionPayload;
-  continuationApproval: ContinuationApproval;
+  buttonActionPayload: TurnPhaseButtonActionPayload = null;
+  continuationApproval: ContinuationApproval = null;
   continuationApprovalSub: Subscription;
-  counterPlayStatus: CounterPlayStatus;
+  counterPlayStatus: CounterPlayStatus = null;
   counterPlayStatusSub: Subscription;
-  curPhase: TurnPhase;
-  currentPlayerKey: PlayerKey;
+  curPhase: TurnPhase = null;
+  currentPlayerKey: PlayerKey = null;
   currentPlayerKeySub: Subscription;
-  players: PlayerOpponentLoadInfo;
+  players: PlayerOpponentLoadInfo = null;
   playersSub: Subscription;
+  transitioning: boolean = false;
+  transitioningSub: Subscription;
   turnPhaseButtonMsg: string;
   turnPhases: InGameTurnPhase[] = [];
   turnPhaseSub: Subscription;
 
-  constructor(private gameStateSvc: GameStateService) { }
+  constructor(
+    private gameStateSvc: GameStateService,
+    private gamePlayerSvc: GamePlayerService
+  ) { }
 
   get turnProgressPercentage(): string {
     return ((this.activeTurnPhaseIndex / (this.turnPhases.length - 1)) * 100).toFixed(2);
@@ -46,14 +54,21 @@ export class TurnPhaseBarComponent implements OnInit {
 
     this.continuationApprovalSub = this.gameStateSvc.getContinuationApproval().subscribe(continuationApproval => {
       this.continuationApproval = continuationApproval;
+      this.setUpButton();
     });
 
     this.counterPlayStatusSub = this.gameStateSvc.getCounterPlayStatus().subscribe(counterPlayStatus => {
       this.counterPlayStatus = counterPlayStatus;
+      this.setUpButton();
     });
 
     this.playersSub = this.gameStateSvc.getPlayers().subscribe(players => {
       this.players = players;
+      this.setUpButton();
+    });
+
+    this.transitioningSub = this.gameStateSvc.getTransitioning().subscribe(transitioning => {
+      this.transitioning = transitioning;
       this.setUpButton();
     });
 
@@ -73,35 +88,72 @@ export class TurnPhaseBarComponent implements OnInit {
 
       this.setUpButton();
     });
+
+    this.setUpButton();
   }
 
   setUpButton = (): void => {
     let msg = 'Continue';
-    this.buttonActionPayload = {
-
+    let btnActionPayload: TurnPhaseButtonActionPayload = {
+      actionType: TurnPhaseButtonActionType.NextPhase
     };
+
+    if(this.transitioning){
+      this.turnPhaseButtonMsg = '...';
+      this.buttonActionPayload = {
+        actionType: TurnPhaseButtonActionType.None
+      };
+      return;
+    }
+
+    if(!this.continuationApproval
+      || !this.counterPlayStatus
+      || !this.curPhase
+      || !this.currentPlayerKey
+      || !this.players) {
+        this.turnPhaseButtonMsg = 'Loading...';
+        this.buttonActionPayload = {
+          actionType: TurnPhaseButtonActionType.None
+        };
+        return;
+      }
 
     if(this.counterPlayStatus.canCounter && this.counterPlayStatus.playerKey === 'player'){
       msg = 'Continue';
-      this.buttonActionType = {
-        
+
+      btnActionPayload = {
+        actionType: TurnPhaseButtonActionType.ApproveContinuation
       };
     } else if(this.currentPlayerKey === 'player'){
       switch(this.curPhase.name){
         case 'preparation-first':
-          if(this.players.player.cardsInPlay.length){
+          if(this.players.player.cardsInPlay.length && this.getHasPotentialAttackingCards('player')){
             msg = 'Go to attack phase';
           } else {
             if(this.getHasPlayableCards('player')){
               msg = 'Skip attacking';
+
+              btnActionPayload = {
+                actionType: TurnPhaseButtonActionType.SkipTo,
+                phaseName: 'preparation-last'
+              };
             } else {
               msg = 'End turn';
+
+              btnActionPayload = {
+                actionType: TurnPhaseButtonActionType.EndTurn
+              };
             }
           }
           break;
 
         case 'attack':
           msg = 'Skip attacking';
+
+          btnActionPayload = {
+            actionType: TurnPhaseButtonActionType.SkipTo,
+            phaseName: 'preparation-last'
+          };
 
           if(this.getHasAttackingCards('player')){
             msg = 'Confirm attackers';
@@ -110,6 +162,15 @@ export class TurnPhaseBarComponent implements OnInit {
 
         case 'defense':
           msg = 'Continue to damage';
+
+          if(this.getHasAttackingCards('player')){
+            msg = 'Continue to the end step';
+
+            btnActionPayload = {
+              actionType: TurnPhaseButtonActionType.SkipTo,
+              phaseName: 'preparation-last'
+            };
+          }
           break;
 
         case 'damage':
@@ -118,6 +179,10 @@ export class TurnPhaseBarComponent implements OnInit {
 
         case 'preparation-last':
           msg = 'End turn';
+
+          btnActionPayload = {
+            actionType: TurnPhaseButtonActionType.EndTurn
+          };
           break;
 
         default:
@@ -125,13 +190,51 @@ export class TurnPhaseBarComponent implements OnInit {
       }
     } else {
       msg = 'Opponent\'s turn';
+
+      btnActionPayload = {
+        actionType: TurnPhaseButtonActionType.None
+      };
+
+      switch(this.curPhase.name){
+        case 'defense':
+          if(this.getHasDefendingCards('player')){
+            msg = 'Confirm blockers';
+          } else {
+            msg = 'Skip blocking';
+          }
+          break;
+
+        default:
+          break;
+      }
     }
 
     this.turnPhaseButtonMsg = msg;
+    this.buttonActionPayload = btnActionPayload;
   }
 
   buttonAction = (): void => {
+    switch(this.buttonActionPayload.actionType){
+      case TurnPhaseButtonActionType.ApproveContinuation:
+        this.gamePlayerSvc.approveContinuation('player');
+        break;
 
+      case TurnPhaseButtonActionType.EndTurn:
+        this.gameStateSvc.endTurn();
+        break;
+
+      case TurnPhaseButtonActionType.NextPhase:
+        this.gameStateSvc.goToNextPhase();
+        break;
+
+      case TurnPhaseButtonActionType.SkipTo:
+        this.gameStateSvc.goToPhase(this.buttonActionPayload.phaseName);
+        break;
+
+      case TurnPhaseButtonActionType.None:
+      default:
+        break;
+    }
   }
 
   getHasAttackingCards = (playerKey: PlayerKey): boolean => {
@@ -144,5 +247,9 @@ export class TurnPhaseBarComponent implements OnInit {
 
   getHasPlayableCards = (playerKey: PlayerKey): boolean => {
     return this.players[playerKey].hand.filter(card => card.playable).length > 0;
+  }
+
+  getHasPotentialAttackingCards = (playerKey: PlayerKey): boolean => {
+    return this.players[playerKey].cardsInPlay.filter(card => !card.dizzy && !card.tired).length > 0;
   }
 }

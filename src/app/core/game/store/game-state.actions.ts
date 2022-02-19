@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { GameStartRawData, HandCard, InGameCard, PlayerKey, PlayerOpponentBundle } from '../game.types';
+import { GameStartRawData, HandCard, PlayerKey, PlayerOpponentBundle, TurnPhaseName } from '../game.types';
 
 /* Actions changing the state of the game, like starting the game, ending, switching turns, phases */
 
@@ -14,7 +14,16 @@ export enum GameStateActionType {
   PLAY_CARD = '[Game] Play Card',
   RESOLVE_CARD = '[Game] Resolve Card',
   RESOLVE_CARD_IN_QUEUE = '[Game] Resolve Card In Queue',
-  RESOLVE_CARD_QUEUE = '[Game] Resolve Card Queue'
+  RESOLVE_CARD_QUEUE = '[Game] Resolve Card Queue',
+  APPROVE_CONTINUATION = '[Game] Approve Continuation',
+  END_TURN = '[Game] End Turn',
+  END_TURN_RESOLVE = '[Game] End Turn Resolve',
+  GO_TO_NEXT_PHASE = '[Game] Go To Next Phase',
+  GO_TO_NEXT_PHASE_RESOLVE = '[Game] Go To Next Phase Resolve',
+  GO_TO_PHASE = '[Game] Go To Phase',
+  GO_TO_PHASE_RESOLVE = '[Game] Go To Phase Resolve',
+  SETUP_NEXT_TURN = '[Game] Setup Next Turn',
+  START_TURN = '[Game] Start Turn'
 }
 
 export const gameStart = createAction(GameStateActionType.START);
@@ -61,4 +70,43 @@ export const gameResolveCardInQueue = createAction(
 
 export const gameResolveCardQueue = createAction(
   GameStateActionType.RESOLVE_CARD_QUEUE
+);
+
+export const gameApproveContinuation = createAction(
+  GameStateActionType.APPROVE_CONTINUATION,
+  props<{ playerKey: PlayerKey }>()
+);
+
+export const gameEndTurn = createAction(
+  GameStateActionType.END_TURN
+);
+
+export const gameEndTurnResolve = createAction(
+  GameStateActionType.END_TURN_RESOLVE
+);
+
+export const gameGoToNextPhase = createAction(
+  GameStateActionType.GO_TO_NEXT_PHASE
+);
+
+export const gameGoToNextPhaseResolve = createAction(
+  GameStateActionType.GO_TO_NEXT_PHASE_RESOLVE
+);
+
+export const gameGoToPhase = createAction(
+  GameStateActionType.GO_TO_PHASE,
+  props<{ phaseName: TurnPhaseName }>()
+);
+
+export const gameGoToPhaseResolve = createAction(
+  GameStateActionType.GO_TO_PHASE_RESOLVE,
+  props<{ phaseName: TurnPhaseName }>()
+);
+
+export const gameSetupNextTurn = createAction(
+  GameStateActionType.SETUP_NEXT_TURN
+);
+
+export const gameStartTurn = createAction(
+  GameStateActionType.START_TURN
 );

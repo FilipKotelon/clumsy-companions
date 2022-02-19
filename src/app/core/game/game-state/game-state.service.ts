@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { Store } from '@ngrx/store';
 
+import * as fromGame from '@core/game/store/game.reducer';
 import * as fromStore from '@core/store/reducer';
 import * as GameSelectors from '@core/game/store/game.selectors';
 import * as GameStateActions from '@core/game/store/game-state.actions';
 
-import { ContinuationApproval, CounterPlayStatus, InGameCard, PlayerKey, PlayerOpponentLoadInfo } from '../game.types';
+import { ContinuationApproval, CounterPlayStatus, InGameCard, PlayerKey, PlayerOpponentLoadInfo, TurnPhaseName } from '../game.types';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,10 @@ export class GameStateService {
   constructor(
     private store: Store<fromStore.AppState>
   ) { }
+
+  getGameState = (): Observable<fromGame.State> => {
+    return this.store.select(GameSelectors.selectGame);
+  }
 
   getPlayers = (): Observable<PlayerOpponentLoadInfo> => {
     return this.store.select(GameSelectors.selectPlayers);
@@ -54,11 +59,27 @@ export class GameStateService {
     return this.store.select(GameSelectors.selectContinuationApproval);
   }
 
+  getTransitioning = (): Observable<boolean> => {
+    return this.store.select(GameSelectors.selectTransitioning);
+  }
+
   choosePlayerHands = (): void => {
     this.store.dispatch(GameStateActions.gameChoosePlayersHands());
   }
 
   chooseFirstPlayer = (playerKey: PlayerKey): void => {
     this.store.dispatch(GameStateActions.gameChooseFirstPlayer({ playerKey }));
+  }
+
+  endTurn = (): void => {
+    this.store.dispatch(GameStateActions.gameEndTurn());
+  }
+
+  goToNextPhase = (): void => {
+    this.store.dispatch(GameStateActions.gameGoToNextPhase());
+  }
+
+  goToPhase = (phaseName: TurnPhaseName): void => {
+    this.store.dispatch(GameStateActions.gameGoToPhase({ phaseName }));
   }
 }

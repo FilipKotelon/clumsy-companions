@@ -1,7 +1,9 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { GamePlayerService } from '@core/game/game-player/game-player.service';
+import { GameStateService } from '@core/game/game-state/game-state.service';
 import { HandCard, InGameCard } from '@core/game/game.types';
 import { fadeInOut } from '@shared/animations/component-animations';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-hand',
@@ -9,17 +11,31 @@ import { fadeInOut } from '@shared/animations/component-animations';
   styleUrls: ['./hand.component.scss'],
   animations: [fadeInOut]
 })
-export class HandComponent {
+export class HandComponent implements OnInit {
   @Input() cards: HandCard[] = [];
   @Input() opponent = false;
   @Input() sleeveImgUrl: string;
 
+  transitioning: boolean = false;
+  transitioningSub: Subscription;
+
   // handCards: HandCard[] = [];
 
-  constructor(private gamePlayerSvc: GamePlayerService) {}
+  constructor(
+    private gamePlayerSvc: GamePlayerService,
+    private gameStateSvc: GameStateService
+  ) {}
+
+  ngOnInit(): void {
+    this.transitioningSub = this.gameStateSvc.getTransitioning().subscribe(transitioning => {
+      this.transitioning = transitioning;
+    });
+  }
 
   playCard = (card: HandCard): void => {
-    this.gamePlayerSvc.playCard(card, 'player');
+    if(!this.transitioning){
+      this.gamePlayerSvc.playCard(card, 'player');
+    }
   }
 
   // ngOnInit(): void {

@@ -9,6 +9,7 @@ import { of } from 'rxjs';
 import { GameConnectorService } from '@core/game/game-connector/game-connector.service';
 
 import * as GameStateActions from '@core/game/store/game-state.actions';
+import * as GameEffectActions from '@core/game/store/game-effect.actions';
 import * as fromStore from '@core/store/reducer';
 import * as GameSelectors from '@core/game/store/game.selectors';
 
@@ -43,7 +44,6 @@ export class GameStateEffects {
     ofType(GameStateActions.gamePlayCard),
     withLatestFrom(this.store.select(GameSelectors.selectContinuationApproval)),
     tap(([{ type, ...payload }, approval]) => {
-      console.log(approval);
       if(approval.opponent && approval.player){
         this.store.dispatch(GameStateActions.gameResolveCard({ card: payload.card, playerKey: payload.playerKey }));
       }
@@ -66,4 +66,43 @@ export class GameStateEffects {
       }
     })
   ), { dispatch: false })
+
+  endTurn$ = createEffect(() => this.actions$.pipe(
+    ofType(
+      GameStateActions.gameEndTurn,
+      GameStateActions.gameGoToNextPhase,
+      GameStateActions.gameGoToPhase
+    ),
+    withLatestFrom(
+      this.store.select(GameSelectors.selectContinuationApproval),
+      this.store.select(GameSelectors.selectStateActionsQueue)
+    ),
+    tap(([action, approval, actionsQueue]) => {
+      if(approval.opponent && approval.player && actionsQueue.length){
+        this.store.dispatch(actionsQueue[actionsQueue.length - 1]());
+      }
+    })
+  ), { dispatch: false })
+
+  endTurnResolve$ = createEffect(() => this.actions$.pipe(
+    ofType(GameStateActions.gameEndTurnResolve),
+    switchMap(() => {
+      return of(GameStateActions.gameSetupNextTurn());
+    })
+  ))
+
+  setupNextTurn$ = createEffect(() => this.actions$.pipe(
+    ofType(GameStateActions.gameSetupNextTurn),
+    switchMap(() => {
+      return of(GameStateActions.gameStartTurn());
+    })
+  ))
+
+  startTurn$ = createEffect(() => this.actions$.pipe(
+    ofType(GameStateActions.gameStartTurn),
+    withLatestFrom(this.store.select(GameSelectors.selectCurrentPlayerKey)),
+    switchMap(([action, playerKey]) => {
+      return of(GameEffectActions.gameDrawXCards({ amount: 1, playerKey }));
+    })
+  ))
 }

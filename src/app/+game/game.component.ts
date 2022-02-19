@@ -1,4 +1,5 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AiService } from '@core/game/ai/ai.service';
 import { GameLoaderService } from '@core/game/game-loader/game-loader.service';
 
 @Component({
@@ -6,10 +7,18 @@ import { GameLoaderService } from '@core/game/game-loader/game-loader.service';
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']
 })
-export class GameComponent implements OnDestroy {
-  constructor(private gameLoaderSvc: GameLoaderService) { }
+export class GameComponent implements OnInit, OnDestroy {
+  constructor(
+    private gameLoaderSvc: GameLoaderService,
+    private aiService: AiService
+  ) { }
+
+  ngOnInit(): void {
+    this.aiService.init();
+  }
 
   ngOnDestroy(): void {
+    this.aiService.reset();
     this.gameLoaderSvc.reset();
   }
 }

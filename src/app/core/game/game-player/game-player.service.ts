@@ -12,6 +12,10 @@ import { HandCard, PlayerKey } from '../game.types';
 export class GamePlayerService {
   constructor(private store: Store<fromStore.AppState>) { }
 
+  approveContinuation = (playerKey: PlayerKey): void => {
+    this.store.dispatch(GameStateActions.gameApproveContinuation({ playerKey }));
+  }
+
   drawXCards = (x: number, playerKey: PlayerKey): void => {
     this.store.dispatch(GameEffectActions.gameDrawXCards({ amount: x, playerKey }));
   }

@@ -217,6 +217,11 @@
   }
 }
 
+.game-turn-button{
+  width: 100%;
+  margin-bottom: 3rem;
+}
+
 .game-turn-phases{
   position: relative;
   margin-bottom: 3.2rem;
@@ -424,7 +429,15 @@
     }
   }
 
-  &:hover{
+  &.blocked{
+    pointer-events: none;
+
+    & app-card{
+      outline-color: transparent;
+    }
+  }
+
+  &:not(.blocked):hover{
     transform: translateY(3rem) scale(1);
   }
 }

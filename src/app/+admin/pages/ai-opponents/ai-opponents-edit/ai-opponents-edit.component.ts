@@ -84,7 +84,7 @@ export class AiOpponentsEditComponent extends EditableOrNew {
       this.avatarsOptions = avatars;
       this.decksOptions = decks;
       this.packsOptions = packsOptions;
-      this.difficultyOptions = this.aiSvc.getAiDifficultySelectOptions();
+      this.difficultyOptions = this.aiOpponentsSvc.getAiDifficultySelectOptions();
 
       if(this.id){
         this.aiOpponentsSvc.getAIOpponent(this.id).subscribe(aiOpponent => {

@@ -179,14 +179,15 @@ export interface InGameTurnPhase extends TurnPhase {
 }
 
 export enum TurnPhaseButtonActionType {
+  ApproveContinuation,
+  EndTurn,
   None,
   NextPhase,
-  SkipTo,
-  SkipTurn
+  SkipTo
 }
 
 export interface TurnPhaseButtonActionPayload {
-  type: TurnPhaseButtonActionType;
+  actionType: TurnPhaseButtonActionType;
   phaseName?: TurnPhaseName;
 }
 

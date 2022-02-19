@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, CollectionReference, Query } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 import { AvatarMainData } from '@core/avatars/avatars.types';
+import { AIDifficulty } from '@core/game/ai/ai.types';
 import { MessageService } from '@core/message/message.service';
+import { SelectControlOption } from '@shared/components/controls/select-control/select-control.types';
 import { combineLatest, Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AIOpponent, AIOpponentMainData, AIOpponentQueryParams, AIOpponentWithThumbnail } from './ai-opponents.types';
@@ -111,5 +113,18 @@ export class AiOpponentsService {
 
         this.messageSvc.displayError('An error occurred while deleting this AI opponent.');
       });
+  }
+
+  getAiDifficultySelectOptions = (): SelectControlOption[] => {
+    return [
+      {
+        key: '',
+        value: 'Select AI difficulty'
+      },
+      ...Object.keys(AIDifficulty).map(key => ({
+        key,
+        value: AIDifficulty[key]
+      }))
+    ]
   }
 }

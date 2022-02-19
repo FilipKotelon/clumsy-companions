@@ -64,3 +64,13 @@ export const selectContinuationApproval = createSelector(
   selectGame,
   (state: fromGame.State) => state.continuationApproval
 );
+
+export const selectStateActionsQueue = createSelector(
+  selectGame,
+  (state: fromGame.State) => state.stateActionsQueue
+);
+
+export const selectTransitioning = createSelector(
+  selectGame,
+  (state: fromGame.State) => state.transitioning
+);

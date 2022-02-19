@@ -1,4 +1,4 @@
-import { createReducer } from '@ngrx/store';
+import { ActionCreator, createReducer } from '@ngrx/store';
 import { immerOn } from 'ngrx-immer/store';
 
 import { BuffData, CardInPlay, CompanionBaseStats, ContinuationApproval, CounterPlayStatus, EffectBasePayload, GameActiveEffects, HandCard, InGameCard, InGamePlayer, PlayerKey, TURN_PHASES } from '@core/game/game.types';
@@ -7,6 +7,7 @@ import * as GameEffectActions from './game-effect.actions';
 import * as GameStateActions from '@core/game/store/game-state.actions';
 import { shuffleCards } from '../game.helpers';
 import { CardType } from '@core/cards/cards.types';
+import { TypedAction } from '@ngrx/store/src/models';
 
 interface CardPlayableCheckPayload {
   player: InGamePlayer;
@@ -14,6 +15,7 @@ interface CardPlayableCheckPayload {
   hasTurn: boolean;
   canCounter: boolean;
   cardsInQueue: boolean;
+  transitioning: boolean;
 }
 
 interface CardPlayableCheckFullPayload extends CardPlayableCheckPayload {
@@ -62,15 +64,20 @@ const getCardPlayableCheckPayload = (draft: State, pcPayload: PlayerKeyAndCardPa
     turnPhaseIndex: draft.turnPhaseIndex,
     hasTurn,
     canCounter,
-    cardsInQueue: draft.cardsQueue.length > 0
+    cardsInQueue: draft.cardsQueue.length > 0,
+    transitioning: draft.transitioning
   }
 }
 
 const getIsCardPlayable = (payload: CardPlayableCheckFullPayload): boolean => {
-  const { card, player, turnPhaseIndex, hasTurn, canCounter, cardsInQueue } = payload;
+  const { card, player, turnPhaseIndex, hasTurn, canCounter, cardsInQueue, transitioning } = payload;
   const turnPhase = TURN_PHASES[turnPhaseIndex];
   let cardTypes: CardType[] = [];
   let canPayForCost = false;
+
+  if(transitioning){
+    return false;
+  }
 
   if(!hasTurn){
     if(canCounter){
@@ -123,7 +130,10 @@ const getOtherPlayerKey = (playerKey: PlayerKey): PlayerKey => {
 }
 
 const getHasPlayableCards = (hand: HandCard[], payload: CardPlayableCheckPayload): boolean => {
-  return hand.some(card => getIsCardPlayable({ ...payload, card }))
+  if(payload.transitioning){
+    return false;
+  }
+  return hand.some(card => getIsCardPlayable({ ...payload, card }));
 }
 
 const getValuesFromEffect = (effect: EffectBasePayload): CompanionBaseStats => {
@@ -213,12 +223,14 @@ export interface State {
   opponent: InGamePlayer;
   turn: number;
   turnPhaseIndex: number;
+  stateActionsQueue: ActionCreator<GameStateActions.GameStateActionType, () => TypedAction<GameStateActions.GameStateActionType>>[];
   effectsQueue: GameEffectActions.GameEffect[];
   cardsQueue: InGameCard[];
   activeEffects: GameActiveEffects;
   currentPlayerKey: PlayerKey;
   counterPlayStatus: CounterPlayStatus;
   continuationApproval: ContinuationApproval;
+  transitioning: boolean;
 }
 
 const gameStateFactory = (data: Partial<State> = {}): State => ({
@@ -232,6 +244,7 @@ const gameStateFactory = (data: Partial<State> = {}): State => ({
   opponent: getEmptyPlayer(),
   turn: 1,
   turnPhaseIndex: 0,
+  stateActionsQueue: [],
   effectsQueue: [],
   cardsQueue: [],
   activeEffects: {
@@ -241,6 +254,7 @@ const gameStateFactory = (data: Partial<State> = {}): State => ({
   currentPlayerKey: null,
   counterPlayStatus: getResetCounterPlayStatus(),
   continuationApproval: getResetContinuationApproval(),
+  transitioning: false,
   ...data
 });
 
@@ -253,7 +267,7 @@ export const gameReducer = createReducer(
 
       Object.keys(cleanState).forEach(key => {
         draft[key] = cleanState[key];
-      })
+      });
     }
   ),
   immerOn(
@@ -352,12 +366,15 @@ export const gameReducer = createReducer(
         case CardType.Companion:
           const { playable, ...companion } = action.card;
           draft[action.playerKey].cardsInPlay.push(
-            pipeCompanion({
-              ...companion,
-              dizzy: true,
-              attacking: false,
-              defending: false
-            }, draft.activeEffects)
+            pipeCompanion(
+              {
+                ...companion,
+                dizzy: true,
+                attacking: false,
+                defending: false
+              },
+              draft.activeEffects
+            )
           );
 
           if(action.card.effects && action.card.effects.length){
@@ -388,13 +405,115 @@ export const gameReducer = createReducer(
       ['player', 'opponent'].forEach(pKey => {
         const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, { playerKey: pKey as PlayerKey });
 
-        draft[pKey].hand.forEach(card => {
+        draft[pKey as PlayerKey].hand.forEach(card => {
           card.playable = getIsCardPlayable({
             ...cardPlayableCheckPayload,
             card
           });
         });
       });
+    }
+  ),
+
+  immerOn(
+    GameStateActions.gameApproveContinuation,
+    (draft, action) => {
+      draft.continuationApproval[action.playerKey] = true;
+    }
+  ),
+  immerOn(
+    GameStateActions.gameEndTurn,
+    GameStateActions.gameGoToNextPhase,
+    GameStateActions.gameGoToPhase,
+    (draft, action) => {
+      const otherPlayerKey = getOtherPlayerKey(draft.currentPlayerKey);
+      const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, { playerKey: otherPlayerKey });
+
+      draft.continuationApproval[draft.currentPlayerKey] = true;
+      draft.continuationApproval[otherPlayerKey] = !getHasPlayableCards(draft[otherPlayerKey].hand, cardPlayableCheckPayload);
+    }
+  ),
+  immerOn(
+    GameStateActions.gameEndTurn,
+    (draft, action) => {
+      draft.stateActionsQueue.push(GameStateActions.gameEndTurnResolve);
+    }
+  ),
+  immerOn(
+    GameStateActions.gameEndTurnResolve,
+    (draft, action) => {
+      draft.transitioning = true;
+    }
+  ),
+  immerOn(
+    GameStateActions.gameGoToNextPhase,
+    (draft, action) => {
+      draft.stateActionsQueue.push(GameStateActions.gameGoToNextPhaseResolve);
+    }
+  ),
+  immerOn(
+    GameStateActions.gameGoToNextPhaseResolve,
+    (draft, action) => {
+      draft.turnPhaseIndex++;
+    }
+  ),
+  immerOn(
+    GameStateActions.gameGoToPhase,
+    (draft, action) => {
+      draft.stateActionsQueue.push(GameStateActions.gameGoToPhaseResolve.bind(null, { phaseName: action.phaseName }));
+    }
+  ),
+  immerOn(
+    GameStateActions.gameGoToPhaseResolve,
+    (draft, action) => {
+      draft.turnPhaseIndex = TURN_PHASES.findIndex(phase => phase.name === action.phaseName);
+    }
+  ),
+  immerOn(
+    GameStateActions.gameEndTurnResolve,
+    GameStateActions.gameGoToNextPhaseResolve,
+    GameStateActions.gameGoToPhaseResolve,
+    (draft, action) => {
+      draft.stateActionsQueue.pop();
+    }
+  ),
+  immerOn(
+    GameStateActions.gameSetupNextTurn,
+    (draft, action) => {
+      draft.currentPlayerKey = getOtherPlayerKey(draft.currentPlayerKey);
+      draft.counterPlayStatus = getResetCounterPlayStatus(),
+      draft.continuationApproval = getResetContinuationApproval(),
+
+      ['player', 'opponent'].forEach(pKey => {
+        draft[pKey as PlayerKey].cardsInPlay.forEach(card => {
+          card.effectedPersonallyBy = [];
+          card.strength = card.baseStrength;
+          card.energy = card.baseEnergy;
+
+          const pipedCompanion = pipeCompanion(card, draft.activeEffects);
+
+          Object.keys(pipedCompanion).forEach(key => {
+            card[key] = pipedCompanion[key];
+          });
+        });
+
+        const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, { playerKey: pKey as PlayerKey });
+
+        draft[pKey as PlayerKey].hand.forEach(card => {
+          card.playable = getIsCardPlayable({
+            ...cardPlayableCheckPayload,
+            card
+          });
+        });
+      });
+    }
+  ),
+  immerOn(
+    GameStateActions.gameStartTurn,
+    (draft, action) => {
+      draft.turnPhaseIndex = 0;
+      draft.turn++;
+      draft.transitioning = false;
     }
   ),
 

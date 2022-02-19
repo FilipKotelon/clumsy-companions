@@ -3,6 +3,7 @@
   @fadeInOut
   class="player-hand folded-cards"
   [class.opponent]="opponent"
+  [class.blocked]="transitioning"
   appFoldedCards
 >
   <ng-container *ngIf="!opponent">
