@@ -115,7 +115,6 @@ export interface InGamePLayerBaseData {
   cardsInPlay: CardInPlay[];
   energy: number;
   currentFood: number;
-  hasTurn: boolean;
   playedFoodThisTurn: boolean;
 }
 

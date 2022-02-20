@@ -58,7 +58,6 @@ export class GameConnectorService {
       cardsInPlay: [],
       energy: PLAYER_SETTINGS.BASE_ENERGY,
       currentFood: PLAYER_SETTINGS.BASE_FOOD,
-      hasTurn: false,
       playedFoodThisTurn: false
     }
   }

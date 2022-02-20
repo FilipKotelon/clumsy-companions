@@ -3,7 +3,7 @@ import { SelectControlOption } from '@shared/components/controls/select-control/
 import { Subscription } from 'rxjs';
 import { GamePlayerService } from '../game-player/game-player.service';
 import { GameStateService } from '../game-state/game-state.service';
-import { PlayerKey } from '../game.types';
+import { HandCard, PlayerKey } from '../game.types';
 import { AIDifficulty, AI_SETTINGS } from './ai.types';
 
 import * as fromGame from '@core/game/store/game.reducer';
@@ -13,6 +13,8 @@ import { CardType } from '@core/cards/cards.types';
   providedIn: 'root'
 })
 export class AiService {
+  myPlayerKey: PlayerKey = 'opponent';
+
   gameState: fromGame.State;
   gameStateSub: Subscription;
   pretendingToThink: boolean;
@@ -22,21 +24,49 @@ export class AiService {
     private gameStateSvc: GameStateService
   ) { }
 
+  get myHand(): HandCard[] {
+    return this.gameState.opponent.hand;
+  }
+
   get iHaveTurn(): boolean {
-    return this.gameState.currentPlayerKey === 'opponent';
+    return this.gameState.currentPlayerKey === this.myPlayerKey;
   }
 
   get iHavePlayableCards(): boolean {
-    return this.gameState.opponent.hand.some(card => card.playable);
+    return this.myHand.some(card => card.playable);
+  }
+
+  get iAmWaiting(): boolean {
+    return !this.gameState.continuationApproval.player
+      || (this.gameState.counterPlayStatus.canCounter
+          && this.gameState.counterPlayStatus.playerKey === 'player')
+      || this.gameState.transitioning
+      || (!this.gameState.counterPlayStatus.canCounter
+        && (this.gameState.cardsQueue.length > 0
+          || this.gameState.effectsQueue.length > 0
+          || this.gameState.stateActionsQueue.length > 0));
+  }
+
+  get iCanCounter(): boolean {
+    return this.gameState.counterPlayStatus.canCounter
+      && this.gameState.counterPlayStatus.playerKey === this.myPlayerKey;
   }
 
   get iCanPlayFood(): boolean {
     return !this.gameState.opponent.playedFoodThisTurn
-      && this.gameState.opponent.hand.some(card => card.type === CardType.Food);
+      && this.myHand.some(card => card.type === CardType.Food);
   }
 
   get iCanPlayCompanion(): boolean {
-    return this.gameState.opponent.hand.some(card => card.type === CardType.Companion && card.playable);
+    return this.myHand.some(card => card.type === CardType.Companion && card.playable);
+  }
+
+  get iCanPlayCharm(): boolean {
+    return this.myHand.some(card => card.type === CardType.Charm && card.playable);
+  }
+
+  get iCanPlayTrick(): boolean {
+    return this.myHand.some(card => card.type === CardType.Trick && card.playable);
   }
 
   init = (): void => {
@@ -50,11 +80,22 @@ export class AiService {
   }
 
   reset = (): void => {
+    this.gameState = null;
     this.gameStateSub.unsubscribe();
   }
 
   analyze = (): void => {
-    if(this.pretendingToThink) return;
+    if(this.pretendingToThink || this.iAmWaiting) return;
+
+    if(this.iCanCounter){
+      if(this.iCanPlayTrick){
+        this.playTrickCard();
+        return;
+      } else {
+        this.approveContinuation();
+        return;
+      }
+    }
 
     if(this.iHaveTurn){
       if(this.iHavePlayableCards){
@@ -70,11 +111,33 @@ export class AiService {
           return;
         }
 
-        
-      } else {
+        if(this.iCanPlayCharm){
+          this.playCharmCard();
+          this.pretendToThink();
+          return;
+        }
 
+        if(this.iCanPlayTrick){
+          this.continue();
+          return;
+        }
+
+        this.continue();
+        return;
+      } else {
+        console.log('here');
+        this.continue();
+        return;
       }
     }
+  }
+
+  approveContinuation = (): void => {
+    this.gamePlayerService.approveContinuation(this.myPlayerKey);
+  }
+
+  continue = (): void => {
+    console.log('I will continue');
   }
 
   pretendToThink = (): void => {
@@ -87,18 +150,34 @@ export class AiService {
   }
 
   playFoodCard = (): void => {
-    const foodCard = this.gameState.opponent.hand.find(card => card.type === CardType.Food);
+    const foodCard = this.myHand.find(card => card.type === CardType.Food);
 
     if(foodCard){
-      this.gamePlayerService.playCard(foodCard, 'opponent');
+      this.gamePlayerService.playCard(foodCard, this.myPlayerKey);
     }
   }
 
   playCompanionCard = (): void => {
-    const companionCard = this.gameState.opponent.hand.find(card => card.type === CardType.Companion && card.playable);
+    const companionCard = this.myHand.find(card => card.type === CardType.Companion && card.playable);
 
     if(companionCard){
-      this.gamePlayerService.playCard(companionCard, 'opponent');
+      this.gamePlayerService.playCard(companionCard, this.myPlayerKey);
+    }
+  }
+
+  playCharmCard = (): void => {
+    const charmCard = this.myHand.find(card => card.type === CardType.Charm && card.playable);
+
+    if(charmCard){
+      this.gamePlayerService.playCard(charmCard, this.myPlayerKey);
+    }
+  }
+
+  playTrickCard = (): void => {
+    const trickCard = this.myHand.find(card => card.type === CardType.Trick && card.playable);
+
+    if(trickCard){
+      this.gamePlayerService.playCard(trickCard, this.myPlayerKey);
     }
   }
 }

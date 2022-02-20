@@ -35,7 +35,6 @@ const getEmptyPlayer = (): InGamePlayer => {
     cardsInPlay: [],
     energy: null,
     currentFood: null,
-    hasTurn: null,
     avatarImgUrl: null,
     gameObjectId: null,
     username: null,
@@ -115,8 +114,8 @@ const getIsCardPlayable = (payload: CardPlayableCheckFullPayload): boolean => {
 }
 
 const getResetContinuationApproval = (): ContinuationApproval => ({
-  player: false,
-  opponent: false
+  player: true,
+  opponent: true
 });
 
 const getResetCounterPlayStatus = (): CounterPlayStatus => ({
@@ -496,15 +495,6 @@ export const gameReducer = createReducer(
             card[key] = pipedCompanion[key];
           });
         });
-
-        const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, { playerKey: pKey as PlayerKey });
-
-        draft[pKey as PlayerKey].hand.forEach(card => {
-          card.playable = getIsCardPlayable({
-            ...cardPlayableCheckPayload,
-            card
-          });
-        });
       });
     }
   ),
@@ -514,6 +504,17 @@ export const gameReducer = createReducer(
       draft.turnPhaseIndex = 0;
       draft.turn++;
       draft.transitioning = false;
+
+      ['player', 'opponent'].forEach(pKey => {
+        const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, { playerKey: pKey as PlayerKey });
+
+        draft[pKey as PlayerKey].hand.forEach(card => {
+          card.playable = getIsCardPlayable({
+            ...cardPlayableCheckPayload,
+            card
+          });
+        });
+      });
     }
   ),
 
