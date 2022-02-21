@@ -57,16 +57,6 @@ export class GameStateEffects {
     })
   ), { dispatch: false })
 
-  resolveCardInQueue$ = createEffect(() => this.actions$.pipe(
-    ofType(GameStateActions.gameResolveCardInQueue),
-    withLatestFrom(this.store.select(GameSelectors.selectCardsQueue)),
-    tap(([{ type, ...payload }, cardsQueue]) => {
-      if(!cardsQueue.length){
-        this.store.dispatch(GameStateActions.gameResolveCardQueue());
-      }
-    })
-  ), { dispatch: false })
-
   endTurn$ = createEffect(() => this.actions$.pipe(
     ofType(
       GameStateActions.gameEndTurn,

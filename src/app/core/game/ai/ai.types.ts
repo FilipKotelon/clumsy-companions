@@ -3,5 +3,6 @@ export enum AIDifficulty {
 }
 
 export const AI_SETTINGS = {
-  PRETENDING_TIME_MS: 3000
+  PRETENDING_TIME_MS: 3000,
+  POTENTIALLY_WORTH_NUMBERS_ADVANTAGE: 3
 }

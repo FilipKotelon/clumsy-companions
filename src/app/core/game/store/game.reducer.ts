@@ -396,21 +396,19 @@ export const gameReducer = createReducer(
     (draft, action) => {
       const index = draft.cardsQueue.findIndex(card => card.gameObjectId === action.card.gameObjectId);
       draft.cardsQueue.splice(index, 1);
-    }
-  ),
-  immerOn(
-    GameStateActions.gameResolveCardQueue,
-    (draft, action) => {
-      ['player', 'opponent'].forEach(pKey => {
-        const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, { playerKey: pKey as PlayerKey });
 
-        draft[pKey as PlayerKey].hand.forEach(card => {
-          card.playable = getIsCardPlayable({
-            ...cardPlayableCheckPayload,
-            card
+      if(!draft.cardsQueue.length){
+        ['player', 'opponent'].forEach(pKey => {
+          const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, { playerKey: pKey as PlayerKey });
+  
+          draft[pKey as PlayerKey].hand.forEach(card => {
+            card.playable = getIsCardPlayable({
+              ...cardPlayableCheckPayload,
+              card
+            });
           });
         });
-      });
+      }
     }
   ),
 

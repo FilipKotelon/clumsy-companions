@@ -14,7 +14,6 @@ export enum GameStateActionType {
   PLAY_CARD = '[Game] Play Card',
   RESOLVE_CARD = '[Game] Resolve Card',
   RESOLVE_CARD_IN_QUEUE = '[Game] Resolve Card In Queue',
-  RESOLVE_CARD_QUEUE = '[Game] Resolve Card Queue',
   APPROVE_CONTINUATION = '[Game] Approve Continuation',
   END_TURN = '[Game] End Turn',
   END_TURN_RESOLVE = '[Game] End Turn Resolve',
@@ -66,10 +65,6 @@ export const gameResolveCard = createAction(
 export const gameResolveCardInQueue = createAction(
   GameStateActionType.RESOLVE_CARD_IN_QUEUE,
   props<{ card: HandCard }>()
-);
-
-export const gameResolveCardQueue = createAction(
-  GameStateActionType.RESOLVE_CARD_QUEUE
 );
 
 export const gameApproveContinuation = createAction(
