@@ -1,7 +1,7 @@
 import { ActionCreator, createReducer } from '@ngrx/store';
 import { immerOn } from 'ngrx-immer/store';
 
-import { BuffData, CardInPlay, CompanionBaseStats, ContinuationApproval, CounterPlayStatus, EffectBasePayload, GameActiveEffects, HandCard, InGameCard, InGamePlayer, PlayerKey, TURN_PHASES } from '@core/game/game.types';
+import { BuffData, CardFight, CardInPlay, CompanionBaseStats, ContinuationApproval, CounterPlayStatus, EffectBasePayload, GameActiveEffects, HandCard, InGameCard, InGamePlayer, PlayerKey, TURN_PHASES } from '@core/game/game.types';
 
 import * as GameEffectActions from './game-effect.actions';
 import * as GameStateActions from '@core/game/store/game-state.actions';
@@ -225,6 +225,7 @@ export interface State {
   stateActionsQueue: ActionCreator<GameStateActions.GameStateActionType, () => TypedAction<GameStateActions.GameStateActionType>>[];
   effectsQueue: GameEffectActions.GameEffect[];
   cardsQueue: InGameCard[];
+  fightQueue: CardFight[];
   activeEffects: GameActiveEffects;
   currentPlayerKey: PlayerKey;
   counterPlayStatus: CounterPlayStatus;
@@ -246,6 +247,7 @@ const gameStateFactory = (data: Partial<State> = {}): State => ({
   stateActionsQueue: [],
   effectsQueue: [],
   cardsQueue: [],
+  fightQueue: [],
   activeEffects: {
     auras: [],
     buffs: []
@@ -427,7 +429,8 @@ export const gameReducer = createReducer(
       const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, { playerKey: otherPlayerKey });
 
       draft.continuationApproval[draft.currentPlayerKey] = true;
-      draft.continuationApproval[otherPlayerKey] = !getHasPlayableCards(draft[otherPlayerKey].hand, cardPlayableCheckPayload);
+      draft.continuationApproval[otherPlayerKey] = otherPlayerKey === 'opponent'
+        || !getHasPlayableCards(draft[otherPlayerKey].hand, cardPlayableCheckPayload);
     }
   ),
   immerOn(
@@ -481,6 +484,13 @@ export const gameReducer = createReducer(
       draft.counterPlayStatus = getResetCounterPlayStatus(),
       draft.continuationApproval = getResetContinuationApproval(),
 
+      draft[draft.currentPlayerKey].playedFoodThisTurn = false;
+      draft[draft.currentPlayerKey].currentFood = draft[draft.currentPlayerKey].baseFood;
+      draft[draft.currentPlayerKey].cardsInPlay.forEach(card => {
+        card.dizzy = false;
+        card.tired = false;
+      });
+
       ['player', 'opponent'].forEach(pKey => {
         draft[pKey as PlayerKey].cardsInPlay.forEach(card => {
           card.effectedPersonallyBy = [];
@@ -517,6 +527,21 @@ export const gameReducer = createReducer(
   ),
 
   immerOn(
+    GameStateActions.gameChooseAttackers,
+    (draft, action) => {
+      const cardsIds = action.cards.map(card => card.gameObjectId);
+
+      draft[action.playerKey].cardsInPlay.forEach(card => {
+        if(cardsIds.includes(card.gameObjectId)){
+          card.attacking = true;
+        } else {
+          card.attacking = false;
+        }
+      });
+    }
+  ),
+
+  immerOn(
     GameEffectActions.gameShuffleDeck,
     (draft, action) => {
       draft[action.playerKey].deck = shuffleCards(draft[action.playerKey].deck);
@@ -537,6 +562,7 @@ export const gameReducer = createReducer(
           })
         });
       }
+      console.log('start');
     }
   )
 )

@@ -3,7 +3,7 @@ import { SelectControlOption } from '@shared/components/controls/select-control/
 import { Subscription } from 'rxjs';
 import { GamePlayerService } from '../game-player/game-player.service';
 import { GameStateService } from '../game-state/game-state.service';
-import { CardInPlay, HandCard, PlayerKey } from '../game.types';
+import { CardFight, CardInPlay, HandCard, PlayerKey, TURN_PHASES } from '../game.types';
 import { AIDifficulty, AI_SETTINGS } from './ai.types';
 
 import * as fromGame from '@core/game/store/game.reducer';
@@ -17,12 +17,17 @@ export class AiService {
 
   gameState: fromGame.State;
   gameStateSub: Subscription;
-  pretendingToThink: boolean;
+  iAmPretendingToThink: boolean;
 
   constructor(
     private gamePlayerService: GamePlayerService,
     private gameStateSvc: GameStateService
   ) { }
+
+  //#region my
+  get myCurrentEnergy(): number {
+    return this.gameState.opponent.energy;
+  }
 
   get myHand(): HandCard[] {
     return this.gameState.opponent.hand;
@@ -32,14 +37,38 @@ export class AiService {
     return this.gameState.opponent.cardsInPlay;
   }
 
-  get myCurrentEnergy(): number {
-    return this.gameState.opponent.energy;
+  get myPotentialBlockers(): CardInPlay[] {
+    return this.gameState[this.myPlayerKey].cardsInPlay.filter(card => !card.tired);
+  }
+  //#endregion
+
+  //#region player's
+  get playersAttackerWithMostStrength(): CardInPlay | null {
+    if(!this.playersAttackingCards.length){
+      return null;
+    }
+
+    let maxStrengthCard = this.playersAttackingCards[0];
+
+    this.playersAttackingCards.forEach(card => {
+      if(card.strength > maxStrengthCard.strength){
+        maxStrengthCard = card;
+      }
+    });
+
+    return maxStrengthCard;
   }
 
-  get opponentCardsInPlay(): CardInPlay[] {
+  get playersCardsInPlay(): CardInPlay[] {
     return this.gameState.player.cardsInPlay;
   }
 
+  get playersAttackingCards(): CardInPlay[] {
+    return this.gameState.player.cardsInPlay.filter(card => card.attacking);
+  }
+  //#endregion
+
+  //#region iHave
   get iHaveTurn(): boolean {
     return this.gameState.currentPlayerKey === this.myPlayerKey;
   }
@@ -60,40 +89,84 @@ export class AiService {
     return this.gameState[this.myPlayerKey].cardsInPlay.filter(card => !card.dizzy && !card.tired).length > 0;
   }
 
-  get iHaveNumbersAdvantage(): boolean {
-    return this.myCardsInPlay.length >= this.opponentCardsInPlay.length + AI_SETTINGS.POTENTIALLY_WORTH_NUMBERS_ADVANTAGE;
+  get iHavePotentialDefendingCards(): boolean {
+    return this.myPotentialBlockers.length > 0;
   }
 
+  get iHaveNumbersAdvantage(): boolean {
+    return this.myCardsInPlay.length >= this.playersCardsInPlay.length + AI_SETTINGS.POTENTIALLY_WORTH_NUMBERS_ADVANTAGE;
+  }
+  //#endregion
+
+  //#region iShould and iMust
   get iShouldAttack(): boolean {
-    const totalEnemyCompanionStrength = this.opponentCardsInPlay.length
-      ? this.opponentCardsInPlay.reduce((prev, card) => {
+    return this.cardsIShouldAttackWith.length > 0
+      || this.iMustDefendMyselfAtAllCost;
+  }
+
+  get iShouldDefend(): boolean {
+    return this.iMustDefendMyselfAtAllCost
+      || this.fightsIShouldTakeInDefense.length > 0;
+  }
+
+  get iMustDefendMyselfAtAllCost(): boolean {
+    const totalEnemyCompanionStrength = this.playersCardsInPlay.length
+      ? this.playersCardsInPlay.reduce((prev, card) => {
         prev += card.strength;
         return prev;
       }, 0)
       : 0;
 
-    return this.cardsIShouldAttackWith.length > 0
-      && this.myCurrentEnergy > totalEnemyCompanionStrength;
+    return this.myCurrentEnergy <= totalEnemyCompanionStrength;
   }
+  //#endregion
 
   get cardsIShouldAttackWith(): CardInPlay[] {
-    if(!this.opponentCardsInPlay.length){
-      return this.myCardsInPlay;
+    if(!this.playersCardsInPlay.length){
+      return this.myCardsInPlay.filter(card =>
+        card.strength > 0
+        && !card.dizzy && !card.tired
+      );
     }
 
-    const biggestEnemyCompanionStrength = this.opponentCardsInPlay.length
-      ? Math.max(...this.opponentCardsInPlay.map(card => card.strength))
+    const biggestEnemyCompanionStrength = this.playersCardsInPlay.length
+      ? Math.max(...this.playersCardsInPlay.map(card => card.strength))
       : 0;
 
-    const biggestEnemyCompanionEnergy = this.opponentCardsInPlay.length
-      ? Math.max(...this.opponentCardsInPlay.map(card => card.energy))
+    const biggestEnemyCompanionEnergy = this.playersCardsInPlay.length
+      ? Math.max(...this.playersCardsInPlay.map(card => card.energy))
       : 0;
 
     return this.myCardsInPlay.filter(card =>
       ((card.energy > biggestEnemyCompanionStrength && card.strength >= biggestEnemyCompanionEnergy)
         || this.iHaveNumbersAdvantage)
       && card.strength > 0
+      && !card.dizzy && !card.tired
     );
+  }
+
+  get fightsIShouldTakeInDefense(): CardFight[] {
+    const fights: CardFight[] = [];
+    const playerCardsIBlocked: CardInPlay[] = [];
+    const myCardsIBlockWith: CardInPlay[] = [];
+    const playersAttackingCardsSortedByStrengthASC = [...this.playersAttackingCards].sort((a, b) => a.strength - b.strength);
+    const cardsICanBlockWith = [...this.myPotentialBlockers];
+
+    while(playerCardsIBlocked.length < this.playersAttackingCards.length && myCardsIBlockWith.length < this.myPotentialBlockers.length){
+      const attacker = playersAttackingCardsSortedByStrengthASC.pop();
+      const defender = this.chooseCardIShouldDefendWith(cardsICanBlockWith, attacker);
+
+      if(attacker && defender){
+        playerCardsIBlocked.push(attacker);
+        myCardsIBlockWith.push(defender);
+        cardsICanBlockWith.splice(cardsICanBlockWith.findIndex(card => card.gameObjectId === defender.gameObjectId), 1);
+        fights.push({ attacker, defender });
+      } else {
+        break;
+      }
+    }
+
+    return fights;
   }
 
   get iAmWaiting(): boolean {
@@ -104,9 +177,12 @@ export class AiService {
       || (!this.gameState.counterPlayStatus.canCounter
         && (this.gameState.cardsQueue.length > 0
           || this.gameState.effectsQueue.length > 0
-          || this.gameState.stateActionsQueue.length > 0));
+          || this.gameState.stateActionsQueue.length > 0
+          || (this.gameState.currentPlayerKey === 'player'
+            && TURN_PHASES[this.gameState.turnPhaseIndex].name !== 'defense')));
   }
 
+  //#region iCan
   get iCanCounter(): boolean {
     return this.gameState.counterPlayStatus.canCounter
       && this.gameState.counterPlayStatus.playerKey === this.myPlayerKey;
@@ -128,7 +204,9 @@ export class AiService {
   get iCanPlayTrick(): boolean {
     return this.myHand.some(card => card.type === CardType.Trick && card.playable);
   }
+  //#endregion
 
+  //#region its
   get itsFirstPreparationPhase(): boolean {
     return this.gameState.turnPhaseIndex === 0;
   }
@@ -148,6 +226,7 @@ export class AiService {
   get itsLastPreparationPhase(): boolean {
     return this.gameState.turnPhaseIndex === 4;
   }
+  //#endregion
 
   init = (): void => {
     this.gameStateSub = this.gameStateSvc.getGameState().subscribe(state => {
@@ -165,41 +244,37 @@ export class AiService {
   }
 
   analyze = (): void => {
-    if(this.pretendingToThink || this.iAmWaiting) return;
+    if(this.iAmPretendingToThink || this.iAmWaiting) return;
 
     if(this.iCanCounter){
-      if(this.iCanPlayTrick){
-        this.playTrickCard();
-        return;
-      } else {
-        this.approveContinuation();
-        return;
-      }
+      this.approveContinuation();
+      return;
     }
 
     if(this.iHaveTurn){
       if(this.itsFirstPreparationPhase || this.itsLastPreparationPhase){
         if(this.iHavePlayableCards){
           if(this.iCanPlayFood){
-            this.playFoodCard();
             this.pretendToThink();
+            this.playFoodCard();
             return;
           }
           
           if(this.iCanPlayCompanion){
-            this.playCompanionCard();
             this.pretendToThink();
+            this.playCompanionCard();
             return;
           }
   
           if(this.iCanPlayCharm){
-            this.playCharmCard();
             this.pretendToThink();
+            this.playCharmCard();
             return;
           }
   
           if(this.iCanPlayTrick){
-            this.continue();
+            this.pretendToThink();
+            this.playTrickCard();
             return;
           }
   
@@ -210,12 +285,38 @@ export class AiService {
           return;
         }
       } else if (this.itsAttackPhase){
-
+        if(this.iHavePotentialAttackingCards && this.iShouldAttack){
+          if(this.iHaveAttackingCards){
+            this.continue();
+            return;
+          } else {
+            this.chooseAttackers();
+            return;
+          }
+        } else {
+          this.continue();
+          return;
+        }
       } else if (this.itsDefendingPhase){
-
+        this.approveContinuation();
+        return;
       } else if (this.itsDamagePhase){
-
+        this.approveContinuation();
+        return;
       }
+    } else {
+      if(this.itsDefendingPhase){
+        if(this.iHavePotentialDefendingCards && this.iShouldDefend && this.fightsIShouldTakeInDefense.length){
+          this.chooseFightsInDefense();
+          return;
+        } else {
+          this.approveContinuation();
+          return;
+        }
+      }
+
+      this.approveContinuation();
+      return;
     }
   }
 
@@ -226,10 +327,13 @@ export class AiService {
   continue = (): void => {
     if(this.itsFirstPreparationPhase){
       if(this.iHavePotentialAttackingCards){
-        
+        this.gameStateSvc.goToNextPhase();
+        return;
+      } else {
+        this.gameStateSvc.endTurn();
+        this.pretendToThink();
+        return;
       }
-      this.pretendToThink();
-      return;
     }
 
     if(this.itsAttackPhase){
@@ -253,11 +357,80 @@ export class AiService {
     }
   }
 
+  chooseAttackers = (): void => {
+    this.gamePlayerService.chooseAttackers(this.cardsIShouldAttackWith, this.myPlayerKey);
+  }
+
+  chooseFightsInDefense = (): void => {
+    this.gamePlayerService.chooseFightsInDefense(this.fightsIShouldTakeInDefense, this.myPlayerKey);
+  }
+
+  chooseCardIShouldDefendWith = (blockers: CardInPlay[], playerCard: CardInPlay): CardInPlay | null => {
+    const blockerWithMostStrength = this.chooseMyPotentialBlockerWithMostStrength(blockers);
+    if(blockerWithMostStrength){
+      if(blockerWithMostStrength.strength > playerCard.energy){
+        return blockerWithMostStrength;
+      } else {
+        return this.chooseMyPotentialBlockerWithLeastStrength(blockers);
+      }
+    }
+
+    return null;
+  }
+
+  chooseMyPotentialBlockerWithMostStrength = (blockers: CardInPlay[]): CardInPlay | null => {
+    if(!blockers.length){
+      return null;
+    }
+
+    let maxStrengthCard = blockers[0];
+
+    blockers.forEach(card => {
+      if(card.strength > maxStrengthCard.strength){
+        maxStrengthCard = card;
+      }
+    });
+
+    return maxStrengthCard;
+  }
+
+  chooseMyPotentialBlockerWithMostEnergy = (blockers: CardInPlay[]): CardInPlay | null => {
+    if(!blockers.length){
+      return null;
+    }
+
+    let maxEnergyCard = blockers[0];
+
+    blockers.forEach(card => {
+      if(card.energy > maxEnergyCard.energy){
+        maxEnergyCard = card;
+      }
+    });
+
+    return maxEnergyCard;
+  }
+
+  chooseMyPotentialBlockerWithLeastStrength = (blockers: CardInPlay[]): CardInPlay | null => {
+    if(!blockers.length){
+      return null;
+    }
+
+    let minStrengthCard = blockers[0];
+
+    blockers.forEach(card => {
+      if(card.strength < minStrengthCard.strength){
+        minStrengthCard = card;
+      }
+    });
+
+    return minStrengthCard;
+  }
+
   pretendToThink = (): void => {
-    this.pretendingToThink = true;
+    this.iAmPretendingToThink = true;
 
     setTimeout(() => {
-      this.pretendingToThink = false;
+      this.iAmPretendingToThink = false;
       this.analyze();
     }, AI_SETTINGS.PRETENDING_TIME_MS);
   }

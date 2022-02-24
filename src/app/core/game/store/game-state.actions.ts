@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { GameStartRawData, HandCard, PlayerKey, PlayerOpponentBundle, TurnPhaseName } from '../game.types';
+import { CardFight, CardInPlay, GameStartRawData, HandCard, PlayerKey, PlayerOpponentBundle, TurnPhaseName } from '../game.types';
 
 /* Actions changing the state of the game, like starting the game, ending, switching turns, phases */
 
@@ -22,7 +22,9 @@ export enum GameStateActionType {
   GO_TO_PHASE = '[Game] Go To Phase',
   GO_TO_PHASE_RESOLVE = '[Game] Go To Phase Resolve',
   SETUP_NEXT_TURN = '[Game] Setup Next Turn',
-  START_TURN = '[Game] Start Turn'
+  START_TURN = '[Game] Start Turn',
+  CHOOSE_ATTACKERS = '[Game] Choose Attackers',
+  CHOOSE_FIGHTS_IN_DEFENSE = '[Game] Choose Fights In Defense'
 }
 
 export const gameStart = createAction(GameStateActionType.START);
@@ -104,4 +106,14 @@ export const gameSetupNextTurn = createAction(
 
 export const gameStartTurn = createAction(
   GameStateActionType.START_TURN
+);
+
+export const gameChooseAttackers = createAction(
+  GameStateActionType.CHOOSE_ATTACKERS,
+  props<{ cards: CardInPlay[], playerKey: PlayerKey }>()
+);
+
+export const gameChooseFightsInDefense = createAction(
+  GameStateActionType.CHOOSE_FIGHTS_IN_DEFENSE,
+  props<{ fights: CardFight[], playerKey: PlayerKey }>()
 );

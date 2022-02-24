@@ -108,6 +108,11 @@ export interface SleepyardCard extends InGameCard {
   turnsLeft: number;
 }
 
+export interface CardFight {
+  attacker: CardInPlay;
+  defender: CardInPlay;
+}
+
 export interface InGamePLayerBaseData {
   readonly baseFood: number;
   hand: HandCard[];
