@@ -244,6 +244,7 @@ export class AiService {
   }
 
   analyze = (): void => {
+    console.log(this.iAmWaiting);
     if(this.iAmPretendingToThink || this.iAmWaiting) return;
 
     if(this.iCanCounter){
@@ -326,7 +327,7 @@ export class AiService {
 
   continue = (): void => {
     if(this.itsFirstPreparationPhase){
-      if(this.iHavePotentialAttackingCards){
+      if(this.iHavePotentialAttackingCards && this.iShouldAttack){
         this.gameStateSvc.goToNextPhase();
         return;
       } else {
@@ -337,8 +338,12 @@ export class AiService {
     }
 
     if(this.itsAttackPhase){
-      this.pretendToThink();
-      return;
+      if(this.iHaveAttackingCards && this.iShouldAttack){
+        this.gameStateSvc.goToNextPhase();
+      } else {
+        this.gameStateSvc.endTurn();
+        return;
+      }
     }
 
     if(this.itsDefendingPhase){

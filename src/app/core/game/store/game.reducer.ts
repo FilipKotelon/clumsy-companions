@@ -475,6 +475,10 @@ export const gameReducer = createReducer(
     GameStateActions.gameGoToPhaseResolve,
     (draft, action) => {
       draft.stateActionsQueue.pop();
+      if(draft.turnPhaseIndex === 2){
+        draft.continuationApproval[draft.currentPlayerKey] = true;
+        draft.continuationApproval[getOtherPlayerKey(draft.currentPlayerKey)] = false;
+      }
     }
   ),
   immerOn(

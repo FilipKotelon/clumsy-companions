@@ -197,6 +197,9 @@ export class TurnPhaseBarComponent implements OnInit {
 
       switch(this.curPhase.name){
         case 'defense':
+          btnActionPayload = {
+            actionType: TurnPhaseButtonActionType.ApproveContinuation
+          };
           if(this.getHasDefendingCards('player')){
             msg = 'Confirm blockers';
           } else {

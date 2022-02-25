@@ -57,6 +57,21 @@ export class GameStateEffects {
     })
   ), { dispatch: false })
 
+  approveContinuation$ = createEffect(() => this.actions$.pipe(
+    ofType(GameStateActions.gameApproveContinuation),
+    withLatestFrom(
+      this.store.select(GameSelectors.selectContinuationApproval),
+      this.store.select(GameSelectors.selectCurrentTurnPhaseIndex)
+    ),
+    tap(([action, approval, turnPhaseIndex]) => {
+      if(approval.opponent && approval.player){
+        if(turnPhaseIndex === 2){
+          this.store.dispatch(GameStateActions.gameGoToNextPhase());
+        }
+      }
+    })
+  ), { dispatch: false })
+
   endTurn$ = createEffect(() => this.actions$.pipe(
     ofType(
       GameStateActions.gameEndTurn,
