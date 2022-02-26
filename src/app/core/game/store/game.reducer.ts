@@ -201,7 +201,7 @@ export const gameReducer = createReducer(
                 GameEffectActions.GameEffectActionType.SHUFFLE_DECK,
                 GameEffectActions.GameEffectActionType.HEAL_PLAYER,
                 GameEffectActions.GameEffectActionType.ADD_FOOD].includes(effect.action.type)){
-                payload.ownerId = action.card.playerKey;
+                payload.playerKey = action.card.playerKey;
               }
 
               if([GameEffectActions.GameEffectActionType.BUFF_TARGET,
@@ -220,12 +220,6 @@ export const gameReducer = createReducer(
                 GameEffectActions.GameEffectActionType.AURA_DEBUFF_ENEMIES,
                 GameEffectActions.GameEffectActionType.AURA_DEBUFF_ALL_EXCEPT].includes(effect.action.type)){
                 payload.originId = action.card.gameObjectId;
-              }
-
-              if([GameEffectActions.GameEffectActionType.HEAL_PLAYER,
-                GameEffectActions.GameEffectActionType.SHUFFLE_DECK,
-                GameEffectActions.GameEffectActionType.ADD_FOOD].includes(effect.action.type)){
-                payload.targetId = action.card.playerKey;
               }
 
               draft.effectsQueue.push({
@@ -488,6 +482,13 @@ export const gameReducer = createReducer(
           })
         });
       }
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameHealPlayer,
+    (draft, action) => {
+      console.log(action);
+      draft[action.playerKey].energy += action.amount;
     }
   )
 )

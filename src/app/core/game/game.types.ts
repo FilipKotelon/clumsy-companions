@@ -89,24 +89,20 @@ export interface EffectPayloadWithEffectValues {
   values: EffectValues;
 }
 
-export interface EffectPayloadWithOwnerId {
-  ownerId: string;
-}
-
 export interface EffectPayloadWithAmountAndTargetId extends EffectPayloadWithTargetId, EffectPayloadWithAmount {}
 
 export interface EffectPayloadWithAmountAndPlayerKey extends EffectPayloadWithPlayerKey, EffectPayloadWithAmount {}
 
-export interface EffectPayloadWithOwnerIdAndEffectValues extends EffectPayloadWithOwnerId, EffectPayloadWithEffectValues {}
+export interface EffectPayloadWithPlayerKeyAndEffectValues extends EffectPayloadWithPlayerKey, EffectPayloadWithEffectValues {}
 
-export interface EffectPayloadWithOwnerIdAndEffectValuesAndTargetId extends EffectPayloadWithOwnerIdAndEffectValues, EffectPayloadWithTargetId {}
+export interface EffectPayloadWithPlayerKeyAndEffectValuesAndTargetId extends EffectPayloadWithPlayerKeyAndEffectValues, EffectPayloadWithTargetId {}
 
 export type EffectPayloadType =
   EffectPayloadWithTargetId
   & EffectPayloadWithAmount
   & EffectPayloadWithPlayerKey
   & EffectPayloadWithEffectValues
-  & EffectPayloadWithOwnerId
+  & EffectPayloadWithPlayerKey
   & AuraPayload;
 
 export interface InGameCard {

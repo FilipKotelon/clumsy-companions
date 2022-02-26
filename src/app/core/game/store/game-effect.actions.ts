@@ -1,7 +1,7 @@
 import { Action, createAction, props } from '@ngrx/store';
 
 import { CardEffectType, CardType } from '@core/cards/cards.types';
-import { AuraPayload, EffectValues, EffectPayloadWithTargetId, EffectPayloadWithAmount, EffectPayloadWithAmountAndTargetId, EffectPayloadWithPlayerKey, EffectPayloadWithAmountAndPlayerKey, EffectPayloadWithOwnerIdAndEffectValuesAndTargetId, EffectPayloadWithOwnerIdAndEffectValues, EffectPayloadType } from '@core/game/game.types';
+import { AuraPayload, EffectPayloadWithTargetId, EffectPayloadWithAmount, EffectPayloadWithAmountAndTargetId, EffectPayloadWithPlayerKey, EffectPayloadWithAmountAndPlayerKey, EffectPayloadWithPlayerKeyAndEffectValuesAndTargetId, EffectPayloadWithPlayerKeyAndEffectValues, EffectPayloadType } from '@core/game/game.types';
 import { ActionCreator } from '@ngrx/store/src/models';
 
 /* Actions triggered by cards and everything within the TCG system */
@@ -123,24 +123,24 @@ export const gameDamageAllExcept = createAction(
 //#region Buff
 export const gameBuffTarget = createAction(
   GameEffectActionType.BUFF_TARGET,
-  props<EffectPayloadWithOwnerIdAndEffectValuesAndTargetId>()
+  props<EffectPayloadWithPlayerKeyAndEffectValuesAndTargetId>()
 );
 
 export const gameBuffAllies = createAction(
   GameEffectActionType.BUFF_ALLIES,
-  props<EffectPayloadWithOwnerIdAndEffectValues>()
+  props<EffectPayloadWithPlayerKeyAndEffectValues>()
 );
 //#endregion
 
 //#region Debuff
 export const gameDebuffTarget = createAction(
   GameEffectActionType.DEBUFF_TARGET,
-  props<EffectPayloadWithOwnerIdAndEffectValuesAndTargetId>()
+  props<EffectPayloadWithPlayerKeyAndEffectValuesAndTargetId>()
 );
 
 export const gameDebuffEnemies = createAction(
   GameEffectActionType.DEBUFF_ENEMIES,
-  props<EffectPayloadWithOwnerIdAndEffectValues>()
+  props<EffectPayloadWithPlayerKeyAndEffectValues>()
 );
 //#endregion
 

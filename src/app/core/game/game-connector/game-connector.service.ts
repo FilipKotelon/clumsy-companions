@@ -98,6 +98,11 @@ export class GameConnectorService {
 
       return {
         ...inGameCardEffect,
+        values: {
+          main: effect.values.main ? +effect.values.main : 0,
+          energy: effect.values.energy ? +effect.values.energy : 0,
+          strength: effect.values.strength ? +effect.values.strength : 0
+        },
         action: this.gameEffectsMap[action]
       };
     }));
