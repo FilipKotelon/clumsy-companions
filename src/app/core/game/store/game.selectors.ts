@@ -70,6 +70,16 @@ export const selectStateActionsQueue = createSelector(
   (state: fromGame.State) => state.stateActionsQueue
 );
 
+export const selectEffectsQueue = createSelector(
+  selectGame,
+  (state: fromGame.State) => state.effectsQueue
+);
+
+export const selectFightQueue = createSelector(
+  selectGame,
+  (state: fromGame.State) => state.fightQueue
+);
+
 export const selectTransitioning = createSelector(
   selectGame,
   (state: fromGame.State) => state.transitioning

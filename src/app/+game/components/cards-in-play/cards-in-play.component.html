@@ -3,6 +3,10 @@
     *ngFor="let card of cards"
     [card]="card"
     [sleeveImgUrl]="sleeveImgUrl"
+    [class.attacking]="card.attacking"
+    [class.defending]="card.defending"
+    [class.dizzy]="card.dizzy"
+    [class.tired]="card.tired"
     size="big"
   ></app-card>
 </div>

@@ -1,7 +1,7 @@
 import { Action, createAction, props } from '@ngrx/store';
 
 import { CardEffectType, CardType } from '@core/cards/cards.types';
-import { AuraPayload, EffectValues, PlayerKey } from '@core/game/game.types';
+import { AuraPayload, EffectValues, EffectPayloadWithTargetId, EffectPayloadWithAmount, EffectPayloadWithAmountAndTargetId, EffectPayloadWithPlayerKey, EffectPayloadWithAmountAndPlayerKey, EffectPayloadWithOwnerIdAndEffectValuesAndTargetId, EffectPayloadWithOwnerIdAndEffectValues, EffectPayloadType } from '@core/game/game.types';
 import { ActionCreator } from '@ngrx/store/src/models';
 
 /* Actions triggered by cards and everything within the TCG system */
@@ -16,8 +16,10 @@ export interface GameEffect {
   readonly cardEffectTypes: CardEffectType[];
   readonly cardTypes: CardType[];
   getAction: ActionCreator<GameEffectActionType>;
+  readonly payload?: Partial<EffectPayloadType>;
   readonly name: string;
   readonly onExecutionMsg?: string;
+  readonly type: GameEffectActionType;
 }
 
 export interface GameEffectMap {
@@ -71,6 +73,13 @@ export enum GameEffectActionType {
   //#endregion
 }
 
+export const TARGETED_GAME_EFFECT_ACTION_TYPES = [
+  GameEffectActionType.DESTROY_TARGET,
+  GameEffectActionType.DAMAGE_TARGET,
+  GameEffectActionType.BUFF_TARGET,
+  GameEffectActionType.DEBUFF_TARGET
+];
+
 //#endregion Action Types
 
 //#region Actions
@@ -78,60 +87,60 @@ export enum GameEffectActionType {
 //#region Destroy
 export const gameDestroyTarget = createAction(
   GameEffectActionType.DESTROY_TARGET,
-  props<{ targetId: string }>()
+  props<EffectPayloadWithTargetId>()
 );
 
 export const gameDestroyAll = createAction(GameEffectActionType.DESTROY_ALL);
 
 export const gameDestroyAllExcept = createAction(
   GameEffectActionType.DESTROY_ALL_EXCEPT,
-  props<{ targetId: string }>()
+  props<EffectPayloadWithTargetId>()
 );
 //#endregion
 
 //#region Damage
 export const gameDamageTarget = createAction(
   GameEffectActionType.DAMAGE_TARGET,
-  props<{ damage: number, targetId: string }>()
+  props<EffectPayloadWithAmountAndTargetId>()
 );
 
 export const gameDamageEnemies = createAction(
   GameEffectActionType.DAMAGE_ENEMIES,
-  props<{ damage: number }>()
+  props<EffectPayloadWithAmount>()
 );
 
 export const gameDamageAll = createAction(
   GameEffectActionType.DAMAGE_ALL,
-  props<{ damage: number }>()
+  props<EffectPayloadWithAmount>()
 );
 
 export const gameDamageAllExcept = createAction(
   GameEffectActionType.DAMAGE_ALL_EXCEPT,
-  props<{ damage: number, targetId: string }>()
+  props<EffectPayloadWithAmountAndTargetId>()
 );
 //#endregion
 
 //#region Buff
 export const gameBuffTarget = createAction(
   GameEffectActionType.BUFF_TARGET,
-  props<{ ownerId: string, values: EffectValues, targetId: string }>()
+  props<EffectPayloadWithOwnerIdAndEffectValuesAndTargetId>()
 );
 
 export const gameBuffAllies = createAction(
   GameEffectActionType.BUFF_ALLIES,
-  props<{ ownerId: string, values: EffectValues }>()
+  props<EffectPayloadWithOwnerIdAndEffectValues>()
 );
 //#endregion
 
 //#region Debuff
 export const gameDebuffTarget = createAction(
   GameEffectActionType.DEBUFF_TARGET,
-  props<{ ownerId: string, values: EffectValues, targetId: string }>()
+  props<EffectPayloadWithOwnerIdAndEffectValuesAndTargetId>()
 );
 
 export const gameDebuffEnemies = createAction(
   GameEffectActionType.DEBUFF_ENEMIES,
-  props<{ ownerId: string, values: EffectValues }>()
+  props<EffectPayloadWithOwnerIdAndEffectValues>()
 );
 //#endregion
 
@@ -160,26 +169,26 @@ export const gameAuraDebuffAllExcept = createAction(
 //#region Heal
 export const gameHealPlayer = createAction(
   GameEffectActionType.HEAL_PLAYER,
-  props<{ amount: number }>()
+  props<EffectPayloadWithAmountAndPlayerKey>()
 );
 //#endregion
 
 //#region Food
 export const gameAddFood = createAction(
   GameEffectActionType.ADD_FOOD,
-  props<{ amount: number }>()
+  props<EffectPayloadWithAmountAndPlayerKey>()
 );
 //#endregion
 
 //#region Other
 export const gameDrawXCards = createAction(
   GameEffectActionType.DRAW_X_CARDS,
-  props<{ amount: number, playerKey: PlayerKey }>()
+  props<EffectPayloadWithAmountAndPlayerKey>()
 );
 
 export const gameShuffleDeck = createAction(
   GameEffectActionType.SHUFFLE_DECK,
-  props<{ playerKey: PlayerKey }>()
+  props<EffectPayloadWithPlayerKey>()
 );
 //#endregion
 
@@ -199,7 +208,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
     ],
     getAction: gameDestroyTarget,
     name: 'Destroy a companion',
-    onExecutionMsg: 'Choose a companion to destroy.'
+    onExecutionMsg: 'Choose a companion to destroy.',
+    type: GameEffectActionType.DESTROY_TARGET
   },
 
   [GameEffectActionType.DESTROY_ALL]: {
@@ -212,7 +222,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
       CardType.Trick
     ],
     getAction: gameDestroyAll,
-    name: 'Destroy all companions'
+    name: 'Destroy all companions',
+    type: GameEffectActionType.DESTROY_ALL
   },
 
   [GameEffectActionType.DESTROY_ALL_EXCEPT]: {
@@ -224,7 +235,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
       CardType.Companion
     ],
     getAction: gameDestroyAllExcept,
-    name: 'Destroy all companions but this one'
+    name: 'Destroy all companions but this one',
+    type: GameEffectActionType.DESTROY_ALL_EXCEPT
   },
   //#endregion
   
@@ -241,7 +253,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
     ],
     getAction: gameDamageTarget,
     name: 'Damage a companion or player',
-    onExecutionMsg: 'Choose the target you want to damage'
+    onExecutionMsg: 'Choose the target you want to damage',
+    type: GameEffectActionType.DAMAGE_TARGET
   },
 
   [GameEffectActionType.DAMAGE_ENEMIES]: {
@@ -255,7 +268,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
       CardType.Trick
     ],
     getAction: gameDamageEnemies,
-    name: 'Damage enemies'
+    name: 'Damage enemies',
+    type: GameEffectActionType.DAMAGE_ENEMIES
   },
 
   [GameEffectActionType.DAMAGE_ALL]: {
@@ -269,7 +283,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
       CardType.Trick
     ],
     getAction: gameDamageAll,
-    name: 'Damage all companions'
+    name: 'Damage all companions',
+    type: GameEffectActionType.DAMAGE_ALL
   },
 
   [GameEffectActionType.DAMAGE_ALL_EXCEPT]: {
@@ -281,7 +296,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
       CardType.Companion
     ],
     getAction: gameDamageAllExcept,
-    name: 'Damage all companions but this one'
+    name: 'Damage all companions but this one',
+    type: GameEffectActionType.DAMAGE_ALL_EXCEPT
   },
   //#endregion
 
@@ -296,7 +312,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
     ],
     getAction: gameBuffTarget,
     name: 'Buff target until end of turn',
-    onExecutionMsg: 'Choose a companion to receive this effect until end of turn.'
+    onExecutionMsg: 'Choose a companion to receive this effect until end of turn.',
+    type: GameEffectActionType.BUFF_TARGET
   },
 
   [GameEffectActionType.BUFF_ALLIES]: {
@@ -308,7 +325,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
       CardType.Trick
     ],
     getAction: gameBuffAllies,
-    name: 'Buff allies until end of turn'
+    name: 'Buff allies until end of turn',
+    type: GameEffectActionType.BUFF_ALLIES
   },
   //#endregion
 
@@ -323,7 +341,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
     ],
     getAction: gameDebuffTarget,
     name: 'Debuff target until end of turn',
-    onExecutionMsg: 'Choose a companion to receive this effect until end of turn.'
+    onExecutionMsg: 'Choose a companion to receive this effect until end of turn.',
+    type: GameEffectActionType.DEBUFF_TARGET
   },
   
   [GameEffectActionType.DEBUFF_ENEMIES]: {
@@ -335,7 +354,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
       CardType.Trick
     ],
     getAction: gameDebuffEnemies,
-    name: 'Debuff enemies until end of turn'
+    name: 'Debuff enemies until end of turn',
+    type: GameEffectActionType.DEBUFF_ENEMIES
   },
   //#endregion
   
@@ -348,7 +368,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
       CardType.Companion
     ],
     getAction: gameAuraBuffAllies,
-    name: 'Buff allies'
+    name: 'Buff allies',
+    type: GameEffectActionType.AURA_BUFF_ALLIES
   },
 
   [GameEffectActionType.AURA_BUFF_ALLIES_EXCEPT]: {
@@ -359,7 +380,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
       CardType.Companion
     ],
     getAction: gameAuraBuffAlliesExcept,
-    name: 'Buff your other companions'
+    name: 'Buff your other companions',
+    type: GameEffectActionType.AURA_BUFF_ALLIES_EXCEPT
   },
 
   [GameEffectActionType.AURA_DEBUFF_ENEMIES]: {
@@ -370,7 +392,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
       CardType.Companion
     ],
     getAction: gameAuraDebuffEnemies,
-    name: 'Debuff enemies'
+    name: 'Debuff enemies',
+    type: GameEffectActionType.AURA_DEBUFF_ENEMIES
   },
 
   [GameEffectActionType.AURA_DEBUFF_ALL_EXCEPT]: {
@@ -381,7 +404,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
       CardType.Companion
     ],
     getAction: gameAuraDebuffAllExcept,
-    name: 'Debuff all companions but this one'
+    name: 'Debuff all companions but this one',
+    type: GameEffectActionType.AURA_DEBUFF_ALL_EXCEPT
   },
   //#endregion
 
@@ -397,7 +421,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
       CardType.Trick
     ],
     getAction: gameHealPlayer,
-    name: 'Heal player'
+    name: 'Heal player',
+    type: GameEffectActionType.HEAL_PLAYER
   },
   //#endregion
 
@@ -410,7 +435,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
       CardType.Food
     ],
     getAction: gameAddFood,
-    name: 'Add Food'
+    name: 'Add Food',
+    type: GameEffectActionType.ADD_FOOD
   },
   //#endregion
 
@@ -426,7 +452,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
       CardType.Trick
     ],
     getAction: gameDrawXCards,
-    name: 'Draw X Cards'
+    name: 'Draw X Cards',
+    type: GameEffectActionType.DRAW_X_CARDS
   },
 
   [GameEffectActionType.SHUFFLE_DECK]: {
@@ -440,7 +467,8 @@ export const getGameEffectsMap = (): GameEffectMap => ({
       CardType.Trick
     ],
     getAction: gameShuffleDeck,
-    name: 'Shuffle deck'
+    name: 'Shuffle deck',
+    type: GameEffectActionType.SHUFFLE_DECK
   },
   //#endregion
 });

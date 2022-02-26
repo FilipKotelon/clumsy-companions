@@ -244,7 +244,6 @@ export class AiService {
   }
 
   analyze = (): void => {
-    console.log(this.iAmWaiting);
     if(this.iAmPretendingToThink || this.iAmWaiting) return;
 
     if(this.iCanCounter){
@@ -299,10 +298,8 @@ export class AiService {
           return;
         }
       } else if (this.itsDefendingPhase){
-        this.approveContinuation();
         return;
       } else if (this.itsDamagePhase){
-        this.approveContinuation();
         return;
       }
     } else {

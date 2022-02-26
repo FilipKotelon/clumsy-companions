@@ -388,6 +388,13 @@ $effect-desc-size-big: 2.2rem;
   }
 }
 
+.game-card-status{
+  @include abs($r: 0, $t: 0);
+  @include square(4rem);
+  transform: translate(50%, -50%);
+  z-index: 10;
+}
+
 .card-property-input{
   text-align: center;
   width: 100%;

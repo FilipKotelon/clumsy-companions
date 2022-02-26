@@ -1,215 +1,13 @@
 import { ActionCreator, createReducer } from '@ngrx/store';
 import { immerOn } from 'ngrx-immer/store';
 
-import { BuffData, CardFight, CardInPlay, CompanionBaseStats, ContinuationApproval, CounterPlayStatus, EffectBasePayload, GameActiveEffects, HandCard, InGameCard, InGamePlayer, PlayerKey, TURN_PHASES } from '@core/game/game.types';
+import { CardFight, ContinuationApproval, CounterPlayStatus, EffectPayloadType, GameActiveEffects, InGameCard, InGamePlayer, PlayerKey, TURN_PHASES } from '@core/game/game.types';
 
 import * as GameEffectActions from './game-effect.actions';
 import * as GameStateActions from '@core/game/store/game-state.actions';
-import { shuffleCards } from '../game.helpers';
+import { getCardPlayableCheckPayload, getEmptyPlayer, getHasPlayableCards, getIsCardPlayable, getOtherPlayerKey, getResetContinuationApproval, getResetCounterPlayStatus, shuffleCards, pipeCompanion } from '../game.helpers';
 import { CardType } from '@core/cards/cards.types';
 import { TypedAction } from '@ngrx/store/src/models';
-
-interface CardPlayableCheckPayload {
-  player: InGamePlayer;
-  turnPhaseIndex: number;
-  hasTurn: boolean;
-  canCounter: boolean;
-  cardsInQueue: boolean;
-  transitioning: boolean;
-}
-
-interface CardPlayableCheckFullPayload extends CardPlayableCheckPayload {
-  card: InGameCard;
-}
-
-interface PlayerKeyAndCardPayload {
-  playerKey: PlayerKey;
-  card?: InGameCard;
-}
-
-const getEmptyPlayer = (): InGamePlayer => {
-  return {
-    baseFood: null,
-    hand: [],
-    sleepyard: [],
-    cardsInPlay: [],
-    energy: null,
-    currentFood: null,
-    avatarImgUrl: null,
-    gameObjectId: null,
-    username: null,
-    deck: [],
-    deckSleeveImgUrl: null,
-    playedFoodThisTurn: false
-  }
-}
-
-const getCardPlayableCheckPayload = (draft: State, pcPayload: PlayerKeyAndCardPayload): CardPlayableCheckPayload => {
-  const hasTurn = draft.currentPlayerKey === pcPayload.playerKey;
-  let canCounter = false;
-
-  if(pcPayload.card && !hasTurn){
-    if(pcPayload.card.type !== CardType.Food){
-      canCounter = true;
-    }
-  }
-
-  if(hasTurn && draft.counterPlayStatus.playerKey === draft.currentPlayerKey && draft.counterPlayStatus.canCounter){
-    canCounter = true;
-  }
-
-  return {
-    player: draft[pcPayload.playerKey],
-    turnPhaseIndex: draft.turnPhaseIndex,
-    hasTurn,
-    canCounter,
-    cardsInQueue: draft.cardsQueue.length > 0,
-    transitioning: draft.transitioning
-  }
-}
-
-const getIsCardPlayable = (payload: CardPlayableCheckFullPayload): boolean => {
-  const { card, player, turnPhaseIndex, hasTurn, canCounter, cardsInQueue, transitioning } = payload;
-  const turnPhase = TURN_PHASES[turnPhaseIndex];
-  let cardTypes: CardType[] = [];
-  let canPayForCost = false;
-
-  if(transitioning){
-    return false;
-  }
-
-  if(!hasTurn){
-    if(canCounter){
-      cardTypes = [CardType.Trick];
-      return cardTypes.includes(card.type);
-    } else {
-      return false;
-    }
-  }
-
-  if(cardsInQueue){
-    if(canCounter){
-      cardTypes = [CardType.Trick];
-      return cardTypes.includes(card.type);
-    } else {
-      return false;
-    }
-  }
-
-  if(turnPhase.type === 'action'){
-    cardTypes = [CardType.Trick];
-  } else {
-    cardTypes = [CardType.Food, CardType.Charm, CardType.Companion, CardType.Trick];
-  }
-
-  if(card.type === CardType.Food){
-    return cardTypes.includes(card.type) && !player.playedFoodThisTurn;
-  }
-
-  if(card.cost <= player.currentFood){
-    canPayForCost = true;
-  }
-
-  return cardTypes.includes(card.type) && canPayForCost;
-}
-
-const getResetContinuationApproval = (): ContinuationApproval => ({
-  player: true,
-  opponent: true
-});
-
-const getResetCounterPlayStatus = (): CounterPlayStatus => ({
-  playerKey: null,
-  canCounter: false
-});
-
-const getOtherPlayerKey = (playerKey: PlayerKey): PlayerKey => {
-  if(playerKey === 'opponent') return 'player';
-  return 'opponent';
-}
-
-const getHasPlayableCards = (hand: HandCard[], payload: CardPlayableCheckPayload): boolean => {
-  if(payload.transitioning){
-    return false;
-  }
-  return hand.some(card => getIsCardPlayable({ ...payload, card }));
-}
-
-const getValuesFromEffect = (effect: EffectBasePayload): CompanionBaseStats => {
-  const values: CompanionBaseStats = {
-    energy: 0,
-    strength: 0
-  };
-
-  if(effect.values.main){
-    values.energy = effect.values.main;
-    values.strength = effect.values.main;
-  }
-
-  if(effect.values.energy){
-    values.energy = effect.values.energy;
-  }
-
-  if(effect.values.energy){
-    values.strength = effect.values.strength;
-  }
-
-  return values;
-}
-
-const pipeCompanion = (card: CardInPlay, activeEffects: GameActiveEffects): CardInPlay => {
-  if(card.effectedPersonallyBy && card.effectedPersonallyBy.length){
-    card.effectedPersonallyBy.forEach(buff => {
-      const values = getValuesFromEffect(buff);
-
-      if(buff.positive){
-        card.energy += values.energy;
-        card.strength += values.strength;
-      } else {
-        card.energy -= values.energy;
-        card.strength -= values.strength;
-      }
-    })
-  }
-
-  if(activeEffects.auras.length){
-    activeEffects.auras.forEach(aura => {
-      if((aura.playerKey === card.currentPlayerKey && aura.target === 'allies')
-        || (aura.playerKey === card.currentPlayerKey && aura.target === 'allies-except' && aura.originId !== card.gameObjectId)
-        || (aura.target === 'all-except' && aura.originId !== card.gameObjectId)
-        || (aura.playerKey !== card.currentPlayerKey && aura.target === 'enemies')) {
-        const values = getValuesFromEffect(aura);
-  
-        if(aura.positive){
-          card.energy += values.energy;
-          card.strength += values.strength;
-        } else {
-          card.energy -= values.energy;
-          card.strength -= values.strength;
-        }
-      }
-    });
-  }
-
-  if(activeEffects.buffs.length){
-    activeEffects.buffs.forEach(buff => {
-      if((buff.playerKey === card.currentPlayerKey && buff.target === 'allies')
-        || (buff.playerKey !== card.currentPlayerKey && buff.target === 'enemies')) {
-        const values = getValuesFromEffect(buff);
-  
-        if(buff.positive){
-          card.energy += values.energy;
-          card.strength += values.strength;
-        } else {
-          card.energy -= values.energy;
-          card.strength -= values.strength;
-        }
-      }
-    });
-  }
-
-  return card;
-}
 
 export interface State {
   initialLoading: boolean;
@@ -377,16 +175,66 @@ export const gameReducer = createReducer(
               draft.activeEffects
             )
           );
-
-          if(action.card.effects && action.card.effects.length){
-            draft.effectsQueue.push(...action.card.effects.map(effect => effect.action))
-          }
-          break;
         case CardType.Charm:
         case CardType.Trick:
           if(action.card.effects && action.card.effects.length){
-            draft.effectsQueue.push(...action.card.effects.map(effect => effect.action))
+            action.card.effects.forEach(effect => {
+              const payload: Partial<EffectPayloadType> = {};
+
+              if([GameEffectActions.GameEffectActionType.ADD_FOOD,
+                GameEffectActions.GameEffectActionType.HEAL_PLAYER,
+                GameEffectActions.GameEffectActionType.DAMAGE_ALL,
+                GameEffectActions.GameEffectActionType.DAMAGE_ENEMIES,
+                GameEffectActions.GameEffectActionType.DAMAGE_TARGET].includes(effect.action.type)){
+                payload.amount = effect.values.main;
+              }
+
+              if([GameEffectActions.GameEffectActionType.BUFF_TARGET,
+                GameEffectActions.GameEffectActionType.BUFF_ALLIES,
+                GameEffectActions.GameEffectActionType.DEBUFF_TARGET,
+                GameEffectActions.GameEffectActionType.DEBUFF_ENEMIES,
+                GameEffectActions.GameEffectActionType.AURA_BUFF_ALLIES,
+                GameEffectActions.GameEffectActionType.AURA_BUFF_ALLIES_EXCEPT,
+                GameEffectActions.GameEffectActionType.AURA_DEBUFF_ENEMIES,
+                GameEffectActions.GameEffectActionType.AURA_DEBUFF_ALL_EXCEPT,
+                GameEffectActions.GameEffectActionType.DRAW_X_CARDS,
+                GameEffectActions.GameEffectActionType.SHUFFLE_DECK,
+                GameEffectActions.GameEffectActionType.HEAL_PLAYER,
+                GameEffectActions.GameEffectActionType.ADD_FOOD].includes(effect.action.type)){
+                payload.ownerId = action.card.playerKey;
+              }
+
+              if([GameEffectActions.GameEffectActionType.BUFF_TARGET,
+                GameEffectActions.GameEffectActionType.BUFF_ALLIES,
+                GameEffectActions.GameEffectActionType.DEBUFF_TARGET,
+                GameEffectActions.GameEffectActionType.DEBUFF_ENEMIES,
+                GameEffectActions.GameEffectActionType.AURA_BUFF_ALLIES,
+                GameEffectActions.GameEffectActionType.AURA_BUFF_ALLIES_EXCEPT,
+                GameEffectActions.GameEffectActionType.AURA_DEBUFF_ENEMIES,
+                GameEffectActions.GameEffectActionType.AURA_DEBUFF_ALL_EXCEPT].includes(effect.action.type)){
+                payload.values = effect.values;
+              }
+
+              if([GameEffectActions.GameEffectActionType.AURA_BUFF_ALLIES,
+                GameEffectActions.GameEffectActionType.AURA_BUFF_ALLIES_EXCEPT,
+                GameEffectActions.GameEffectActionType.AURA_DEBUFF_ENEMIES,
+                GameEffectActions.GameEffectActionType.AURA_DEBUFF_ALL_EXCEPT].includes(effect.action.type)){
+                payload.originId = action.card.gameObjectId;
+              }
+
+              if([GameEffectActions.GameEffectActionType.HEAL_PLAYER,
+                GameEffectActions.GameEffectActionType.SHUFFLE_DECK,
+                GameEffectActions.GameEffectActionType.ADD_FOOD].includes(effect.action.type)){
+                payload.targetId = action.card.playerKey;
+              }
+
+              draft.effectsQueue.push({
+                ...effect.action,
+                payload
+              });
+            });
           }
+
           break;
         default:
           break;
@@ -482,6 +330,22 @@ export const gameReducer = createReducer(
     }
   ),
   immerOn(
+    GameStateActions.gameGoToNextPhaseResolve,
+    GameStateActions.gameGoToPhaseResolve,
+    (draft, action) => {
+      ['player', 'opponent'].forEach(pKey => {
+        const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, { playerKey: pKey as PlayerKey });
+
+        draft[pKey as PlayerKey].hand.forEach(card => {
+          card.playable = getIsCardPlayable({
+            ...cardPlayableCheckPayload,
+            card
+          });
+        });
+      });
+    }
+  ),
+  immerOn(
     GameStateActions.gameSetupNextTurn,
     (draft, action) => {
       draft.currentPlayerKey = getOtherPlayerKey(draft.currentPlayerKey);
@@ -544,6 +408,64 @@ export const gameReducer = createReducer(
       });
     }
   ),
+  immerOn(
+    GameStateActions.gameResolveFightsDamage,
+    (draft, action) => {
+      const attackerIdsInFights = draft.fightQueue.map(fight => fight.attacker.gameObjectId);
+      const unblockedAttackers = draft[draft.currentPlayerKey].cardsInPlay
+        .filter(card => card.attacking && !attackerIdsInFights.includes(card.gameObjectId))
+
+      draft.fightQueue.forEach(({ attacker, defender }) => {
+        attacker.energy -= defender.strength;
+        defender.energy -= attacker.strength;
+        attacker.tired = true;
+        attacker.attacking = false;
+
+        if(attacker.energy < 0){
+          draft[attacker.playerKey].sleepyard.unshift({
+            ...draft[attacker.playerKey].cardsInPlay.splice(
+              draft[attacker.playerKey].cardsInPlay.findIndex(card => card.gameObjectId === attacker.gameObjectId),
+              1
+            )[0],
+            turnsLeft: 5
+          });
+        }
+
+        if(defender.energy < 0){
+          draft[defender.playerKey].sleepyard.unshift({
+            ...draft[defender.playerKey].cardsInPlay.splice(
+              draft[defender.playerKey].cardsInPlay.findIndex(card => card.gameObjectId === defender.gameObjectId),
+              1
+            )[0],
+            turnsLeft: 5
+          });
+        }
+      });
+
+      unblockedAttackers.forEach(attacker => {
+        draft[getOtherPlayerKey(draft.currentPlayerKey)].energy -= attacker.strength;
+      });
+    }
+  ),
+  immerOn(
+    GameStateActions.gameResolveFights,
+    (draft, action) => {
+      draft[draft.currentPlayerKey].cardsInPlay.forEach(card => {
+        if(card.attacking){
+          card.attacking = false;
+          card.tired = true;
+        }
+      });
+
+      draft[getOtherPlayerKey(draft.currentPlayerKey)].cardsInPlay.forEach(card => {
+        if(card.defending){
+          card.defending = false;
+        }
+      });
+
+      draft.fightQueue = [];
+    }
+  ),
 
   immerOn(
     GameEffectActions.gameShuffleDeck,
@@ -566,7 +488,6 @@ export const gameReducer = createReducer(
           })
         });
       }
-      console.log('start');
     }
   )
 )

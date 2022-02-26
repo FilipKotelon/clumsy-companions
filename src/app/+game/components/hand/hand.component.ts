@@ -33,7 +33,7 @@ export class HandComponent implements OnInit {
   }
 
   playCard = (card: HandCard): void => {
-    if(!this.transitioning){
+    if(!this.transitioning && card.playable){
       this.gamePlayerSvc.playCard(card, 'player');
     }
   }

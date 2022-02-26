@@ -4,6 +4,27 @@
 >
   <div class="full-card-inner">
     <div class="full-card-front">
+      <img
+        *ngIf="isAttacking"
+        src="assets/img/icons/statuses/attacking.svg"
+        alt="Attacking"
+        class="game-card-status">
+      <img
+        *ngIf="isDefending"
+        src="assets/img/icons/statuses/defending.svg"
+        alt="Defending"
+        class="game-card-status">
+      <img
+        *ngIf="card.dizzy"
+        src="assets/img/icons/statuses/dizzy.svg"
+        alt="Dizzy"
+        class="game-card-status">
+      <img
+        *ngIf="card.tired"
+        src="assets/img/icons/statuses/tired.svg"
+        alt="Tired"
+        class="game-card-status">
+
       <app-card-front
         [card]="card"
         [reportLoad]="reportLoad"

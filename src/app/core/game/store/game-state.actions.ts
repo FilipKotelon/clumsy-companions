@@ -24,7 +24,9 @@ export enum GameStateActionType {
   SETUP_NEXT_TURN = '[Game] Setup Next Turn',
   START_TURN = '[Game] Start Turn',
   CHOOSE_ATTACKERS = '[Game] Choose Attackers',
-  CHOOSE_FIGHTS_IN_DEFENSE = '[Game] Choose Fights In Defense'
+  CHOOSE_FIGHTS_IN_DEFENSE = '[Game] Choose Fights In Defense',
+  RESOLVE_FIGHTS_DAMAGE = '[Game] Resolve Fights Damage',
+  RESOLVE_FIGHTS = '[Game] Resolve Fights'
 }
 
 export const gameStart = createAction(GameStateActionType.START);
@@ -117,3 +119,7 @@ export const gameChooseFightsInDefense = createAction(
   GameStateActionType.CHOOSE_FIGHTS_IN_DEFENSE,
   props<{ fights: CardFight[], playerKey: PlayerKey }>()
 );
+
+export const gameResolveFightsDamage = createAction(GameStateActionType.RESOLVE_FIGHTS_DAMAGE);
+
+export const gameResolveFights = createAction(GameStateActionType.RESOLVE_FIGHTS);

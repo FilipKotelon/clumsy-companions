@@ -11,6 +11,7 @@
       *ngFor="let card of cards"
       appDraggableCard
       (played)="playCard(card)"
+      [blocked]="!card.playable"
       [class.playable]="card.playable"
       [card]="card"
       [sleeveImgUrl]="sleeveImgUrl"

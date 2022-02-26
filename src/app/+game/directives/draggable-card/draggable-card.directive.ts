@@ -1,9 +1,10 @@
-import { Directive, ElementRef, EventEmitter, HostBinding, HostListener, Output, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, Output, Renderer2 } from '@angular/core';
 
 @Directive({
   selector: '[appDraggableCard]'
 })
 export class DraggableCardDirective {
+  @Input() blocked = false;
   @Output() played = new EventEmitter();
 
   baseHostLeft: number;
@@ -20,8 +21,7 @@ export class DraggableCardDirective {
   pageMaxLeftThreshold: number;
   pageMinTopThreshold: number;
   pageMaxTopThreshold: number;
-  
-  blocked = false;
+
   dragging = false;
   playTopThreshold = -100;
 

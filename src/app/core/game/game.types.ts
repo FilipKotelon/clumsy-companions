@@ -13,11 +13,7 @@ export interface EffectValues extends CompanionBaseStats {
   main: number;
 }
 
-export interface EffectBasePayload {
-  positive: boolean;
-  playerKey: PlayerKey;
-  values: EffectValues;
-}
+export interface EffectBasePayload extends EffectPayloadWithEffectValues, EffectPayloadWithPlayerKey {}
 
 export interface AuraPayload extends EffectBasePayload {
   originId: string;
@@ -31,6 +27,7 @@ export enum AuraTarget {
 }
 
 export interface AuraData extends AuraPayload {
+  positive: boolean;
   target: AuraTarget;
 }
 
@@ -41,6 +38,7 @@ export enum BuffTarget {
 }
 
 export interface BuffData extends EffectBasePayload {
+  positive: boolean;
   target: BuffTarget;
   targetId?: string;
 }
@@ -75,6 +73,42 @@ export interface InGameCardEffect {
   readonly values: EffectValues;
 }
 
+export interface EffectPayloadWithTargetId {
+  targetId: string;
+}
+
+export interface EffectPayloadWithAmount {
+  amount: number;
+}
+
+export interface EffectPayloadWithPlayerKey {
+  playerKey: PlayerKey;
+}
+
+export interface EffectPayloadWithEffectValues {
+  values: EffectValues;
+}
+
+export interface EffectPayloadWithOwnerId {
+  ownerId: string;
+}
+
+export interface EffectPayloadWithAmountAndTargetId extends EffectPayloadWithTargetId, EffectPayloadWithAmount {}
+
+export interface EffectPayloadWithAmountAndPlayerKey extends EffectPayloadWithPlayerKey, EffectPayloadWithAmount {}
+
+export interface EffectPayloadWithOwnerIdAndEffectValues extends EffectPayloadWithOwnerId, EffectPayloadWithEffectValues {}
+
+export interface EffectPayloadWithOwnerIdAndEffectValuesAndTargetId extends EffectPayloadWithOwnerIdAndEffectValues, EffectPayloadWithTargetId {}
+
+export type EffectPayloadType =
+  EffectPayloadWithTargetId
+  & EffectPayloadWithAmount
+  & EffectPayloadWithPlayerKey
+  & EffectPayloadWithEffectValues
+  & EffectPayloadWithOwnerId
+  & AuraPayload;
+
 export interface InGameCard {
   readonly baseCost?: number;
   readonly baseEnergy?: number;
@@ -106,6 +140,24 @@ export interface CardInPlay extends InGameCard {
 
 export interface SleepyardCard extends InGameCard {
   turnsLeft: number;
+}
+
+export interface CardPlayableCheckPayload {
+  player: InGamePlayer;
+  turnPhaseIndex: number;
+  hasTurn: boolean;
+  canCounter: boolean;
+  cardsInQueue: boolean;
+  transitioning: boolean;
+}
+
+export interface CardPlayableCheckFullPayload extends CardPlayableCheckPayload {
+  card: InGameCard;
+}
+
+export interface PlayerKeyAndCardPayload {
+  playerKey: PlayerKey;
+  card?: InGameCard;
 }
 
 export interface CardFight {
