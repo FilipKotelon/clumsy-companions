@@ -213,14 +213,18 @@
 
 .game-cards-in-play{
   @include d-flex($jc: center, $ai: flex-end);
-  @include m-not-last(6rem, r);
+  @include m-not-last(3.6rem, r);
 
   & app-card{
-    @include rect(12rem, 18rem);
     box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.25);
+
+    &, & app-card-front{
+      @include rect(12rem, 18rem);
+    }
 
     & .card-front{
       transform: scaleCardTo(12rem);
+      overflow: initial;
 
       & .card-front__info-con, & .card-front__info{
         height: 100% !important;
@@ -232,6 +236,19 @@
 
       & .card-front__cost{
         display: none;
+      }
+
+      & .card-front__strength, .card-front__energy{
+        font-size: 3.8rem;
+        transform: scale(1.55);
+      }
+
+      & .card-front__strength{
+        transform-origin: right top;
+      }
+
+      & .card-front__energy{
+        transform-origin: left top;
       }
     }
 
@@ -245,7 +262,12 @@
 
     &.tired{
       opacity: .8;
-      transform: rotate(8deg);
+      transform: rotate(8deg) scale(.9);
+    }
+
+    &.clickable{
+      outline: .3rem solid $yellow;
+      z-index: 30;
     }
   }
 }
@@ -339,11 +361,14 @@
   & .game-deck{
     & app-card{
       @include abs();
-      @include rect(12rem, 18rem);
       box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.25);
 
       & .card-front{
         transform: scaleCardTo(12rem);
+      }
+
+      &, & app-card-front{
+        @include rect(12rem, 18rem);
       }
 
       & .full-card-inner{
@@ -396,10 +421,20 @@
       @include square(100%);
       border: .2rem solid $white;
       border-radius: .3rem;
+      position: relative;
+      z-index: 10;
 
       & > img{
         width: 6.8rem;
       }
+    }
+
+    &__next-card{
+      @include abs(0, 0);
+      @include square(100%);
+      z-index: 0;
+      filter: brightness(.8);
+      opacity: .9;
     }
 
     &__queue{

@@ -1,7 +1,7 @@
 import { CardInPlay, CardPlayableCheckFullPayload, CardPlayableCheckPayload, CompanionBaseStats, ContinuationApproval, CounterPlayStatus, EffectBasePayload, GameActiveEffects, HandCard, InGameCard, InGamePlayer, PlayerKey, PlayerKeyAndCardPayload, TURN_PHASES } from './game.types';
 import * as fromGame from '@core/game/store/game.reducer';
 import { CardType } from '@core/cards/cards.types';
-import { GameEffectActionType, TARGETED_GAME_EFFECT_ACTION_TYPES } from './store/game-effect.actions';
+import { GameEffectActionType } from './store/game-effect.actions';
 
 export const getEmptyPlayer = (): InGamePlayer => {
   return {
@@ -212,6 +212,16 @@ export const shuffleCards = (cards: InGameCard[]): InGameCard[] => {
   return shuffledCards;
 }
 
+export const getEffectNeedsEnemyTarget = (effectType: GameEffectActionType): boolean => {
+  return [GameEffectActionType.DESTROY_TARGET,
+    GameEffectActionType.DAMAGE_TARGET,
+    GameEffectActionType.BUFF_TARGET].includes(effectType);
+}
+
+export const getEffectNeedsFriendlyTarget = (effectType: GameEffectActionType): boolean => {
+  return effectType === GameEffectActionType.BUFF_TARGET;
+}
+
 export const getEffectNeedsTarget = (effectType: GameEffectActionType): boolean => {
-  return TARGETED_GAME_EFFECT_ACTION_TYPES.includes(effectType);
+  return getEffectNeedsEnemyTarget(effectType) || getEffectNeedsFriendlyTarget(effectType);
 }

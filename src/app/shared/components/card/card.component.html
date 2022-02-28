@@ -15,7 +15,7 @@
         alt="Defending"
         class="game-card-status">
       <img
-        *ngIf="card.dizzy"
+        *ngIf="card.dizzy && !isDefending"
         src="assets/img/icons/statuses/dizzy.svg"
         alt="Dizzy"
         class="game-card-status">
@@ -29,6 +29,7 @@
         [card]="card"
         [reportLoad]="reportLoad"
         [size]="size"
+        [showEffects]="showEffects"
       ></app-card-front>
     </div>
     <div class="full-card-sleeve">

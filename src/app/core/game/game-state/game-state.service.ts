@@ -6,6 +6,7 @@ import * as fromGame from '@core/game/store/game.reducer';
 import * as fromStore from '@core/store/reducer';
 import * as GameSelectors from '@core/game/store/game.selectors';
 import * as GameStateActions from '@core/game/store/game-state.actions';
+import { GameEffect } from '@core/game/store/game-effect.actions';
 
 import { ContinuationApproval, CounterPlayStatus, InGameCard, PlayerKey, PlayerOpponentLoadInfo, TurnPhaseName } from '../game.types';
 
@@ -49,6 +50,10 @@ export class GameStateService {
 
   getCardsQueue = (): Observable<InGameCard[]> => {
     return this.store.select(GameSelectors.selectCardsQueue);
+  }
+
+  getEffectsQueue = (): Observable<GameEffect[]> => {
+    return this.store.select(GameSelectors.selectEffectsQueue);
   }
 
   getCounterPlayStatus = (): Observable<CounterPlayStatus> => {

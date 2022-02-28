@@ -21,6 +21,10 @@ export class GameFightsService {
     if(unblockedAttackers.length){
       this.animateAttackingPlayer(unblockedAttackers, attackedPlayerId);
     }
+
+    setTimeout(() => {
+      this.store.dispatch(GameStateActions.gameResolveFightsDamage());
+    }, 1000);
   }
 
   animateFights = (fights: CardFight[]): void => {
@@ -42,10 +46,6 @@ export class GameFightsService {
         this.animateAttack(attackerEl, playerEl);
       }
     });
-
-    setTimeout(() => {
-      this.store.dispatch(GameStateActions.gameResolveFightsDamage());
-    }, 400);
   }
 
   animateAttack = (attackerEl: HTMLElement, targetEl: HTMLElement): void => {

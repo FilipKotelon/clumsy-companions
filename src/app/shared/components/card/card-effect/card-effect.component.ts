@@ -17,6 +17,7 @@ import { fadeInOut } from '@shared/animations/component-animations';
 export class CardEffectComponent implements OnInit {
   @Input() effect: CardEffect;
   @Input() cardType?: CardType;
+  @Input() showEffects: boolean = false;
 
   effectIcon: string;
   open: boolean;

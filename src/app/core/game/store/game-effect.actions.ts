@@ -73,13 +73,6 @@ export enum GameEffectActionType {
   //#endregion
 }
 
-export const TARGETED_GAME_EFFECT_ACTION_TYPES = [
-  GameEffectActionType.DESTROY_TARGET,
-  GameEffectActionType.DAMAGE_TARGET,
-  GameEffectActionType.BUFF_TARGET,
-  GameEffectActionType.DEBUFF_TARGET
-];
-
 //#endregion Action Types
 
 //#region Actions

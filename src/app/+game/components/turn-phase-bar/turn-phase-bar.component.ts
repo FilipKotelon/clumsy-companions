@@ -157,24 +157,35 @@ export class TurnPhaseBarComponent implements OnInit {
 
           if(this.getHasAttackingCards('player')){
             msg = 'Confirm attackers';
+
+            btnActionPayload = {
+              actionType: TurnPhaseButtonActionType.NextPhase
+            };
           }
           break;
 
         case 'defense':
-          msg = 'Continue to damage';
-
-          if(this.getHasAttackingCards('player')){
-            msg = 'Continue to the end step';
+          if(this.continuationApproval.opponent){
+            msg = 'Continue to damage';
 
             btnActionPayload = {
-              actionType: TurnPhaseButtonActionType.SkipTo,
-              phaseName: 'preparation-last'
+              actionType: TurnPhaseButtonActionType.NextPhase
+            };
+          } else {
+            msg = 'Waiting for opponent';
+
+            btnActionPayload = {
+              actionType: TurnPhaseButtonActionType.None
             };
           }
           break;
 
         case 'damage':
-          msg = 'Continue to the end step';
+          msg = 'Continue to damage';
+
+          btnActionPayload = {
+            actionType: TurnPhaseButtonActionType.None
+          };
           break;
 
         case 'preparation-last':
@@ -198,7 +209,7 @@ export class TurnPhaseBarComponent implements OnInit {
       switch(this.curPhase.name){
         case 'defense':
           btnActionPayload = {
-            actionType: TurnPhaseButtonActionType.ApproveContinuation
+            actionType: TurnPhaseButtonActionType.NextPhase
           };
           if(this.getHasDefendingCards('player')){
             msg = 'Confirm blockers';

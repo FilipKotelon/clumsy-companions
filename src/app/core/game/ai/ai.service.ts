@@ -101,12 +101,7 @@ export class AiService {
   //#region iShould and iMust
   get iShouldAttack(): boolean {
     return this.cardsIShouldAttackWith.length > 0
-      || this.iMustDefendMyselfAtAllCost;
-  }
-
-  get iShouldDefend(): boolean {
-    return this.iMustDefendMyselfAtAllCost
-      || this.fightsIShouldTakeInDefense.length > 0;
+      && !this.iMustDefendMyselfAtAllCost;
   }
 
   get iMustDefendMyselfAtAllCost(): boolean {
@@ -143,30 +138,6 @@ export class AiService {
       && card.strength > 0
       && !card.dizzy && !card.tired
     );
-  }
-
-  get fightsIShouldTakeInDefense(): CardFight[] {
-    const fights: CardFight[] = [];
-    const playerCardsIBlocked: CardInPlay[] = [];
-    const myCardsIBlockWith: CardInPlay[] = [];
-    const playersAttackingCardsSortedByStrengthASC = [...this.playersAttackingCards].sort((a, b) => a.strength - b.strength);
-    const cardsICanBlockWith = [...this.myPotentialBlockers];
-
-    while(playerCardsIBlocked.length < this.playersAttackingCards.length && myCardsIBlockWith.length < this.myPotentialBlockers.length){
-      const attacker = playersAttackingCardsSortedByStrengthASC.pop();
-      const defender = this.chooseCardIShouldDefendWith(cardsICanBlockWith, attacker);
-
-      if(attacker && defender){
-        playerCardsIBlocked.push(attacker);
-        myCardsIBlockWith.push(defender);
-        cardsICanBlockWith.splice(cardsICanBlockWith.findIndex(card => card.gameObjectId === defender.gameObjectId), 1);
-        fights.push({ attacker, defender });
-      } else {
-        break;
-      }
-    }
-
-    return fights;
   }
 
   get iAmWaiting(): boolean {
@@ -304,8 +275,10 @@ export class AiService {
       }
     } else {
       if(this.itsDefendingPhase){
-        if(this.iHavePotentialDefendingCards && this.iShouldDefend && this.fightsIShouldTakeInDefense.length){
-          this.chooseFightsInDefense();
+        const fightsInDefense = this.getFightsIShouldTakeInDefense();
+
+        if(this.iHavePotentialDefendingCards && (this.iMustDefendMyselfAtAllCost || fightsInDefense.length) && !this.iHaveDefendingCards){
+          this.chooseFightsInDefense(fightsInDefense);
           return;
         } else {
           this.approveContinuation();
@@ -344,17 +317,17 @@ export class AiService {
     }
 
     if(this.itsDefendingPhase){
-      this.pretendToThink();
+      this.approveContinuation();
       return;
     }
 
     if(this.itsDamagePhase){
-      this.pretendToThink();
+      this.approveContinuation();
       return;
     }
 
     if(this.itsLastPreparationPhase){
-      this.pretendToThink();
+      this.gameStateSvc.endTurn();
       return;
     }
   }
@@ -363,8 +336,8 @@ export class AiService {
     this.gamePlayerService.chooseAttackers(this.cardsIShouldAttackWith, this.myPlayerKey);
   }
 
-  chooseFightsInDefense = (): void => {
-    this.gamePlayerService.chooseFightsInDefense(this.fightsIShouldTakeInDefense, this.myPlayerKey);
+  chooseFightsInDefense = (fights: CardFight[]): void => {
+    this.gamePlayerService.chooseFightsInDefense(fights, this.myPlayerKey);
   }
 
   chooseCardIShouldDefendWith = (blockers: CardInPlay[], playerCard: CardInPlay): CardInPlay | null => {
@@ -426,6 +399,30 @@ export class AiService {
     });
 
     return minStrengthCard;
+  }
+
+  getFightsIShouldTakeInDefense = (): CardFight[] => {
+    const fights: CardFight[] = [];
+    const playerCardsIBlocked: CardInPlay[] = [];
+    const myCardsIBlockWith: CardInPlay[] = [];
+    const playersAttackingCardsSortedByStrengthASC = [...this.playersAttackingCards].sort((a, b) => a.strength - b.strength);
+    const cardsICanBlockWith = [...this.myPotentialBlockers];
+
+    while(playerCardsIBlocked.length < this.playersAttackingCards.length && myCardsIBlockWith.length < this.myPotentialBlockers.length){
+      const attacker = playersAttackingCardsSortedByStrengthASC.pop();
+      const defender = this.chooseCardIShouldDefendWith(cardsICanBlockWith, attacker);
+
+      if(attacker && defender){
+        playerCardsIBlocked.push(attacker);
+        myCardsIBlockWith.push(defender);
+        cardsICanBlockWith.splice(cardsICanBlockWith.findIndex(card => card.gameObjectId === defender.gameObjectId), 1);
+        fights.push({ attacker, defender });
+      } else {
+        break;
+      }
+    }
+
+    return fights;
   }
 
   pretendToThink = (): void => {

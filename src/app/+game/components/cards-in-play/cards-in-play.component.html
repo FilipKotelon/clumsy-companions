@@ -4,9 +4,19 @@
     [card]="card"
     [sleeveImgUrl]="sleeveImgUrl"
     [class.attacking]="card.attacking"
-    [class.defending]="card.defending"
+    [class.defending]="card.defending || (selectedDefender && selectedDefender.gameObjectId === card.gameObjectId)"
     [class.dizzy]="card.dizzy"
     [class.tired]="card.tired"
+    [class.clickable]="opponent ? (getIsClickableByPlayer(card) && showAttackersAsClickable) : getIsClickableByPlayer(card)"
     size="big"
+    (click)="
+      opponent
+        ? getIsClickableByPlayer(card) && showAttackersAsClickable
+          ? clickAction(card)
+          : null
+        : getIsClickableByPlayer(card)
+          ? clickAction(card)
+          : null
+    "
   ></app-card>
 </div>

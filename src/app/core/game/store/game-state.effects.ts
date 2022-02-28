@@ -69,21 +69,6 @@ export class GameStateEffects {
     })
   ), { dispatch: false })
 
-  approveContinuation$ = createEffect(() => this.actions$.pipe(
-    ofType(GameStateActions.gameApproveContinuation),
-    withLatestFrom(
-      this.store.select(GameSelectors.selectContinuationApproval),
-      this.store.select(GameSelectors.selectCurrentTurnPhaseIndex)
-    ),
-    tap(([action, approval, turnPhaseIndex]) => {
-      if(approval.opponent && approval.player){
-        if(turnPhaseIndex === 2){
-          this.store.dispatch(GameStateActions.gameGoToNextPhase());
-        }
-      }
-    })
-  ), { dispatch: false })
-  
   goToNextPhaseResolve$ = createEffect(() => this.actions$.pipe(
     ofType(GameStateActions.gameGoToNextPhaseResolve),
     withLatestFrom(
@@ -102,7 +87,7 @@ export class GameStateEffects {
     })
   ), { dispatch: false })
 
-  gameResolveFightsDamage$ = createEffect(() => this.actions$.pipe(
+  resolveFightsDamage$ = createEffect(() => this.actions$.pipe(
     ofType(GameStateActions.gameResolveFightsDamage),
     tap(() => {
       setTimeout(() => {
@@ -111,7 +96,7 @@ export class GameStateEffects {
     })
   ), { dispatch: false })
 
-  gameResolveFights$ = createEffect(() => this.actions$.pipe(
+  resolveFights$ = createEffect(() => this.actions$.pipe(
     ofType(GameStateActions.gameResolveFights),
     withLatestFrom(this.store.select(GameSelectors.selectGame)),
     tap(([action, gameState]) => {
@@ -119,13 +104,7 @@ export class GameStateEffects {
         if(gameState.currentPlayerKey === 'opponent'){
           this.store.dispatch(GameStateActions.gameEndTurn());
         } else {
-          const cardPlayableCheckPayload = getCardPlayableCheckPayload(gameState, { playerKey: gameState.currentPlayerKey });
-
-          if(getHasPlayableCards(gameState[gameState.currentPlayerKey].hand, cardPlayableCheckPayload)){
-            this.store.dispatch(GameStateActions.gameGoToNextPhase());
-          } else {
-            this.store.dispatch(GameStateActions.gameEndTurn());
-          }
+          this.store.dispatch(GameStateActions.gameGoToNextPhase());
         }
       }, 1000);
     })
@@ -169,4 +148,47 @@ export class GameStateEffects {
       return of(GameEffectActions.gameDrawXCards({ amount: 1, playerKey }));
     })
   ))
+
+  gameEffect$ = createEffect(() => this.actions$.pipe(
+    ofType(
+      GameEffectActions.gameDestroyTarget,
+      GameEffectActions.gameDestroyAll,
+      GameEffectActions.gameDestroyAllExcept,
+      GameEffectActions.gameDamageTarget,
+      GameEffectActions.gameDamageEnemies,
+      GameEffectActions.gameDamageAll,
+      GameEffectActions.gameDamageAllExcept,
+      GameEffectActions.gameBuffTarget,
+      GameEffectActions.gameBuffAllies,
+      GameEffectActions.gameDebuffTarget,
+      GameEffectActions.gameDebuffEnemies,
+      GameEffectActions.gameAuraBuffAllies,
+      GameEffectActions.gameAuraBuffAlliesExcept,
+      GameEffectActions.gameAuraDebuffEnemies,
+      GameEffectActions.gameAuraDebuffAllExcept,
+      GameEffectActions.gameHealPlayer,
+      GameEffectActions.gameAddFood,
+      GameEffectActions.gameDrawXCards,
+      GameEffectActions.gameShuffleDeck,
+    ),
+    withLatestFrom(
+      this.store.select(GameSelectors.selectEffectsQueue),
+      this.store.select(GameSelectors.selectCardsQueue)
+    ),
+    tap(([action, effectsQueue, cardsQueue]) => {
+      if(effectsQueue.length){
+        this.store.dispatch(GameStateActions.gameResolveEffectInQueue());
+      }
+    })
+  ), { dispatch: false })
+
+  resolveEffectInQueue$ = createEffect(() => this.actions$.pipe(
+    ofType(GameStateActions.gameResolveEffectInQueue),
+    withLatestFrom(this.store.select(GameSelectors.selectCardsQueue)),
+    tap(([action, cardsQueue]) => {
+      if(cardsQueue.length){
+        this.store.dispatch(GameStateActions.gameResolveCardInQueue({ card: cardsQueue[cardsQueue.length - 1] }));
+      }
+    })
+  ), { dispatch: false })
 }

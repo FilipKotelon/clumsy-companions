@@ -31,7 +31,9 @@
       <div class="game-board__player-side">
         <div class="game-board__player-side__cards-area">
           <div class="game-board__player-side__sleepyard">
-            <app-sleepyard></app-sleepyard>
+            <app-sleepyard
+              [cards]="opponent.sleepyard"
+            ></app-sleepyard>
           </div>
           <div class="game-board__player-side__deck">
             <app-game-deck
@@ -82,7 +84,9 @@
         </div>
         <div class="game-board__player-side__cards-area">
           <div class="game-board__player-side__sleepyard">
-            <app-sleepyard></app-sleepyard>
+            <app-sleepyard
+              [cards]="player.sleepyard"
+            ></app-sleepyard>
           </div>
           <div class="game-board__player-side__deck">
             <app-game-deck

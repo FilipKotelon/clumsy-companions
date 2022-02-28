@@ -403,6 +403,16 @@ export const gameReducer = createReducer(
     }
   ),
   immerOn(
+    GameStateActions.gameChooseFightsInDefense,
+    (draft, action) => {
+      draft.fightQueue = action.fights;
+
+      action.fights.forEach(fight => {
+        draft[action.playerKey].cardsInPlay.find(card => card.gameObjectId === fight.defender.gameObjectId).defending = true;
+      });
+    }
+  ),
+  immerOn(
     GameStateActions.gameResolveFightsDamage,
     (draft, action) => {
       const attackerIdsInFights = draft.fightQueue.map(fight => fight.attacker.gameObjectId);
@@ -410,12 +420,12 @@ export const gameReducer = createReducer(
         .filter(card => card.attacking && !attackerIdsInFights.includes(card.gameObjectId))
 
       draft.fightQueue.forEach(({ attacker, defender }) => {
-        attacker.energy -= defender.strength;
-        defender.energy -= attacker.strength;
-        attacker.tired = true;
-        attacker.attacking = false;
+        const attackerRef = draft[attacker.playerKey].cardsInPlay.find(card => card.gameObjectId === attacker.gameObjectId);
+        const defenderRef = draft[defender.playerKey].cardsInPlay.find(card => card.gameObjectId === defender.gameObjectId);
+        attackerRef.energy -= defender.strength;
+        defenderRef.energy -= attacker.strength;
 
-        if(attacker.energy < 0){
+        if(attackerRef.energy <= 0){
           draft[attacker.playerKey].sleepyard.unshift({
             ...draft[attacker.playerKey].cardsInPlay.splice(
               draft[attacker.playerKey].cardsInPlay.findIndex(card => card.gameObjectId === attacker.gameObjectId),
@@ -425,7 +435,7 @@ export const gameReducer = createReducer(
           });
         }
 
-        if(defender.energy < 0){
+        if(defenderRef.energy <= 0){
           draft[defender.playerKey].sleepyard.unshift({
             ...draft[defender.playerKey].cardsInPlay.splice(
               draft[defender.playerKey].cardsInPlay.findIndex(card => card.gameObjectId === defender.gameObjectId),
@@ -487,8 +497,14 @@ export const gameReducer = createReducer(
   immerOn(
     GameEffectActions.gameHealPlayer,
     (draft, action) => {
-      console.log(action);
       draft[action.playerKey].energy += action.amount;
+    }
+  ),
+
+  immerOn(
+    GameStateActions.gameResolveEffectInQueue,
+    (draft, action) => {
+      draft.effectsQueue.pop();
     }
   )
 )

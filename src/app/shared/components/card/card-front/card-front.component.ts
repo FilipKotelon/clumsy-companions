@@ -11,6 +11,7 @@ export class CardFrontComponent extends ObjectLoadReporter implements OnInit {
   @Input() permShowName = false;
   @Input() reportLoad = false;
   @Input() size: CardSize;
+  @Input() showEffects: boolean = false;
 
   allCardTypes = CardType;
   cardEffects: Card[] = [];

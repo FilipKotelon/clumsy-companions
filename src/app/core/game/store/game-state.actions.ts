@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { CardFight, CardInPlay, GameStartRawData, HandCard, PlayerKey, PlayerOpponentBundle, TurnPhaseName } from '../game.types';
+import { CardFight, CardInPlay, GameStartRawData, HandCard, InGameCard, PlayerKey, PlayerOpponentBundle, TurnPhaseName } from '../game.types';
 
 /* Actions changing the state of the game, like starting the game, ending, switching turns, phases */
 
@@ -26,7 +26,8 @@ export enum GameStateActionType {
   CHOOSE_ATTACKERS = '[Game] Choose Attackers',
   CHOOSE_FIGHTS_IN_DEFENSE = '[Game] Choose Fights In Defense',
   RESOLVE_FIGHTS_DAMAGE = '[Game] Resolve Fights Damage',
-  RESOLVE_FIGHTS = '[Game] Resolve Fights'
+  RESOLVE_FIGHTS = '[Game] Resolve Fights',
+  RESOLVE_EFFECT_IN_QUEUE = '[Game] Resolve Effect In Queue',
 }
 
 export const gameStart = createAction(GameStateActionType.START);
@@ -68,7 +69,7 @@ export const gameResolveCard = createAction(
 
 export const gameResolveCardInQueue = createAction(
   GameStateActionType.RESOLVE_CARD_IN_QUEUE,
-  props<{ card: HandCard }>()
+  props<{ card: InGameCard }>()
 );
 
 export const gameApproveContinuation = createAction(
@@ -123,3 +124,5 @@ export const gameChooseFightsInDefense = createAction(
 export const gameResolveFightsDamage = createAction(GameStateActionType.RESOLVE_FIGHTS_DAMAGE);
 
 export const gameResolveFights = createAction(GameStateActionType.RESOLVE_FIGHTS);
+
+export const gameResolveEffectInQueue = createAction(GameStateActionType.RESOLVE_EFFECT_IN_QUEUE);

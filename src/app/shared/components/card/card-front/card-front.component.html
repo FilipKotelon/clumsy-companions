@@ -30,6 +30,7 @@
         <app-card-effect
           *ngFor="let cardEffect of card.effects"
           [effect]="cardEffect"
+          [showEffects]="showEffects"
         ></app-card-effect>
   
         <div class="card-front__energy">
