@@ -5,10 +5,15 @@
 >
   <div class="game-overlay__content">
     <app-hand-picker
+      *ngIf="!winner"
       [open]="!playerHandsChosen"
     ></app-hand-picker>
     <app-coin-flip
+      *ngIf="!winner"
       [open]="coinFlipOpen"
     ></app-coin-flip>
+    <app-game-end-screen
+      [winner]="winner"
+    ></app-game-end-screen>
   </div>
 </div>

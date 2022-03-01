@@ -1,0 +1,22 @@
+<div
+  *ngIf="winner"
+  @fadeInOut
+  class="game-end-screen"
+>
+  <div class="game-overlay-title medium-title">
+    <span *ngIf="won">You won!</span>
+    <span *ngIf="!won">You... lost...</span>
+  </div>
+  <div class="game-overlay-desc medium-text">
+    <span *ngIf="won">An incredible perfomance to be remembered for ages!</span>
+    <span *ngIf="!won">But... but how? You were looking so confident and cool :c</span>
+  </div>
+  <button
+    class="game-button"
+    [class.green]="won"
+    [class.white]="!won"
+    (click)="continue()"
+  >
+    Continue
+  </button>
+</div>

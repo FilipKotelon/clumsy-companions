@@ -8,7 +8,7 @@ import * as GameSelectors from '@core/game/store/game.selectors';
 import * as GameStateActions from '@core/game/store/game-state.actions';
 import { GameEffect } from '@core/game/store/game-effect.actions';
 
-import { ContinuationApproval, CounterPlayStatus, InGameCard, PlayerKey, PlayerOpponentLoadInfo, TurnPhaseName } from '../game.types';
+import { ContinuationApproval, CounterPlayStatus, GameGiftData, InGameCard, PlayerKey, PlayerOpponentLoadInfo, TurnPhaseName } from '../game.types';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +19,10 @@ export class GameStateService {
   constructor(
     private store: Store<fromStore.AppState>
   ) { }
+
+  endGame = (): void => {
+    this.store.dispatch(GameStateActions.gameEnd());
+  }
 
   getGameState = (): Observable<fromGame.State> => {
     return this.store.select(GameSelectors.selectGame);
@@ -66,6 +70,14 @@ export class GameStateService {
 
   getTransitioning = (): Observable<boolean> => {
     return this.store.select(GameSelectors.selectTransitioning);
+  }
+
+  getWinner = (): Observable<PlayerKey> => {
+    return this.store.select(GameSelectors.selectGameWinner);
+  }
+
+  getMaxReward = (): Observable<GameGiftData> => {
+    return this.store.select(GameSelectors.selectMaxReward);
   }
 
   choosePlayerHands = (): void => {

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GameStateService } from '@core/game/game-state/game-state.service';
+import { PlayerKey } from '@core/game/game.types';
 import { fadeInOut } from '@shared/animations/component-animations';
 import { Subscription } from 'rxjs';
 
@@ -13,11 +14,13 @@ export class GameOverlayComponent implements OnInit {
   arePlayerHandsChosenSub: Subscription;
   isFirstPlayerChosenSub: Subscription;
   isPreparingSub: Subscription;
+  winnerChosenSub: Subscription;
 
   coinFlipOpen = false;
   firstPlayerChosen = false;
   open = false;
   playerHandsChosen = false;
+  winner: PlayerKey = null;
 
   constructor(private gameStateSvc: GameStateService) { }
 
@@ -37,6 +40,11 @@ export class GameOverlayComponent implements OnInit {
 
     this.isFirstPlayerChosenSub = this.gameStateSvc.getIsFirstPlayerChosen().subscribe(playerChosen => {
       this.firstPlayerChosen = playerChosen;
+    });
+
+    this.winnerChosenSub = this.gameStateSvc.getWinner().subscribe(winner => {
+      this.winner = winner;
+      this.open = !!winner;
     });
   }
 

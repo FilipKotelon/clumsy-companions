@@ -1,7 +1,7 @@
 import { ActionCreator, createReducer } from '@ngrx/store';
 import { immerOn } from 'ngrx-immer/store';
 
-import { CardFight, ContinuationApproval, CounterPlayStatus, EffectPayloadType, GameActiveEffects, InGameCard, InGamePlayer, PlayerKey, TURN_PHASES } from '@core/game/game.types';
+import { CardFight, ContinuationApproval, CounterPlayStatus, EffectPayloadType, GameActiveEffects, GameGiftData, InGameCard, InGamePlayer, PlayerKey, TURN_PHASES } from '@core/game/game.types';
 
 import * as GameEffectActions from './game-effect.actions';
 import * as GameStateActions from '@core/game/store/game-state.actions';
@@ -29,6 +29,9 @@ export interface State {
   counterPlayStatus: CounterPlayStatus;
   continuationApproval: ContinuationApproval;
   transitioning: boolean;
+  gameEndedByDraw: boolean;
+  winner: PlayerKey;
+  winMaxReward: GameGiftData;
 }
 
 const gameStateFactory = (data: Partial<State> = {}): State => ({
@@ -54,6 +57,9 @@ const gameStateFactory = (data: Partial<State> = {}): State => ({
   counterPlayStatus: getResetCounterPlayStatus(),
   continuationApproval: getResetContinuationApproval(),
   transitioning: false,
+  gameEndedByDraw: false,
+  winner: null,
+  winMaxReward: null,
   ...data
 });
 
@@ -67,6 +73,11 @@ export const gameReducer = createReducer(
       Object.keys(cleanState).forEach(key => {
         draft[key] = cleanState[key];
       });
+
+      draft.winMaxReward = {
+        coins: action.opponent.coinsReward,
+        packId: action.opponent.rewardPackId
+      };
     }
   ),
   immerOn(
@@ -485,17 +496,21 @@ export const gameReducer = createReducer(
   immerOn(
     GameEffectActions.gameDrawXCards,
     (draft, action) => {
-      for(let i = 0; i < action.amount; i++){
-        const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, action);
-        const drawnCard = draft[action.playerKey].deck.pop();
-
-        draft[action.playerKey].hand.push({
-          ...drawnCard,
-          playable: getIsCardPlayable({
-            ...cardPlayableCheckPayload,
-            card: drawnCard
-          })
-        });
+      if(draft[action.playerKey].deck.length){
+        for(let i = 0; i < action.amount; i++){
+          const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, action);
+          const drawnCard = draft[action.playerKey].deck.pop();
+  
+          draft[action.playerKey].hand.push({
+            ...drawnCard,
+            playable: getIsCardPlayable({
+              ...cardPlayableCheckPayload,
+              card: drawnCard
+            })
+          });
+        }
+      } else {
+        draft.gameEndedByDraw = true;
       }
     }
   ),
@@ -510,6 +525,24 @@ export const gameReducer = createReducer(
     GameStateActions.gameResolveEffectInQueue,
     (draft, action) => {
       draft.effectsQueue.pop();
+    }
+  ),
+
+  immerOn(
+    GameStateActions.gameChooseWinner,
+    (draft, action) => {
+      draft.transitioning = true;
+      draft.winner = action.playerKey;
+    }
+  ),
+  immerOn(
+    GameStateActions.gameEnd,
+    (draft, action) => {
+      const cleanState = gameStateFactory();
+
+      Object.keys(cleanState).forEach(key => {
+        draft[key] = cleanState[key];
+      });
     }
   )
 )

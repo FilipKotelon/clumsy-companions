@@ -28,6 +28,7 @@ export enum GameStateActionType {
   RESOLVE_FIGHTS_DAMAGE = '[Game] Resolve Fights Damage',
   RESOLVE_FIGHTS = '[Game] Resolve Fights',
   RESOLVE_EFFECT_IN_QUEUE = '[Game] Resolve Effect In Queue',
+  CHOOSE_WINNER = '[Game] Choose Winner'
 }
 
 export const gameStart = createAction(GameStateActionType.START);
@@ -126,3 +127,8 @@ export const gameResolveFightsDamage = createAction(GameStateActionType.RESOLVE_
 export const gameResolveFights = createAction(GameStateActionType.RESOLVE_FIGHTS);
 
 export const gameResolveEffectInQueue = createAction(GameStateActionType.RESOLVE_EFFECT_IN_QUEUE);
+
+export const gameChooseWinner = createAction(
+  GameStateActionType.CHOOSE_WINNER,
+  props<{ playerKey: PlayerKey }>()
+);

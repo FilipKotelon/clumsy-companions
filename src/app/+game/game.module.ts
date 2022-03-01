@@ -19,6 +19,7 @@ import { FoldedCardsDirective } from './directives/folded-cards/folded-cards.dir
 import { DraggableCardDirective } from './directives/draggable-card/draggable-card.directive';
 import { CardsQueueComponent } from './components/cards-queue/cards-queue.component';
 import { CardsInPlayComponent } from './components/cards-in-play/cards-in-play.component';
+import { GameEndScreenComponent } from './components/game-end-screen/game-end-screen.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { CardsInPlayComponent } from './components/cards-in-play/cards-in-play.c
     DraggableCardDirective,
     CardsQueueComponent,
     CardsInPlayComponent,
+    GameEndScreenComponent,
   ],
   imports: [
     SharedModule,

@@ -95,7 +95,7 @@
   }
 }
 
-.game-hand-picker, .game-coin-flip{
+.game-hand-picker, .game-coin-flip, .game-end-screen{
   @include d-flex($dir: column, $ai: center);
 }
 
@@ -148,6 +148,12 @@
         }
       }
     }
+  }
+}
+
+.game-end-screen{
+  & .game-button{
+    margin-top: 6rem;
   }
 }
 

@@ -84,3 +84,18 @@ export const selectTransitioning = createSelector(
   selectGame,
   (state: fromGame.State) => state.transitioning
 );
+
+export const selectGameEndedByDraw = createSelector(
+  selectGame,
+  (state: fromGame.State) => state.gameEndedByDraw
+);
+
+export const selectGameWinner = createSelector(
+  selectGame,
+  (state: fromGame.State) => state.winner
+);
+
+export const selectMaxReward = createSelector(
+  selectGame,
+  (state: fromGame.State) => state.winMaxReward
+);

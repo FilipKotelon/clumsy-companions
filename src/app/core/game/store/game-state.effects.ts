@@ -191,4 +191,29 @@ export class GameStateEffects {
       }
     })
   ), { dispatch: false })
+
+  gameEndedByDamage$ = createEffect(() => this.actions$.pipe(
+    ofType(
+      GameStateActions.gameResolveFights,
+      GameEffectActions.gameDamageTarget
+    ),
+    withLatestFrom(this.store.select(GameSelectors.selectPlayers)),
+    tap(([action, { player, opponent }]) => {
+      if(player.energy <= 0){
+        this.store.dispatch(GameStateActions.gameChooseWinner({ playerKey: 'opponent' }));
+      } else if(opponent.energy <= 0){
+        this.store.dispatch(GameStateActions.gameChooseWinner({ playerKey: 'player' }));
+      }
+    })
+  ), { dispatch: false })
+
+  gameEndedByDrawingCards$ = createEffect(() => this.actions$.pipe(
+    ofType(GameEffectActions.gameDrawXCards),
+    withLatestFrom(this.store.select(GameSelectors.selectGameEndedByDraw)),
+    tap(([action, endedByDraw]) => {
+      if(endedByDraw){
+        this.store.dispatch(GameStateActions.gameChooseWinner({ playerKey: getOtherPlayerKey(action.playerKey) }));
+      }
+    })
+  ), { dispatch: false })
 }

@@ -252,3 +252,8 @@ export interface CounterPlayStatus {
   playerKey: PlayerKey;
   canCounter: boolean;
 }
+
+export interface GameGiftData {
+  coins: number;
+  packId?: string;
+}

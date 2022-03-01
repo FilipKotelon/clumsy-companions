@@ -222,6 +222,36 @@ export class PlayerService {
       });
   }
 
+  receiveGift = (gift: GiftService): void => {
+    this.loadingSvc.addLoadingTask('PLAYER_RECEIVE_GIFT');
+
+    this.getPlayer()
+      .pipe(take(1))
+      .subscribe(player => {
+        const receivedGiftData: Partial<DbUser> = {};
+        const packsIds = [...player.ownedPacksIds];
+        packsIds.splice(packsIds.indexOf(pack.id), 1);
+        receivedGiftData.ownedPacksIds = packsIds;
+
+        if(gift.cards) receivedGiftData.ownedCardsIds = [...player.ownedCardsIds, ...gift.cards.map(card => card.id)];
+        if(gift.coins) receivedGiftData.coins = player.coins + gift.coins;
+        if(gift.decks) receivedGiftData.decksIds = [...player.decksIds, ...gift.decks.map(deck => deck.id)];
+        if(gift.packs) receivedGiftData.ownedPacksIds = [...packsIds, ...gift.packs.map(pack => pack.id)];
+
+        this.giftSvc.addGift(gift);
+
+        this.playerDocRef
+          .update(receivedGiftData)
+          .catch(e => {
+            console.log(e);
+            this.messageSvc.displayError('Something went wrong while giving you your new items. If they are missing from your account, inform us immediately.');
+          })
+          .finally(() => {
+            this.loadingSvc.removeLoadingTask('PLAYER_OPEN_PACK');
+          });
+      });
+  }
+
   assignDeck = (deckId: string, callback?: Function): void => {
     this.getPlayer()
       .pipe(take(1))
