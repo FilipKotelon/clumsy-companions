@@ -22,8 +22,8 @@ export class CardsInPlayComponent implements OnInit {
   chosenDefenders: CardInPlay[] = [];
   gameState: fromGame.State;
   gameStateSub: Subscription;
-  selectedDefender: CardInPlay;
-  showAttackersAsClickable: boolean = false;
+  playerPredeclaredDefender: CardInPlay;
+  playerPredeclaredDefenderSub: Subscription;
 
   constructor(
     private gameStateSvc: GameStateService,
@@ -48,16 +48,13 @@ export class CardsInPlayComponent implements OnInit {
     this.gameStateSub = this.gameStateSvc.getGameState().subscribe(gameState => {
       this.gameState = gameState;
     });
+
+    this.playerPredeclaredDefenderSub = this.gamePlayerSvc.playerPredeclaredDefender$.subscribe(defender => {
+      this.playerPredeclaredDefender = defender;
+    });
   }
 
   getIsClickableByPlayer = (card: CardInPlay): boolean => {
-    if(this.gameState.currentPlayerKey === 'opponent' && this.gameState.turnPhaseIndex === 2 && this.opponent){
-      console.log(this.gameState.turnPhaseIndex === 2, card.attacking, card.name, this.showAttackersAsClickable, this.gameState.currentPlayerKey === 'opponent'
-      && this.opponent
-      && ((this.gameState.turnPhaseIndex === 2 && card.attacking)
-        || this.lastEffectOnStackNeedsEnemyTarget));
-    }
-
     return (
         this.gameState.currentPlayerKey === 'player'
         && !this.opponent
@@ -81,7 +78,7 @@ export class CardsInPlayComponent implements OnInit {
   }
 
   clickAction = (card: CardInPlay): void => {
-    console.log('click');
+    console.log(this.chosenDefenders);
     if(this.gameState.currentPlayerKey === 'player'){
       if(!this.opponent){
         if(this.gameState.turnPhaseIndex === 1){
@@ -110,19 +107,19 @@ export class CardsInPlayComponent implements OnInit {
     } else {
       if(!this.opponent){
         if(this.gameState.turnPhaseIndex === 2){
-          if(!this.selectedDefender){
-            this.showAttackersAsClickable = true;
-            this.selectedDefender = card;
+          const cardIsAlreadyADefender = this.gameState.fightQueue.find(fight => fight.defender.gameObjectId === card.gameObjectId);
+
+          if(!this.playerPredeclaredDefender && !cardIsAlreadyADefender){
+            this.gamePlayerSvc.predeclareDefender(card);
           } else {
-            if(this.chosenDefenders.includes(this.selectedDefender)){
+            if(cardIsAlreadyADefender){
               this.gamePlayerSvc.chooseFightsInDefense(
-                [...this.gameState.fightQueue.filter(fight => fight.defender.gameObjectId !== this.selectedDefender.gameObjectId)],
+                [...this.gameState.fightQueue.filter(fight => fight.defender.gameObjectId !== card.gameObjectId)],
                 'player'
               );
             }
 
-            this.showAttackersAsClickable = false;
-            this.selectedDefender = null;
+            this.gamePlayerSvc.clearPredeclaredDefender();
           }
           return;
         } else if(this.lastEffectOnStackNeedsFriendlyTarget){
@@ -134,14 +131,12 @@ export class CardsInPlayComponent implements OnInit {
           this.gamePlayerSvc.chooseFightsInDefense(
             [
               ...this.gameState.fightQueue,
-              { attacker: card, defender: this.selectedDefender }
+              { attacker: card, defender: this.playerPredeclaredDefender }
             ],
             'player'
           );
 
-          this.chosenDefenders.push(this.selectedDefender);
-          this.showAttackersAsClickable = false;
-          this.selectedDefender = null;
+          this.gamePlayerSvc.clearPredeclaredDefender();
 
           return;
         } else if(this.lastEffectOnStackNeedsEnemyTarget){

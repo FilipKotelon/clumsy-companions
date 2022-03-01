@@ -240,7 +240,7 @@
 
       & .card-front__strength, .card-front__energy{
         font-size: 3.8rem;
-        transform: scale(1.55);
+        transform: scale(1.5);
       }
 
       & .card-front__strength{
@@ -249,6 +249,12 @@
 
       & .card-front__energy{
         transform-origin: left top;
+      }
+
+      & .card-front__effect{
+        transform: scale(1.5);
+        transform-origin: bottom left;
+        pointer-events: none;
       }
     }
 

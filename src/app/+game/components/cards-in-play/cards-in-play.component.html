@@ -4,14 +4,14 @@
     [card]="card"
     [sleeveImgUrl]="sleeveImgUrl"
     [class.attacking]="card.attacking"
-    [class.defending]="card.defending || (selectedDefender && selectedDefender.gameObjectId === card.gameObjectId)"
+    [class.defending]="card.defending || (playerPredeclaredDefender && playerPredeclaredDefender.gameObjectId === card.gameObjectId)"
     [class.dizzy]="card.dizzy"
     [class.tired]="card.tired"
-    [class.clickable]="opponent ? (getIsClickableByPlayer(card) && showAttackersAsClickable) : getIsClickableByPlayer(card)"
+    [class.clickable]="opponent ? (getIsClickableByPlayer(card) && playerPredeclaredDefender) : getIsClickableByPlayer(card)"
     size="big"
     (click)="
       opponent
-        ? getIsClickableByPlayer(card) && showAttackersAsClickable
+        ? getIsClickableByPlayer(card) && playerPredeclaredDefender
           ? clickAction(card)
           : null
         : getIsClickableByPlayer(card)

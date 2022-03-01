@@ -405,10 +405,15 @@ export const gameReducer = createReducer(
   immerOn(
     GameStateActions.gameChooseFightsInDefense,
     (draft, action) => {
+      const cardsIds = action.fights.map(fight => fight.defender.gameObjectId);
       draft.fightQueue = action.fights;
 
-      action.fights.forEach(fight => {
-        draft[action.playerKey].cardsInPlay.find(card => card.gameObjectId === fight.defender.gameObjectId).defending = true;
+      draft[action.playerKey].cardsInPlay.forEach(card => {
+        if(cardsIds.includes(card.gameObjectId)){
+          card.defending = true;
+        } else {
+          card.defending = false;
+        }
       });
     }
   ),
