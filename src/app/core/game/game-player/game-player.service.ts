@@ -49,4 +49,8 @@ export class GamePlayerService {
   shuffleDeck = (playerKey: PlayerKey): void => {
     this.store.dispatch(GameEffectActions.gameShuffleDeck({ playerKey }));
   }
+
+  provideTargetForEffect = (targetId: string): void => {
+    this.store.dispatch(GameStateActions.gameProvideTargetForEffect({ targetId }));
+  }
 }

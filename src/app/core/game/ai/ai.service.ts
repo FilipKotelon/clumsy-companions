@@ -18,6 +18,8 @@ export class AiService {
   gameState: fromGame.State;
   gameStateSub: Subscription;
   iAmPretendingToThink: boolean;
+  iAmWaitingForPhase: boolean;
+  turnPhaseIndexIAmWaitingFor: number;
 
   constructor(
     private gamePlayerService: GamePlayerService,
@@ -145,6 +147,7 @@ export class AiService {
       || (this.gameState.counterPlayStatus.canCounter
           && this.gameState.counterPlayStatus.playerKey === 'player')
       || this.gameState.transitioning
+      || (this.iAmWaitingForPhase && this.gameState.turnPhaseIndex !== this.turnPhaseIndexIAmWaitingFor)
       || (!this.gameState.counterPlayStatus.canCounter
         && (this.gameState.cardsQueue.length > 0
           || this.gameState.effectsQueue.length > 0
@@ -215,6 +218,10 @@ export class AiService {
   }
 
   analyze = (): void => {
+    if(this.iAmWaitingForPhase && this.turnPhaseIndexIAmWaitingFor === this.gameState.turnPhaseIndex){
+      this.iAmWaitingForPhase = false;
+    }
+
     if(this.iAmPretendingToThink || this.iAmWaiting) return;
 
     if(this.iCanCounter){
@@ -281,12 +288,12 @@ export class AiService {
           this.chooseFightsInDefense(fightsInDefense);
           return;
         } else {
-          this.approveContinuation();
+          this.continue();
           return;
         }
       }
 
-      this.approveContinuation();
+      this.continue();
       return;
     }
   }
@@ -296,39 +303,48 @@ export class AiService {
   }
 
   continue = (): void => {
-    if(this.itsFirstPreparationPhase){
-      if(this.iHavePotentialAttackingCards && this.iShouldAttack){
-        this.gameStateSvc.goToNextPhase();
-        return;
-      } else {
-        this.gameStateSvc.endTurn();
-        this.pretendToThink();
+    if(this.iHaveTurn){
+      if(this.itsFirstPreparationPhase){
+        if(this.iHavePotentialAttackingCards && this.iShouldAttack){
+          this.gameStateSvc.goToNextPhase();
+          return;
+        } else {
+          this.gameStateSvc.endTurn();
+          this.pretendToThink();
+          return;
+        }
+      }
+  
+      if(this.itsAttackPhase){
+        if(this.iHaveAttackingCards && this.iShouldAttack){
+          this.gameStateSvc.goToNextPhase();
+        } else {
+          this.gameStateSvc.endTurn();
+          return;
+        }
+      }
+  
+      if(this.itsDefendingPhase){
+        this.approveContinuation();
         return;
       }
-    }
-
-    if(this.itsAttackPhase){
-      if(this.iHaveAttackingCards && this.iShouldAttack){
-        this.gameStateSvc.goToNextPhase();
-      } else {
+  
+      if(this.itsDamagePhase){
+        this.approveContinuation();
+        return;
+      }
+  
+      if(this.itsLastPreparationPhase){
         this.gameStateSvc.endTurn();
         return;
       }
-    }
-
-    if(this.itsDefendingPhase){
-      this.approveContinuation();
-      return;
-    }
-
-    if(this.itsDamagePhase){
-      this.approveContinuation();
-      return;
-    }
-
-    if(this.itsLastPreparationPhase){
-      this.gameStateSvc.endTurn();
-      return;
+    } else {
+      if(this.itsDefendingPhase){
+        this.approveContinuation();
+        this.turnPhaseIndexIAmWaitingFor = 3;
+        this.iAmWaitingForPhase = true;
+        return;
+      }
     }
   }
 

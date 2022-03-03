@@ -27,19 +27,23 @@ export class PlayerHudComponent extends ObjectLoadReporter implements OnInit, On
 
   get energyPercentage(): string {
     let percentage = ((this.energy / PLAYER_SETTINGS.BASE_ENERGY) * 100);
-    percentage = percentage > 100 ? 100 : percentage;
+    percentage = percentage > 100
+      ? 100
+      : percentage < 0
+        ? 0
+        : percentage;
     return (percentage).toFixed(2);
   }
 
   ngOnInit(): void {
-    const amountToDisplay = this.baseFood > 0 ? this.baseFood : 1;
+    const amountToDisplay = this.currentFood > 0 ? this.currentFood : 1;
     this.avatarLoadId = this.gameLoaderSvc.registerLoadingObject();
     this.foodTokensToDisplay = new Array(amountToDisplay).fill(1);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes.baseFood){
-      const amountToDisplay = changes.baseFood.currentValue > 0 ? changes.baseFood.currentValue : 1;
+    if(changes.currentFood){
+      const amountToDisplay = changes.currentFood.currentValue > 0 ? changes.currentFood.currentValue : 1;
       this.foodTokensToDisplay = new Array(amountToDisplay).fill(1);
     }
   }

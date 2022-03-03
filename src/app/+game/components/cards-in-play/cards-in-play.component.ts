@@ -67,18 +67,17 @@ export class CardsInPlayComponent implements OnInit {
       ) || (
         this.gameState.currentPlayerKey === 'opponent'
         && !this.opponent
-        && ((this.gameState.turnPhaseIndex === 2 && !card.tired)
+        && ((this.gameState.turnPhaseIndex === 2 && !card.tired && !this.gameState.counterPlayStatus.canCounter && !this.lastEffectOnStackNeedsEnemyTarget)
           || this.lastEffectOnStackNeedsFriendlyTarget)
       ) || (
         this.gameState.currentPlayerKey === 'opponent'
         && this.opponent
-        && ((this.gameState.turnPhaseIndex === 2 && card.attacking)
+        && ((this.gameState.turnPhaseIndex === 2 && card.attacking && this.playerPredeclaredDefender && !this.gameState.fightQueue.find(fight => fight.attacker.gameObjectId === card.gameObjectId) && !this.gameState.counterPlayStatus.canCounter && !this.lastEffectOnStackNeedsFriendlyTarget)
           || this.lastEffectOnStackNeedsEnemyTarget)
       );
   }
 
   clickAction = (card: CardInPlay): void => {
-    console.log(this.chosenDefenders);
     if(this.gameState.currentPlayerKey === 'player'){
       if(!this.opponent){
         if(this.gameState.turnPhaseIndex === 1){
@@ -95,18 +94,22 @@ export class CardsInPlayComponent implements OnInit {
 
             this.gamePlayerSvc.chooseAttackers(attackers, 'player');
           }
+
           return;
         } else if(this.lastEffectOnStackNeedsFriendlyTarget){
-
+          this.gamePlayerSvc.provideTargetForEffect(card.gameObjectId);
           return;
         }
       } else if(this.lastEffectOnStackNeedsEnemyTarget){
-
+        this.gamePlayerSvc.provideTargetForEffect(card.gameObjectId);
         return;
       }
     } else {
       if(!this.opponent){
-        if(this.gameState.turnPhaseIndex === 2){
+        if(this.lastEffectOnStackNeedsFriendlyTarget){
+          this.gamePlayerSvc.provideTargetForEffect(card.gameObjectId);
+          return;
+        } else if(this.gameState.turnPhaseIndex === 2 && !this.lastEffectOnStackNeedsEnemyTarget){
           const cardIsAlreadyADefender = this.gameState.fightQueue.find(fight => fight.defender.gameObjectId === card.gameObjectId);
 
           if(!this.playerPredeclaredDefender && !cardIsAlreadyADefender){
@@ -122,12 +125,12 @@ export class CardsInPlayComponent implements OnInit {
             this.gamePlayerSvc.clearPredeclaredDefender();
           }
           return;
-        } else if(this.lastEffectOnStackNeedsFriendlyTarget){
-
-          return;
-        }
+        } 
       } else {
-        if(this.gameState.turnPhaseIndex === 2){
+        if(this.lastEffectOnStackNeedsEnemyTarget){
+          this.gamePlayerSvc.provideTargetForEffect(card.gameObjectId);
+          return;
+        } else if(this.gameState.turnPhaseIndex === 2){
           this.gamePlayerSvc.chooseFightsInDefense(
             [
               ...this.gameState.fightQueue,
@@ -139,10 +142,7 @@ export class CardsInPlayComponent implements OnInit {
           this.gamePlayerSvc.clearPredeclaredDefender();
 
           return;
-        } else if(this.lastEffectOnStackNeedsEnemyTarget){
-
-          return;
-        }
+        } 
       }
     }
   }

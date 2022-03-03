@@ -17,7 +17,11 @@
     <!-- COMPANION CARD START -->
     <div class="card-front__info" *ngIf="card.type === allCardTypes.Companion">
       <div class="card-front__info__left">
-        <div class="card-front__strength">
+        <div
+          class="card-front__strength"
+          [class.weakened]="card.strength < card.baseStrength"
+          [class.buffed]="card.strength > card.baseStrength"
+        >
           <div class="card-front__strength__bg"></div>
           <span>{{ card.strength }}</span>
         </div>
@@ -33,7 +37,11 @@
           [showEffects]="showEffects"
         ></app-card-effect>
   
-        <div class="card-front__energy">
+        <div
+          class="card-front__energy"
+          [class.weakened]="card.energy < card.baseEnergy"
+          [class.buffed]="card.energy > card.baseEnergy"
+        >
           {{ card.energy }}
         </div>
       </div>
@@ -51,6 +59,7 @@
         <app-card-effect
           [effect]="card.effects[0]"
           [cardType]="card.type"
+          [showEffects]="showEffects"
         ></app-card-effect>
       </div>
     </div>
@@ -63,6 +72,7 @@
         <app-card-effect
           [effect]="card.effects[0]"
           [cardType]="card.type"
+          [showEffects]="showEffects"
         ></app-card-effect>
       </div>
     </div>

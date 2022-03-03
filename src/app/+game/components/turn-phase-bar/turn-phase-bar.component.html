@@ -3,11 +3,15 @@
     *ngIf="turnPhaseButtonMsg"
     @fadeInOut
     class="game-turn-button game-button white"
+    [class.disabled]="buttonDisabled"
     (click)="buttonAction()"
   >
     {{ turnPhaseButtonMsg }}
   </button>
-  <div class="game-turn-phases">
+  <div
+    class="game-turn-phases"
+    [class.opponent]="isOpponentTurn"
+  >
     <div class="game-turn-phases__bar">
       <div
         class="game-turn-phases__bar__fill"

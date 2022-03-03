@@ -280,6 +280,7 @@
     &.clickable{
       outline: .3rem solid $yellow;
       z-index: 30;
+      cursor: pointer;
     }
   }
 }
@@ -287,11 +288,28 @@
 .game-turn-button{
   width: 100%;
   margin-bottom: 3rem;
+
+  &.disabled{
+    opacity: .7;
+    cursor: not-allowed;
+  }
 }
 
 .game-turn-phases{
   position: relative;
   margin-bottom: 3.2rem;
+
+  &.opponent{
+    & .game-turn-phases__bar__fill{
+      background-color: $grey-800;
+    }
+
+    & .game-turn-phases__phases__item{
+      &.active, &.past{
+        background-color: $grey-800;
+      }
+    }
+  }
 
   &__bar{
     @include abs-center-y;
@@ -540,7 +558,7 @@
   @include abs-center-y();
   @include d-flex($center: true);
   left: 5rem;
-  z-index: 700;
+  z-index: 400;
 
   & app-card{
     @include rect(30rem, 45rem);
@@ -549,5 +567,27 @@
     & .card-front{
       transform: scaleCardTo(30rem);
     }
+  }
+}
+
+.game-canvas-overlay{
+  @include fix(0, 0);
+  @include square(100%);
+  z-index: 300;
+  pointer-events: none;
+}
+
+.game-messages{
+  @include abs-center-y;
+  right: 3rem;
+  z-index: 500;
+
+  &__msg{
+    max-width: 44rem;
+    padding: 2.4rem;
+    background-color: $main;
+    color: $white;
+    border-radius: .3rem;
+    font-size: 2.8rem;
   }
 }

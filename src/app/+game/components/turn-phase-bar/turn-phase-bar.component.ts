@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { GamePlayerService } from '@core/game/game-player/game-player.service';
 import { GameStateService } from '@core/game/game-state/game-state.service';
 import { CardInPlay, ContinuationApproval, CounterPlayStatus, InGameTurnPhase, PlayerKey, PlayerOpponentLoadInfo, TurnPhase, TurnPhaseButtonActionPayload, TurnPhaseButtonActionType, TURN_PHASES } from '@core/game/game.types';
+import { GameEffect } from '@core/game/store/game-effect.actions';
 import { fadeInOut } from '@shared/animations/component-animations';
 import { Subscription } from 'rxjs';
 
@@ -20,6 +21,8 @@ export class TurnPhaseBarComponent implements OnInit {
   curPhase: TurnPhase = null;
   currentPlayerKey: PlayerKey = null;
   currentPlayerKeySub: Subscription;
+  effectsQueue: GameEffect[];
+  effectsQueueSub: Subscription;
   players: PlayerOpponentLoadInfo = null;
   playersSub: Subscription;
   transitioning: boolean = false;
@@ -41,6 +44,15 @@ export class TurnPhaseBarComponent implements OnInit {
     return this.turnPhases.findIndex(phase => phase.active);
   }
 
+  get buttonDisabled(): boolean {
+    return this.buttonActionPayload.actionType === TurnPhaseButtonActionType.None
+      || this.effectsQueue.length > 0;
+  }
+
+  get isOpponentTurn(): boolean {
+    return this.currentPlayerKey === 'opponent';
+  }
+
   ngOnInit(): void {
     this.turnPhases = TURN_PHASES.map(phase => ({
       ...phase,
@@ -59,6 +71,11 @@ export class TurnPhaseBarComponent implements OnInit {
 
     this.counterPlayStatusSub = this.gameStateSvc.getCounterPlayStatus().subscribe(counterPlayStatus => {
       this.counterPlayStatus = counterPlayStatus;
+      this.setUpButton();
+    });
+
+    this.effectsQueueSub = this.gameStateSvc.getEffectsQueue().subscribe(effects => {
+      this.effectsQueue = effects;
       this.setUpButton();
     });
 

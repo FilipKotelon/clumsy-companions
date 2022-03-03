@@ -15,12 +15,18 @@
     [@fadeInOut]
     class="card-front__effect__modal" 
   >
-    <img
-      (click)="onClose()"
+    <div
+      *ngIf="!showEffects"
       class="card-front__effect__modal__close"
-      src="assets/img/icons/close.svg"
-      alt="Close"
     >
+      <img
+        (click)="onClose()"
+        class="card-front__effect__modal__close__img"
+        src="assets/img/icons/close.svg"
+        alt="Close"
+      >
+    </div>
+
     <div class="card-front__effect">
       <img 
         class="card-front__effect__img"

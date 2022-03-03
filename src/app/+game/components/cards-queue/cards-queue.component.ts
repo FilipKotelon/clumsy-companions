@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { CardType } from '@core/cards/cards.types';
 import { GameStateService } from '@core/game/game-state/game-state.service';
 import { InGameCard } from '@core/game/game.types';
 import { GameEffect } from '@core/game/store/game-effect.actions';
@@ -48,5 +49,9 @@ export class CardsQueueComponent implements OnInit {
         this.effectsInQueue = effects;
       }
     });
+  }
+
+  getIsCardFood = (card: InGameCard): boolean => {
+    return card.type === CardType.Food;
   }
 }

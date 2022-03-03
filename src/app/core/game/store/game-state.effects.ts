@@ -13,14 +13,18 @@ import * as GameEffectActions from '@core/game/store/game-effect.actions';
 import * as fromStore from '@core/store/reducer';
 import * as GameSelectors from '@core/game/store/game.selectors';
 import { GameFightsService } from '../game-fights/game-fights.service';
-import { getCardPlayableCheckPayload, getEffectNeedsTarget, getHasPlayableCards, getOtherPlayerKey } from '../game.helpers';
+import { getCardPlayableCheckPayload, getEffectNeedsEnemyTarget, getEffectNeedsFriendlyTarget, getEffectNeedsTarget, getHasPlayableCards, getOtherPlayerKey } from '../game.helpers';
+import { GameCanvasService } from '../game-canvas/game-canvas.service';
+import { GameMessagesService } from '../game-messages/game-messages.service';
 
 @Injectable()
 export class GameStateEffects {
   constructor(
     private actions$: Actions,
+    private gameCanvasSvc: GameCanvasService,
     private gameConnectorSvc: GameConnectorService,
     private gameFightsSvc: GameFightsService,
+    private gameMessagesSvc: GameMessagesService,
     private router: Router,
     private store: Store<fromStore.AppState>
   ) {}
@@ -55,13 +59,26 @@ export class GameStateEffects {
 
   resolveCard$ = createEffect(() => this.actions$.pipe(
     ofType(GameStateActions.gameResolveCard),
-    withLatestFrom(this.store.select(GameSelectors.selectEffectsQueue)),
-    tap(([{ type, ...payload }, effectsQueue]) => {
+    withLatestFrom(
+      this.store.select(GameSelectors.selectEffectsQueue),
+      this.store.select(GameSelectors.selectPlayers)
+    ),
+    tap(([{ type, ...payload }, effectsQueue, players]) => {
       if(effectsQueue.length){
         const nextEffect = effectsQueue[effectsQueue.length - 1];
 
         if(!getEffectNeedsTarget(nextEffect.type)){
           this.store.dispatch(nextEffect.getAction(nextEffect.payload) as Action);
+        } else if(
+          (getEffectNeedsFriendlyTarget(nextEffect.type) && !players[payload.card.playerKey].cardsInPlay.length)
+          || (getEffectNeedsEnemyTarget(nextEffect.type) && !players[getOtherPlayerKey(payload.card.playerKey)].cardsInPlay.length)
+        ){
+          //skip the effect if no target is available
+          this.store.dispatch(GameStateActions.gameResolveEffectInQueue());
+        }
+
+        if(getEffectNeedsTarget(nextEffect.type)){
+          this.gameMessagesSvc.showMessage('Choose the target for your spell!', true);
         }
       } else {
         this.store.dispatch(GameStateActions.gameResolveCardInQueue({ card: payload.card }));
@@ -83,7 +100,16 @@ export class GameStateEffects {
         const defendingPlayerId = players[getOtherPlayerKey(currentPlayerKey)].gameObjectId;
 
         this.gameFightsSvc.resolveFights(fights, attackingPlayerCards, defendingPlayerId);
+        this.gameCanvasSvc.clear();
       }
+    })
+  ), { dispatch: false })
+
+  chooseFightsInDefense$ = createEffect(() => this.actions$.pipe(
+    ofType(GameStateActions.gameChooseFightsInDefense),
+    withLatestFrom(this.store.select(GameSelectors.selectFightQueue)),
+    tap(([action, fights]) => {
+      this.gameCanvasSvc.setFightsToDrawBetween(fights);
     })
   ), { dispatch: false })
 
@@ -136,10 +162,20 @@ export class GameStateEffects {
 
   setupNextTurn$ = createEffect(() => this.actions$.pipe(
     ofType(GameStateActions.gameSetupNextTurn),
-    switchMap(() => {
-      return of(GameStateActions.gameStartTurn());
+    withLatestFrom(this.store.select(GameSelectors.selectCurrentPlayerKey)),
+    tap(([action, playerKey]) => {
+      if(playerKey === 'player'){
+        this.gameMessagesSvc.showMessage('Your turn');
+        this.store.dispatch(GameStateActions.gameStartTurn());
+      } else {
+        this.gameMessagesSvc.showMessage('Opponent\'s turn');
+
+        setTimeout(() => {
+          this.store.dispatch(GameStateActions.gameStartTurn());
+        }, 1000);
+      }
     })
-  ))
+  ), { dispatch: false })
 
   startTurn$ = createEffect(() => this.actions$.pipe(
     ofType(GameStateActions.gameStartTurn),
@@ -171,14 +207,49 @@ export class GameStateEffects {
       GameEffectActions.gameDrawXCards,
       GameEffectActions.gameShuffleDeck,
     ),
-    withLatestFrom(
-      this.store.select(GameSelectors.selectEffectsQueue),
-      this.store.select(GameSelectors.selectCardsQueue)
-    ),
-    tap(([action, effectsQueue, cardsQueue]) => {
+    withLatestFrom(this.store.select(GameSelectors.selectEffectsQueue)),
+    tap(([action, effectsQueue]) => {
       if(effectsQueue.length){
         this.store.dispatch(GameStateActions.gameResolveEffectInQueue());
       }
+    })
+  ), { dispatch: false })
+
+  potentialCardDestroyEffects$ = createEffect(() => this.actions$.pipe(
+    ofType(
+      GameEffectActions.gameDestroyTarget,
+      GameEffectActions.gameDestroyAll,
+      GameEffectActions.gameDestroyAllExcept,
+      GameEffectActions.gameDamageTarget,
+      GameEffectActions.gameDamageEnemies,
+      GameEffectActions.gameDamageAll,
+      GameEffectActions.gameDamageAllExcept,
+      GameEffectActions.gameDebuffTarget,
+      GameEffectActions.gameDebuffEnemies,
+      GameEffectActions.gameAuraDebuffEnemies,
+      GameEffectActions.gameAuraDebuffAllExcept
+    ),
+    withLatestFrom(
+      this.store.select(GameSelectors.selectFightQueue),
+      this.store.select(GameSelectors.selectCurrentTurnPhaseIndex),
+      this.store.select(GameSelectors.selectCurrentPlayerKey)
+    ),
+    tap(([action, fights, turnPhaseIndex, playerKey]) => {
+      if(turnPhaseIndex === 2){
+        this.gameCanvasSvc.setFightsToDrawBetween(fights);
+        this.store.dispatch(GameStateActions.gameChooseFightsInDefense({ fights, playerKey: getOtherPlayerKey(playerKey) }));
+      }
+    })
+  ), { dispatch: false })
+
+  provideTargetForEffect$ = createEffect(() => this.actions$.pipe(
+    ofType(GameStateActions.gameProvideTargetForEffect),
+    withLatestFrom(this.store.select(GameSelectors.selectEffectsQueue)),
+    tap(([action, effectsQueue]) => {
+      const nextEffect = effectsQueue[effectsQueue.length - 1];
+
+      this.store.dispatch(nextEffect.getAction(nextEffect.payload) as Action);
+      this.gameMessagesSvc.clearMessage();
     })
   ), { dispatch: false })
 

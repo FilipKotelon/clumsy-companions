@@ -1,8 +1,8 @@
 <div class="game-sleepyard">
   <img
     *ngIf="cards.length"
-    [src]="cards[0].imgUrl"
-    [alt]="cards[0].name"
+    [src]="cards[cards.length - 1].imgUrl"
+    [alt]="cards[cards.length - 1].name"
     class="game-sleepyard__next-card"
   >
   <div class="game-sleepyard__overlay">

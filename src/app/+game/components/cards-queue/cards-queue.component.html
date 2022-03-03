@@ -8,7 +8,7 @@
     @fadeInOut
     [card]="card"
     [sleeveImgUrl]="sleeveImgUrl"
-    [showEffects]="showEffects"
+    [showEffects]="showEffects || getIsCardFood(card)"
     size="big"
   ></app-card>
 </div>

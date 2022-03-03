@@ -24,7 +24,7 @@
         *ngFor="let token of foodTokensToDisplay; let i = index"
         @fadeInOut
         class="player-hud__tokens__column__token"
-        [class.grey]="i > currentFood || currentFood === 0"
+        [class.grey]="currentFood === 0"
       >
         <img
           src="assets/img/icons/food-token-icon.svg"

@@ -17,6 +17,7 @@ import { Deck } from '@core/decks/decks.types';
 import { Sleeve } from '@core/sleeves/sleeves.types';
 import { SleevesService } from '@core/sleeves/sleeves.service';
 import { DecksService } from '@core/decks/decks.service';
+import { Gift } from '@core/gift/gift.types';
 
 @Injectable({
   providedIn: 'root'
@@ -222,21 +223,18 @@ export class PlayerService {
       });
   }
 
-  receiveGift = (gift: GiftService): void => {
+  receiveGift = (gift: Gift): void => {
     this.loadingSvc.addLoadingTask('PLAYER_RECEIVE_GIFT');
 
     this.getPlayer()
       .pipe(take(1))
       .subscribe(player => {
         const receivedGiftData: Partial<DbUser> = {};
-        const packsIds = [...player.ownedPacksIds];
-        packsIds.splice(packsIds.indexOf(pack.id), 1);
-        receivedGiftData.ownedPacksIds = packsIds;
 
         if(gift.cards) receivedGiftData.ownedCardsIds = [...player.ownedCardsIds, ...gift.cards.map(card => card.id)];
         if(gift.coins) receivedGiftData.coins = player.coins + gift.coins;
         if(gift.decks) receivedGiftData.decksIds = [...player.decksIds, ...gift.decks.map(deck => deck.id)];
-        if(gift.packs) receivedGiftData.ownedPacksIds = [...packsIds, ...gift.packs.map(pack => pack.id)];
+        if(gift.packs) receivedGiftData.ownedPacksIds = [...player.ownedPacksIds, ...gift.packs.map(pack => pack.id)];
 
         this.giftSvc.addGift(gift);
 
@@ -247,7 +245,7 @@ export class PlayerService {
             this.messageSvc.displayError('Something went wrong while giving you your new items. If they are missing from your account, inform us immediately.');
           })
           .finally(() => {
-            this.loadingSvc.removeLoadingTask('PLAYER_OPEN_PACK');
+            this.loadingSvc.removeLoadingTask('PLAYER_RECEIVE_GIFT');
           });
       });
   }

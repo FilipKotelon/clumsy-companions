@@ -24,8 +24,12 @@ export const getCardPlayableCheckPayload = (draft: fromGame.State, pcPayload: Pl
   const hasTurn = draft.currentPlayerKey === pcPayload.playerKey;
   let canCounter = false;
 
-  if(pcPayload.card && !hasTurn){
-    if(pcPayload.card.type !== CardType.Food){
+  if(!hasTurn){
+    if(pcPayload.card && pcPayload.card.type !== CardType.Food && draft.counterPlayStatus.playerKey === getOtherPlayerKey(pcPayload.playerKey) && draft.counterPlayStatus.canCounter){
+      canCounter = true;
+    }
+
+    if(draft.turnPhaseIndex === 2){
       canCounter = true;
     }
   }
@@ -36,6 +40,7 @@ export const getCardPlayableCheckPayload = (draft: fromGame.State, pcPayload: Pl
 
   return {
     player: draft[pcPayload.playerKey],
+    otherPlayer: draft[getOtherPlayerKey(pcPayload.playerKey)],
     turnPhaseIndex: draft.turnPhaseIndex,
     hasTurn,
     canCounter,
@@ -45,7 +50,7 @@ export const getCardPlayableCheckPayload = (draft: fromGame.State, pcPayload: Pl
 }
 
 export const getIsCardPlayable = (payload: CardPlayableCheckFullPayload): boolean => {
-  const { card, player, turnPhaseIndex, hasTurn, canCounter, cardsInQueue, transitioning } = payload;
+  const { card, player, otherPlayer, turnPhaseIndex, hasTurn, canCounter, cardsInQueue, transitioning } = payload;
   const turnPhase = TURN_PHASES[turnPhaseIndex];
   let cardTypes: CardType[] = [];
   let canPayForCost = false;
@@ -54,25 +59,15 @@ export const getIsCardPlayable = (payload: CardPlayableCheckFullPayload): boolea
     return false;
   }
 
-  if(!hasTurn){
-    if(canCounter){
-      cardTypes = [CardType.Trick];
-      return cardTypes.includes(card.type);
-    } else {
-      return false;
-    }
+  if(!hasTurn && !canCounter) {
+    return false;
   }
 
-  if(cardsInQueue){
-    if(canCounter){
-      cardTypes = [CardType.Trick];
-      return cardTypes.includes(card.type);
-    } else {
-      return false;
-    }
+  if(card.cost && card.cost <= player.currentFood){
+    canPayForCost = true;
   }
 
-  if(turnPhase.type === 'action'){
+  if(turnPhase.type === 'action' || canCounter){
     cardTypes = [CardType.Trick];
   } else {
     cardTypes = [CardType.Food, CardType.Charm, CardType.Companion, CardType.Trick];
@@ -82,8 +77,17 @@ export const getIsCardPlayable = (payload: CardPlayableCheckFullPayload): boolea
     return cardTypes.includes(card.type) && !player.playedFoodThisTurn;
   }
 
-  if(card.cost <= player.currentFood){
-    canPayForCost = true;
+  if(card.type === CardType.Trick){
+    const trickRequirements = cardTypes.includes(card.type) && canPayForCost && (canCounter || hasTurn);
+    console.log(trickRequirements, otherPlayer.cardsInPlay.length > 0);
+
+    if(getEffectNeedsEnemyTarget(card.effects[0].action.type)){
+      return trickRequirements && otherPlayer.cardsInPlay.length > 0;
+    }
+
+    if(getEffectNeedsFriendlyTarget(card.effects[0].action.type)){
+      return trickRequirements && player.cardsInPlay.length > 0;
+    }
   }
 
   return cardTypes.includes(card.type) && canPayForCost;

@@ -20,6 +20,8 @@ import { DraggableCardDirective } from './directives/draggable-card/draggable-ca
 import { CardsQueueComponent } from './components/cards-queue/cards-queue.component';
 import { CardsInPlayComponent } from './components/cards-in-play/cards-in-play.component';
 import { GameEndScreenComponent } from './components/game-end-screen/game-end-screen.component';
+import { GameCanvasOverlayComponent } from './components/game-canvas-overlay/game-canvas-overlay.component';
+import { GameMessagesComponent } from './components/game-messages/game-messages.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +42,8 @@ import { GameEndScreenComponent } from './components/game-end-screen/game-end-sc
     CardsQueueComponent,
     CardsInPlayComponent,
     GameEndScreenComponent,
+    GameCanvasOverlayComponent,
+    GameMessagesComponent,
   ],
   imports: [
     SharedModule,

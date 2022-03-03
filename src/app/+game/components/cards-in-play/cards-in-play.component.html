@@ -7,16 +7,8 @@
     [class.defending]="card.defending || (playerPredeclaredDefender && playerPredeclaredDefender.gameObjectId === card.gameObjectId)"
     [class.dizzy]="card.dizzy"
     [class.tired]="card.tired"
-    [class.clickable]="opponent ? (getIsClickableByPlayer(card) && playerPredeclaredDefender) : getIsClickableByPlayer(card)"
+    [class.clickable]="getIsClickableByPlayer(card)"
     size="big"
-    (click)="
-      opponent
-        ? getIsClickableByPlayer(card) && playerPredeclaredDefender
-          ? clickAction(card)
-          : null
-        : getIsClickableByPlayer(card)
-          ? clickAction(card)
-          : null
-    "
+    (click)="getIsClickableByPlayer(card) ? clickAction(card) : null"
   ></app-card>
 </div>

@@ -132,27 +132,31 @@ export const gameReducer = createReducer(
       );
 
       const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, action);
-
-      cardPlayableCheckPayload.canCounter = getHasPlayableCards(draft[action.playerKey].hand, cardPlayableCheckPayload);
+      cardPlayableCheckPayload.canCounter = getHasPlayableCards(draft[getOtherPlayerKey(action.playerKey)].hand, cardPlayableCheckPayload);
+      draft.continuationApproval = { player: true, opponent: true };
 
       if(action.card.type !== CardType.Food){
         draft[action.playerKey].currentFood -= action.card.cost;
-        draft.continuationApproval[action.playerKey] = true;
-        draft.continuationApproval[getOtherPlayerKey(action.playerKey)] = !cardPlayableCheckPayload.canCounter;
-
-        if(cardPlayableCheckPayload.canCounter){
-          draft.counterPlayStatus = {
-            playerKey: getOtherPlayerKey(action.playerKey),
-            canCounter: cardPlayableCheckPayload.canCounter
-          }
-        } else {
-          draft.counterPlayStatus = getResetCounterPlayStatus();
-        }
       }
 
-      if(action.card.type === CardType.Food){
-        draft.continuationApproval = { player: true, opponent: true };
-      }
+      // if(action.card.type !== CardType.Food){
+      //   draft[action.playerKey].currentFood -= action.card.cost;
+      //   draft.continuationApproval[action.playerKey] = true;
+      //   draft.continuationApproval[getOtherPlayerKey(action.playerKey)] = !cardPlayableCheckPayload.canCounter;
+
+      //   if(cardPlayableCheckPayload.canCounter){
+      //     draft.counterPlayStatus = {
+      //       playerKey: getOtherPlayerKey(action.playerKey),
+      //       canCounter: cardPlayableCheckPayload.canCounter
+      //     }
+      //   } else {
+      //     draft.counterPlayStatus = getResetCounterPlayStatus();
+      //   }
+      // }
+
+      // if(action.card.type === CardType.Food){
+      //   draft.continuationApproval = { player: true, opponent: true };
+      // }
 
       ['player', 'opponent'].forEach(pKey => {
         draft[pKey].hand.forEach(card => {
@@ -271,21 +275,30 @@ export const gameReducer = createReducer(
     GameStateActions.gameApproveContinuation,
     (draft, action) => {
       draft.continuationApproval[action.playerKey] = true;
-    }
-  ),
-  immerOn(
-    GameStateActions.gameEndTurn,
-    GameStateActions.gameGoToNextPhase,
-    GameStateActions.gameGoToPhase,
-    (draft, action) => {
-      const otherPlayerKey = getOtherPlayerKey(draft.currentPlayerKey);
-      const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, { playerKey: otherPlayerKey });
 
-      draft.continuationApproval[draft.currentPlayerKey] = true;
-      draft.continuationApproval[otherPlayerKey] = otherPlayerKey === 'opponent'
-        || !getHasPlayableCards(draft[otherPlayerKey].hand, cardPlayableCheckPayload);
+      if(draft.continuationApproval[getOtherPlayerKey(action.playerKey)]){
+        draft.counterPlayStatus = getResetCounterPlayStatus();
+      }
     }
   ),
+  // immerOn(
+  //   GameStateActions.gameEndTurn,
+  //   GameStateActions.gameGoToNextPhase,
+  //   GameStateActions.gameGoToPhase,
+  //   (draft, action) => {
+  //     const otherPlayerKey = getOtherPlayerKey(draft.currentPlayerKey);
+  //     const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, { playerKey: otherPlayerKey });
+
+  //     draft.continuationApproval[draft.currentPlayerKey] = true;
+  //     draft.continuationApproval[otherPlayerKey] = otherPlayerKey === 'opponent'
+  //       || !getHasPlayableCards(draft[otherPlayerKey].hand, cardPlayableCheckPayload);
+
+  //     if(draft.continuationApproval[otherPlayerKey] === false){
+  //       draft.counterPlayStatus.playerKey = otherPlayerKey;
+  //       draft.counterPlayStatus.canCounter = true;
+  //     }
+  //   }
+  // ),
   immerOn(
     GameStateActions.gameEndTurn,
     (draft, action) => {
@@ -328,16 +341,29 @@ export const gameReducer = createReducer(
     GameStateActions.gameGoToPhaseResolve,
     (draft, action) => {
       draft.stateActionsQueue.pop();
-      if(draft.turnPhaseIndex === 2){
-        draft.continuationApproval[draft.currentPlayerKey] = true;
-        draft.continuationApproval[getOtherPlayerKey(draft.currentPlayerKey)] = false;
-      }
     }
   ),
   immerOn(
     GameStateActions.gameGoToNextPhaseResolve,
     GameStateActions.gameGoToPhaseResolve,
     (draft, action) => {
+      // const otherPlayerKey = getOtherPlayerKey(draft.currentPlayerKey);
+
+      // if(draft.turnPhaseIndex === 2){
+      //   const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, { playerKey: otherPlayerKey });
+      //   const canCounter = otherPlayerKey === 'opponent'
+      //     || getHasPlayableCards(draft[otherPlayerKey].hand, cardPlayableCheckPayload);
+
+      //   if(canCounter){
+      //     draft.continuationApproval[draft.currentPlayerKey] = true;
+      //     draft.continuationApproval[otherPlayerKey] = false;
+      //     draft.counterPlayStatus.playerKey = otherPlayerKey;
+      //     draft.counterPlayStatus.canCounter = true;
+      //   }
+      // } else {
+      //   draft.counterPlayStatus = getResetCounterPlayStatus();
+      // }
+
       ['player', 'opponent'].forEach(pKey => {
         const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, { playerKey: pKey as PlayerKey });
 
@@ -520,7 +546,64 @@ export const gameReducer = createReducer(
       draft[action.playerKey].energy += action.amount;
     }
   ),
+  immerOn(
+    GameEffectActions.gameDestroyTarget,
+    (draft, action) => {
+      const target = [...draft.player.cardsInPlay, ...draft.opponent.cardsInPlay].find(card => card.gameObjectId === action.targetId);
 
+      draft[target.playerKey].sleepyard.unshift({
+        ...draft[target.playerKey].cardsInPlay.splice(
+          draft[target.playerKey].cardsInPlay.findIndex(card => card.gameObjectId === target.gameObjectId),
+          1
+        )[0],
+        turnsLeft: 5
+      });
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameDamageTarget,
+    (draft, action) => {
+      const target = [...draft.player.cardsInPlay, ...draft.opponent.cardsInPlay].find(card => card.gameObjectId === action.targetId);
+
+      target.energy -= action.amount;
+
+      if(target.energy <= 0){
+        draft[target.playerKey].sleepyard.unshift({
+          ...draft[target.playerKey].cardsInPlay.splice(
+            draft[target.playerKey].cardsInPlay.findIndex(card => card.gameObjectId === target.gameObjectId),
+            1
+          )[0],
+          turnsLeft: 5
+        });
+      }
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameDestroyTarget,
+    GameEffectActions.gameDamageTarget,
+    (draft, action) => {
+      if(draft.fightQueue.length){
+        const curPlayerCards = draft[draft.currentPlayerKey].cardsInPlay;
+        const otherPlayerCards = draft[getOtherPlayerKey(draft.currentPlayerKey)].cardsInPlay;
+
+        const filteredQueue = [...draft.fightQueue].filter(fight => {
+          return curPlayerCards.find(card => card.gameObjectId === fight.attacker.gameObjectId)
+            && otherPlayerCards.find(card => card.gameObjectId === fight.defender.gameObjectId)
+        });
+
+        if(filteredQueue.length !== draft.fightQueue.length){
+          draft.fightQueue = filteredQueue;
+        }
+      }
+    }
+  ),
+
+  immerOn(
+    GameStateActions.gameProvideTargetForEffect,
+    (draft, action) => {
+      draft.effectsQueue[draft.effectsQueue.length - 1].payload.targetId = action.targetId;
+    }
+  ),
   immerOn(
     GameStateActions.gameResolveEffectInQueue,
     (draft, action) => {

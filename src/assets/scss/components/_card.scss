@@ -109,12 +109,28 @@ $effect-desc-size-big: 2.2rem;
 
   &__energy{
     background-color: $blue;
+
+    &.weakened{
+      color: $orange;
+    }
+
+    &.buffed{
+      color: $yellow;
+    }
   }
 
   &__strength{
     @include d-flex($center: true);
     @include square($info-size-md);
     position: relative;
+
+    &.weakened{
+      color: $light-blue;
+    }
+
+    &.buffed{
+      color: $yellow;
+    }
 
     & span{
       position: relative;
@@ -162,7 +178,7 @@ $effect-desc-size-big: 2.2rem;
       @include square(100%);
       z-index: 10;
       @include d-flex($dir: column, $center: true);
-      background-color: $white-dimmed-transparent-stronger;
+      background-color: $white-dimmed-transparent-medium;
       color: $black;
       padding: 1.5rem;
       
@@ -183,9 +199,16 @@ $effect-desc-size-big: 2.2rem;
       }
 
       &__close{
-        @include square(calc(#{$info-size-md} / 2));
-        @include abs($r: $name-size-md, $t: $name-size-md);
+        @include circle($info-size-md);
+        @include abs($r: 1.2rem, $t: 1.2rem);
+        overflow: hidden;
+        background-color: $black;
         cursor: pointer;
+
+        &__img{
+          filter: brightness(0) invert(1);
+          @include square(50%);
+        }
       }
     }
   }
@@ -257,8 +280,7 @@ $effect-desc-size-big: 2.2rem;
             }
 
             &__close{
-              @include square(calc(#{$info-size-small} / 2));
-              @include abs($r: $name-size-small, $t: $name-size-small);
+              @include square($info-size-small);
             }
           }
         }
@@ -344,8 +366,7 @@ $effect-desc-size-big: 2.2rem;
             }
 
             &__close{
-              @include square(calc(#{$info-size-big} / 2));
-              @include abs($r: $name-size-big, $t: $name-size-big);
+              @include square($info-size-big);
             }
           }
         }

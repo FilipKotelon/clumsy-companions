@@ -140,6 +140,7 @@ export interface SleepyardCard extends InGameCard {
 
 export interface CardPlayableCheckPayload {
   player: InGamePlayer;
+  otherPlayer: InGamePlayer;
   turnPhaseIndex: number;
   hasTurn: boolean;
   canCounter: boolean;
@@ -256,4 +257,11 @@ export interface CounterPlayStatus {
 export interface GameGiftData {
   coins: number;
   packId?: string;
+}
+
+export interface GameCanvasDataItem {
+  attackerX: number;
+  attackerY: number;
+  defenderX: number;
+  defenderY: number;
 }
