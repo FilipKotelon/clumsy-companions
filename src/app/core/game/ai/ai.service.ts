@@ -102,8 +102,22 @@ export class AiService {
 
   //#region iShould and iMust
   get iShouldAttack(): boolean {
-    return this.cardsIShouldAttackWith.length > 0
-      && !this.iMustDefendMyselfAtAllCost;
+    const cardsICanAttackWith = this.myCardsInPlay.filter(card =>
+      card.strength > 0
+      && !card.dizzy && !card.tired
+    );
+    let lowestStrengthOfThem = 99;
+
+    cardsICanAttackWith.forEach(card => {
+      if(card.strength < lowestStrengthOfThem){
+        lowestStrengthOfThem = card.strength;
+      }
+    })
+
+    return (this.cardsIShouldAttackWith.length > 0
+        && !this.iMustDefendMyselfAtAllCost)
+      || (cardsICanAttackWith.length > this.playersCardsInPlay.length
+        && lowestStrengthOfThem >= this.gameState.player.energy);
   }
 
   get iMustDefendMyselfAtAllCost(): boolean {

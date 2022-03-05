@@ -3,6 +3,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 import { CardType, FOOD_CARD_EFFECT } from '@core/cards/cards.types';
 
 import { CardEffect, CardEffectType } from '@core/cards/cards.types';
+import { InGameCardEffect } from '@core/game/game.types';
 import { GameEffectActionType } from '@core/game/store/game-effect.actions';
 
 import { fadeInOut } from '@shared/animations/component-animations';
@@ -15,7 +16,7 @@ import { fadeInOut } from '@shared/animations/component-animations';
   ]
 })
 export class CardEffectComponent implements OnInit {
-  @Input() effect: CardEffect;
+  @Input() effect: CardEffect | InGameCardEffect;
   @Input() cardType?: CardType;
   @Input() showEffects: boolean = false;
 
@@ -37,9 +38,13 @@ export class CardEffectComponent implements OnInit {
       return `${type}`;
     }
 
-    const action = this.effect.action;
+    let action = this.effect.action;
     let additional = '';
 
+    if((this.effect as InGameCardEffect).action.type){
+      action = (this.effect as InGameCardEffect).action.type;
+    }
+    
     if(type === CardEffectType.AuraEffect){
       if(action === GameEffectActionType.AURA_BUFF_ALLIES || action === GameEffectActionType.AURA_BUFF_ALLIES_EXCEPT){
         additional = '-buff';

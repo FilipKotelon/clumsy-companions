@@ -99,7 +99,7 @@ export const gameDamageTarget = createAction(
 
 export const gameDamageEnemies = createAction(
   GameEffectActionType.DAMAGE_ENEMIES,
-  props<EffectPayloadWithAmount>()
+  props<EffectPayloadWithAmountAndPlayerKey>()
 );
 
 export const gameDamageAll = createAction(

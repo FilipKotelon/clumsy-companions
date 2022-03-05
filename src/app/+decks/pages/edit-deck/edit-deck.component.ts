@@ -220,9 +220,10 @@ export class EditDeckComponent extends EditableOrNew {
 
   getCardMaxAmount = (card: Card): number => {
     if(card.type === CardType.Food) return DECK_SETTINGS.MIN_CARDS - 5;
-    if(card.cost > 6) return 3;
-    if(card.cost > 4) return 4;
-    if(card.cost > 2) return 5;
+    if(card.cost >= 8) return 2;
+    if(card.cost >= 6) return 3;
+    if(card.cost >= 4) return 4;
+    if(card.cost >= 2) return 5;
     return 6;
   }
 

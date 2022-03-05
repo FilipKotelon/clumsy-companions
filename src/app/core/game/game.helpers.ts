@@ -79,7 +79,6 @@ export const getIsCardPlayable = (payload: CardPlayableCheckFullPayload): boolea
 
   if(card.type === CardType.Trick){
     const trickRequirements = cardTypes.includes(card.type) && canPayForCost && (canCounter || hasTurn);
-    console.log(trickRequirements, otherPlayer.cardsInPlay.length > 0);
 
     if(getEffectNeedsEnemyTarget(card.effects[0].action.type)){
       return trickRequirements && otherPlayer.cardsInPlay.length > 0;
@@ -130,7 +129,7 @@ export const getValuesFromEffect = (effect: EffectBasePayload): CompanionBaseSta
     values.energy = effect.values.energy;
   }
 
-  if(effect.values.energy){
+  if(effect.values.strength){
     values.strength = effect.values.strength;
   }
 
@@ -138,26 +137,12 @@ export const getValuesFromEffect = (effect: EffectBasePayload): CompanionBaseSta
 }
 
 export const pipeCompanion = (card: CardInPlay, activeEffects: GameActiveEffects): CardInPlay => {
-  if(card.effectedPersonallyBy && card.effectedPersonallyBy.length){
-    card.effectedPersonallyBy.forEach(buff => {
-      const values = getValuesFromEffect(buff);
-
-      if(buff.positive){
-        card.energy += values.energy;
-        card.strength += values.strength;
-      } else {
-        card.energy -= values.energy;
-        card.strength -= values.strength;
-      }
-    })
-  }
-
   if(activeEffects.auras.length){
     activeEffects.auras.forEach(aura => {
-      if((aura.playerKey === card.currentPlayerKey && aura.target === 'allies')
-        || (aura.playerKey === card.currentPlayerKey && aura.target === 'allies-except' && aura.originId !== card.gameObjectId)
+      if((aura.playerKey === card.playerKey && aura.target === 'allies')
+        || (aura.playerKey === card.playerKey && aura.target === 'allies-except' && aura.originId !== card.gameObjectId)
         || (aura.target === 'all-except' && aura.originId !== card.gameObjectId)
-        || (aura.playerKey !== card.currentPlayerKey && aura.target === 'enemies')) {
+        || (aura.playerKey !== card.playerKey && aura.target === 'enemies')) {
         const values = getValuesFromEffect(aura);
   
         if(aura.positive){
@@ -173,8 +158,9 @@ export const pipeCompanion = (card: CardInPlay, activeEffects: GameActiveEffects
 
   if(activeEffects.buffs.length){
     activeEffects.buffs.forEach(buff => {
-      if((buff.playerKey === card.currentPlayerKey && buff.target === 'allies')
-        || (buff.playerKey !== card.currentPlayerKey && buff.target === 'enemies')) {
+      if((buff.playerKey === card.playerKey && buff.target === 'allies')
+        || (buff.playerKey !== card.playerKey && buff.target === 'enemies')
+        || (buff.targetId && buff.targetId === card.gameObjectId)) {
         const values = getValuesFromEffect(buff);
   
         if(buff.positive){
@@ -209,7 +195,7 @@ const simpleShuffleCards = (cards: InGameCard[]): InGameCard[] => {
 export const shuffleCards = (cards: InGameCard[]): InGameCard[] => {
   let shuffledCards = cards;
 
-  for(let i = 0; i < 3; i++){
+  for(let i = 0; i < 5; i++){
     shuffledCards = simpleShuffleCards(shuffledCards);
   }
 
@@ -219,7 +205,7 @@ export const shuffleCards = (cards: InGameCard[]): InGameCard[] => {
 export const getEffectNeedsEnemyTarget = (effectType: GameEffectActionType): boolean => {
   return [GameEffectActionType.DESTROY_TARGET,
     GameEffectActionType.DAMAGE_TARGET,
-    GameEffectActionType.BUFF_TARGET].includes(effectType);
+    GameEffectActionType.DEBUFF_TARGET].includes(effectType);
 }
 
 export const getEffectNeedsFriendlyTarget = (effectType: GameEffectActionType): boolean => {

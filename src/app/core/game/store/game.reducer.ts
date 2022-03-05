@@ -1,7 +1,7 @@
 import { ActionCreator, createReducer } from '@ngrx/store';
 import { immerOn } from 'ngrx-immer/store';
 
-import { CardFight, ContinuationApproval, CounterPlayStatus, EffectPayloadType, GameActiveEffects, GameGiftData, InGameCard, InGamePlayer, PlayerKey, TURN_PHASES } from '@core/game/game.types';
+import { AuraTarget, BuffTarget, CardFight, ContinuationApproval, CounterPlayStatus, EffectPayloadType, GameActiveEffects, GameGiftData, InGameCard, InGamePlayer, PlayerKey, TURN_PHASES } from '@core/game/game.types';
 
 import * as GameEffectActions from './game-effect.actions';
 import * as GameStateActions from '@core/game/store/game-state.actions';
@@ -196,9 +196,11 @@ export const gameReducer = createReducer(
             action.card.effects.forEach(effect => {
               const payload: Partial<EffectPayloadType> = {};
 
-              if([GameEffectActions.GameEffectActionType.ADD_FOOD,
+              if([GameEffectActions.GameEffectActionType.DRAW_X_CARDS,
+                GameEffectActions.GameEffectActionType.ADD_FOOD,
                 GameEffectActions.GameEffectActionType.HEAL_PLAYER,
                 GameEffectActions.GameEffectActionType.DAMAGE_ALL,
+                GameEffectActions.GameEffectActionType.DAMAGE_ALL_EXCEPT,
                 GameEffectActions.GameEffectActionType.DAMAGE_ENEMIES,
                 GameEffectActions.GameEffectActionType.DAMAGE_TARGET].includes(effect.action.type)){
                 payload.amount = effect.values.main;
@@ -212,6 +214,7 @@ export const gameReducer = createReducer(
                 GameEffectActions.GameEffectActionType.AURA_BUFF_ALLIES_EXCEPT,
                 GameEffectActions.GameEffectActionType.AURA_DEBUFF_ENEMIES,
                 GameEffectActions.GameEffectActionType.AURA_DEBUFF_ALL_EXCEPT,
+                GameEffectActions.GameEffectActionType.DAMAGE_ENEMIES,
                 GameEffectActions.GameEffectActionType.DRAW_X_CARDS,
                 GameEffectActions.GameEffectActionType.SHUFFLE_DECK,
                 GameEffectActions.GameEffectActionType.HEAL_PLAYER,
@@ -235,6 +238,11 @@ export const gameReducer = createReducer(
                 GameEffectActions.GameEffectActionType.AURA_DEBUFF_ENEMIES,
                 GameEffectActions.GameEffectActionType.AURA_DEBUFF_ALL_EXCEPT].includes(effect.action.type)){
                 payload.originId = action.card.gameObjectId;
+              }
+
+              if([GameEffectActions.GameEffectActionType.DAMAGE_ALL_EXCEPT,
+                GameEffectActions.GameEffectActionType.DESTROY_ALL_EXCEPT].includes(effect.action.type)){
+                payload.targetId = action.card.gameObjectId;
               }
 
               draft.effectsQueue.push({
@@ -382,6 +390,7 @@ export const gameReducer = createReducer(
       draft.currentPlayerKey = getOtherPlayerKey(draft.currentPlayerKey);
       draft.counterPlayStatus = getResetCounterPlayStatus(),
       draft.continuationApproval = getResetContinuationApproval(),
+      draft.activeEffects.buffs = [];
 
       draft[draft.currentPlayerKey].playedFoodThisTurn = false;
       draft[draft.currentPlayerKey].currentFood = draft[draft.currentPlayerKey].baseFood;
@@ -392,7 +401,6 @@ export const gameReducer = createReducer(
 
       ['player', 'opponent'].forEach(pKey => {
         draft[pKey as PlayerKey].cardsInPlay.forEach(card => {
-          card.effectedPersonallyBy = [];
           card.strength = card.baseStrength;
           card.energy = card.baseEnergy;
 
@@ -464,11 +472,17 @@ export const gameReducer = createReducer(
       draft.fightQueue.forEach(({ attacker, defender }) => {
         const attackerRef = draft[attacker.playerKey].cardsInPlay.find(card => card.gameObjectId === attacker.gameObjectId);
         const defenderRef = draft[defender.playerKey].cardsInPlay.find(card => card.gameObjectId === defender.gameObjectId);
-        attackerRef.energy -= defender.strength;
-        defenderRef.energy -= attacker.strength;
+
+        if(defender.strength > 0){
+          attackerRef.energy -= defender.strength;
+        }
+
+        if(attacker.strength > 0){
+          defenderRef.energy -= attacker.strength;
+        }
 
         if(attackerRef.energy <= 0){
-          draft[attacker.playerKey].sleepyard.unshift({
+          draft[attacker.playerKey].sleepyard.push({
             ...draft[attacker.playerKey].cardsInPlay.splice(
               draft[attacker.playerKey].cardsInPlay.findIndex(card => card.gameObjectId === attacker.gameObjectId),
               1
@@ -478,7 +492,7 @@ export const gameReducer = createReducer(
         }
 
         if(defenderRef.energy <= 0){
-          draft[defender.playerKey].sleepyard.unshift({
+          draft[defender.playerKey].sleepyard.push({
             ...draft[defender.playerKey].cardsInPlay.splice(
               draft[defender.playerKey].cardsInPlay.findIndex(card => card.gameObjectId === defender.gameObjectId),
               1
@@ -551,12 +565,41 @@ export const gameReducer = createReducer(
     (draft, action) => {
       const target = [...draft.player.cardsInPlay, ...draft.opponent.cardsInPlay].find(card => card.gameObjectId === action.targetId);
 
-      draft[target.playerKey].sleepyard.unshift({
+      draft[target.playerKey].sleepyard.push({
         ...draft[target.playerKey].cardsInPlay.splice(
           draft[target.playerKey].cardsInPlay.findIndex(card => card.gameObjectId === target.gameObjectId),
           1
         )[0],
         turnsLeft: 5
+      });
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameDestroyAll,
+    (draft, action) => {
+      ['player', 'opponent'].forEach((pKey: PlayerKey) => {
+        draft[pKey].sleepyard.push(...draft[pKey].cardsInPlay.map(card => ({ ...card, turnsLeft: 5 })));
+        draft[pKey].cardsInPlay = [];
+      });
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameDestroyAllExcept,
+    (draft, action) => {
+      const target = [...draft.player.cardsInPlay, ...draft.opponent.cardsInPlay].find(card => card.gameObjectId === action.targetId);
+
+      ['player', 'opponent'].forEach((pKey: PlayerKey) => {
+        draft[pKey].sleepyard.push(
+          ...draft[pKey].cardsInPlay
+            .filter(card => card.gameObjectId !== target.gameObjectId)
+            .map(card => ({ ...card, turnsLeft: 5 }))
+        );
+
+        if(target.playerKey === pKey){
+          draft[pKey].cardsInPlay = [target];
+        } else {
+          draft[pKey].cardsInPlay = [];
+        }
       });
     }
   ),
@@ -568,7 +611,7 @@ export const gameReducer = createReducer(
       target.energy -= action.amount;
 
       if(target.energy <= 0){
-        draft[target.playerKey].sleepyard.unshift({
+        draft[target.playerKey].sleepyard.push({
           ...draft[target.playerKey].cardsInPlay.splice(
             draft[target.playerKey].cardsInPlay.findIndex(card => card.gameObjectId === target.gameObjectId),
             1
@@ -576,6 +619,70 @@ export const gameReducer = createReducer(
           turnsLeft: 5
         });
       }
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameDamageEnemies,
+    (draft, action) => {
+      const cardsToSleepyard = [];
+      const otherPlayerKey = getOtherPlayerKey(action.playerKey);
+
+      draft[otherPlayerKey].cardsInPlay.forEach(card => {
+        card.energy -= action.amount;
+
+        if(card.energy <= 0){
+          cardsToSleepyard.push(card);
+        }
+      });
+
+      if(cardsToSleepyard.length){
+        draft[otherPlayerKey].sleepyard.push(...cardsToSleepyard.map(card => ({ ...card, turnsLeft: 5 })));
+        draft[otherPlayerKey].cardsInPlay = draft[otherPlayerKey].cardsInPlay.filter(card => card.energy > 0);
+      }
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameDamageAll,
+    (draft, action) => {
+      ['player', 'opponent'].forEach((pKey: PlayerKey) => {
+        const cardsToSleepyard = [];
+
+        draft[pKey].cardsInPlay.forEach(card => {
+          card.energy -= action.amount;
+
+          if(card.energy <= 0){
+            cardsToSleepyard.push(card);
+          }
+        });
+
+        if(cardsToSleepyard.length){
+          draft[pKey].sleepyard.push(...cardsToSleepyard.map(card => ({ ...card, turnsLeft: 5 })));
+          draft[pKey].cardsInPlay = draft[pKey].cardsInPlay.filter(card => card.energy > 0);
+        }
+      });
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameDamageAllExcept,
+    (draft, action) => {
+      ['player', 'opponent'].forEach((pKey: PlayerKey) => {
+        const cardsToSleepyard = [];
+
+        draft[pKey].cardsInPlay.forEach(card => {
+          if(card.gameObjectId !== action.targetId){
+            card.energy -= action.amount;
+  
+            if(card.energy <= 0){
+              cardsToSleepyard.push(card);
+            }
+          }
+        });
+
+        if(cardsToSleepyard.length){
+          draft[pKey].sleepyard.push(...cardsToSleepyard.map(card => ({ ...card, turnsLeft: 5 })));
+          draft[pKey].cardsInPlay = draft[pKey].cardsInPlay.filter(card => card.energy > 0);
+        }
+      });
     }
   ),
   immerOn(
@@ -595,6 +702,203 @@ export const gameReducer = createReducer(
           draft.fightQueue = filteredQueue;
         }
       }
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameBuffTarget,
+    (draft, action) => {
+      draft.activeEffects.buffs.push({
+        positive: true,
+        target: BuffTarget.Target,
+        targetId: action.targetId,
+        values: action.values,
+        playerKey: action.playerKey
+      });
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameBuffAllies,
+    (draft, action) => {
+      draft.activeEffects.buffs.push({
+        positive: true,
+        target: BuffTarget.Allies,
+        values: action.values,
+        playerKey: action.playerKey
+      });
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameDebuffTarget,
+    (draft, action) => {
+      draft.activeEffects.buffs.push({
+        positive: false,
+        target: BuffTarget.Target,
+        targetId: action.targetId,
+        values: action.values,
+        playerKey: action.playerKey
+      });
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameDebuffEnemies,
+    (draft, action) => {
+      draft.activeEffects.buffs.push({
+        positive: false,
+        target: BuffTarget.Enemies,
+        values: action.values,
+        playerKey: action.playerKey
+      });
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameDebuffTarget,
+    GameEffectActions.gameDebuffEnemies,
+    (draft, action) => {
+      ['player', 'opponent'].forEach((pKey: PlayerKey) => {
+        draft[pKey].cardsInPlay.forEach(card => {
+          card.strength = card.baseStrength;
+          card.energy = card.baseEnergy;
+
+          const pipedCompanion = pipeCompanion(card, draft.activeEffects);
+
+          Object.keys(pipedCompanion).forEach(key => {
+            card[key] = pipedCompanion[key];
+          });
+
+          if(draft.fightQueue.length){
+            const fight = draft.fightQueue.find(fight => card.gameObjectId === fight.defender.gameObjectId || card.gameObjectId === fight.attacker.gameObjectId);
+
+            if(fight){
+              if(fight.defender.gameObjectId === card.gameObjectId){
+                fight.defender = card;
+              } else {
+                fight.attacker = card;
+              }
+            }
+          }
+        });
+
+        const cardsToSleepyard = draft[pKey].cardsInPlay.filter(card => card.energy <= 0);
+        const cardsLeft = draft[pKey].cardsInPlay.filter(card => card.energy > 0);
+
+        if(cardsToSleepyard.length){
+          draft[pKey].sleepyard.push(...cardsToSleepyard.map(card => ({ ...card, turnsLeft: 5 })));
+          draft[pKey].cardsInPlay = cardsLeft;
+
+          if(draft.fightQueue.length){
+            cardsToSleepyard.forEach(card => {
+              const fight = draft.fightQueue.find(fight => card.gameObjectId === fight.defender.gameObjectId || card.gameObjectId === fight.attacker.gameObjectId);
+              draft.fightQueue.splice(draft.fightQueue.indexOf(fight), 1);
+            });
+          }
+        }
+      });
+    }
+  ),
+
+  immerOn(
+    GameEffectActions.gameAuraBuffAllies,
+    (draft, action) => {
+      draft.activeEffects.auras.push({
+        positive: true,
+        target: AuraTarget.Allies,
+        originId: action.originId,
+        values: action.values,
+        playerKey: action.playerKey
+      });
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameAuraBuffAlliesExcept,
+    (draft, action) => {
+      draft.activeEffects.auras.push({
+        positive: true,
+        target: AuraTarget.AlliesExcept,
+        originId: action.originId,
+        values: action.values,
+        playerKey: action.playerKey
+      });
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameAuraDebuffEnemies,
+    (draft, action) => {
+      draft.activeEffects.auras.push({
+        positive: false,
+        target: AuraTarget.Enemies,
+        originId: action.originId,
+        values: action.values,
+        playerKey: action.playerKey
+      });
+    }
+  ),
+  immerOn(
+    GameEffectActions.gameAuraDebuffAllExcept,
+    (draft, action) => {
+      draft.activeEffects.auras.push({
+        positive: false,
+        target: AuraTarget.AllExcept,
+        originId: action.originId,
+        values: action.values,
+        playerKey: action.playerKey
+      });
+    }
+  ),
+
+  immerOn(
+    GameStateActions.gameResolveFightsDamage,
+    GameEffectActions.gameAuraDebuffEnemies,
+    GameEffectActions.gameAuraDebuffAllExcept,
+    GameEffectActions.gameDestroyTarget,
+    GameEffectActions.gameDestroyAll,
+    GameEffectActions.gameDestroyAllExcept,
+    GameEffectActions.gameDamageTarget,
+    GameEffectActions.gameDebuffEnemies,
+    GameEffectActions.gameDebuffTarget,
+    (draft, action) => {
+      const allCardsInPlay = [...draft.player.cardsInPlay, ...draft.opponent.cardsInPlay];
+
+      draft.activeEffects.auras = draft.activeEffects.auras.filter(aura => allCardsInPlay.find(card => card.gameObjectId === aura.originId));
+    }
+  ),
+
+  // Apply auras
+  immerOn(
+    GameStateActions.gameResolveFightsDamage,
+    GameEffectActions.gameAuraBuffAllies,
+    GameEffectActions.gameAuraBuffAlliesExcept,
+    GameEffectActions.gameAuraDebuffEnemies,
+    GameEffectActions.gameAuraDebuffAllExcept,
+    GameEffectActions.gameDestroyAllExcept,
+    GameEffectActions.gameDestroyTarget,
+    GameEffectActions.gameDestroyAll,
+    GameEffectActions.gameDestroyAllExcept,
+    GameEffectActions.gameDamageTarget,
+    GameEffectActions.gameBuffAllies,
+    GameEffectActions.gameBuffTarget,
+    GameEffectActions.gameDebuffEnemies,
+    GameEffectActions.gameDebuffTarget,
+    (draft, action) => {
+      ['player', 'opponent'].forEach((pKey: PlayerKey) => {
+        draft[pKey].cardsInPlay.forEach(card => {
+          card.strength = card.baseStrength;
+          card.energy = card.baseEnergy;
+
+          const pipedCompanion = pipeCompanion(card, draft.activeEffects);
+
+          Object.keys(pipedCompanion).forEach(key => {
+            card[key] = pipedCompanion[key];
+          });
+        });
+
+        const cardsToSleepyard = draft[pKey].cardsInPlay.filter(card => card.energy <= 0);
+        const cardsLeft = draft[pKey].cardsInPlay.filter(card => card.energy > 0);
+
+        if(cardsToSleepyard.length){
+          draft[pKey].sleepyard.push(...cardsToSleepyard.map(card => ({ ...card, turnsLeft: 5 })));
+          draft[pKey].cardsInPlay = cardsLeft;
+        }
+      });
     }
   ),
 

@@ -119,7 +119,6 @@ export interface InGameCard {
   currentPlayerKey: string;
   dizzy?: boolean;
   effects?: InGameCardEffect[];
-  effectedPersonallyBy?: BuffData[];
   energy?: number;
   strength?: number;
   tired?: boolean;

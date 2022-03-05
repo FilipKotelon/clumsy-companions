@@ -164,6 +164,8 @@ export class GameStateEffects {
     ofType(GameStateActions.gameSetupNextTurn),
     withLatestFrom(this.store.select(GameSelectors.selectCurrentPlayerKey)),
     tap(([action, playerKey]) => {
+      this.store.dispatch(GameEffectActions.gameDrawXCards({ amount: 1, playerKey }));
+
       if(playerKey === 'player'){
         this.gameMessagesSvc.showMessage('Your turn');
         this.store.dispatch(GameStateActions.gameStartTurn());
@@ -177,13 +179,13 @@ export class GameStateEffects {
     })
   ), { dispatch: false })
 
-  startTurn$ = createEffect(() => this.actions$.pipe(
-    ofType(GameStateActions.gameStartTurn),
-    withLatestFrom(this.store.select(GameSelectors.selectCurrentPlayerKey)),
-    switchMap(([action, playerKey]) => {
-      return of(GameEffectActions.gameDrawXCards({ amount: 1, playerKey }));
-    })
-  ))
+  // startTurn$ = createEffect(() => this.actions$.pipe(
+  //   ofType(GameStateActions.gameStartTurn),
+  //   withLatestFrom(this.store.select(GameSelectors.selectCurrentPlayerKey)),
+  //   switchMap(([action, playerKey]) => {
+  //     return of(GameEffectActions.gameDrawXCards({ amount: 1, playerKey }));
+  //   })
+  // ))
 
   gameEffect$ = createEffect(() => this.actions$.pipe(
     ofType(
@@ -215,19 +217,21 @@ export class GameStateEffects {
     })
   ), { dispatch: false })
 
-  potentialCardDestroyEffects$ = createEffect(() => this.actions$.pipe(
+  potentialFightsChangeByCardEffect$ = createEffect(() => this.actions$.pipe(
     ofType(
+      GameEffectActions.gameAuraBuffAllies,
+      GameEffectActions.gameAuraBuffAlliesExcept,
+      GameEffectActions.gameAuraDebuffEnemies,
+      GameEffectActions.gameAuraDebuffAllExcept,
+      GameEffectActions.gameDestroyAllExcept,
       GameEffectActions.gameDestroyTarget,
       GameEffectActions.gameDestroyAll,
       GameEffectActions.gameDestroyAllExcept,
       GameEffectActions.gameDamageTarget,
-      GameEffectActions.gameDamageEnemies,
-      GameEffectActions.gameDamageAll,
-      GameEffectActions.gameDamageAllExcept,
-      GameEffectActions.gameDebuffTarget,
+      GameEffectActions.gameBuffAllies,
+      GameEffectActions.gameBuffTarget,
       GameEffectActions.gameDebuffEnemies,
-      GameEffectActions.gameAuraDebuffEnemies,
-      GameEffectActions.gameAuraDebuffAllExcept
+      GameEffectActions.gameDebuffTarget
     ),
     withLatestFrom(
       this.store.select(GameSelectors.selectFightQueue),

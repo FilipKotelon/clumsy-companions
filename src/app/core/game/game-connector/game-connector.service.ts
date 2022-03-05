@@ -86,7 +86,6 @@ export class GameConnectorService {
         currentPlayerKey: playerKey,
         dizzy: false,
         effects: this.mapToInGameCardEffects(effects),
-        effectedPersonallyBy: [],
         tired: false
       }
     })
