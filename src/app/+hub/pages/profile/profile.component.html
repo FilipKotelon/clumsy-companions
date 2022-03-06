@@ -1,3 +1,17 @@
 <div class="hub-page hub-profile-page">
-  
+  <div class="hub-profile-page__title medium-title">Choose your avatar!</div>
+  <app-fade-carousel
+    [itemsLength]="avatars.length"
+    [initIndex]="initAvatarIndex"
+    (changedItem)="changeCurrentAvatar($event)"
+  >
+    <div
+      *ngFor="let avatar of avatars"
+      class="fade-carousel-item"
+    >
+      <app-avatar
+        [avatar]="avatar"
+      ></app-avatar>
+    </div>
+  </app-fade-carousel>
 </div>

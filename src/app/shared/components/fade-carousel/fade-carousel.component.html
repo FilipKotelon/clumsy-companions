@@ -1,4 +1,4 @@
-<div class="fade-carousel{{ ' ' + className }}">
+<div class="fade-carousel{{ ' ' + className || '' }}">
   <div
     *ngIf="itemsLength > 1"
     (click)="prevItem()"

@@ -47,7 +47,9 @@ export class GameStartModalComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.dataSub.unsubscribe();
+    if(this.dataSub){
+      this.dataSub.unsubscribe();
+    }
     this.gameStartModalSub.unsubscribe();
   }
 

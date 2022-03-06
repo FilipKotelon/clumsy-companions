@@ -1,0 +1,26 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+@import "utility/mixins/mixins-spacing";
+
+.hub-profile-page{
+  @include d-flex($center: true, $dir: column);
+  height: 100%;
+  padding-bottom: 18rem;
+
+  &__title{
+    margin-bottom: 6rem;
+  }
+}
+
+::ng-deep{
+  .hub-profile-page{
+    & .fade-carousel{
+      @include square(30rem);
+
+      & .avatar{
+        @include square(30rem);
+      }
+    }
+  }
+}

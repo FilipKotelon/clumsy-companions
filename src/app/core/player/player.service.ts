@@ -392,4 +392,20 @@ export class PlayerService {
       }
     });
   }
+
+  chooseCurrentAvatar = (id: string): void => {
+    this.getOwnedAvatarsIds().pipe(
+      take(1)
+    ).subscribe(avatarsIds => {
+      if(avatarsIds.includes(id)){
+        this.playerDocRef.update({
+          currentAvatarId: id
+        })
+        .catch(e => {
+          console.log(e);
+          this.messageSvc.displayError('An error occurred while changing the current avatar!');
+        })
+      }
+    });
+  }
 }

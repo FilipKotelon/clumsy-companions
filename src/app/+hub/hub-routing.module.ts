@@ -5,6 +5,7 @@ import { HubComponent } from './hub.component';
 import { DecksComponent } from './pages/decks/decks.component';
 import { HomeComponent } from './pages/home/home.component';
 import { PacksComponent } from './pages/packs/packs.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 let routes: Routes = [
   {
@@ -65,7 +66,14 @@ let routes: Routes = [
             }
           }
         ]
-      }
+      },
+      {
+        path: 'profile',
+        component: ProfileComponent,
+        data: {
+          animation: '15'
+        }
+      },
     ]
   },
 ];
