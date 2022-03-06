@@ -50,6 +50,16 @@
       & .pack{
         @include rect(16rem, 24rem);
       }
+
+      & .avatar{
+        @include square(20rem);
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      & .card-sleeve{
+        @include rect(16rem, 24rem);
+      }
     }
   }
 }

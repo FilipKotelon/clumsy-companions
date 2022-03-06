@@ -12,6 +12,11 @@ export interface PackWithAmount extends Pack {
   readonly amount: number;
 }
 
+export interface PackQueryParams {
+  ids?: string[];
+  visibleInShop?: boolean;
+}
+
 export const PACKS_SETTINGS = {
   CARDS_IN_PACK: 3
 }

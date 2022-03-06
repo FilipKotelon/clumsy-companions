@@ -1,0 +1,19 @@
+<div class="shop-page">
+  <div class="shop-info medium-text">
+    Get yourself a new sleeve for your deck!
+  </div>
+  <div class="shop-grid">
+    <app-shop-item-wrapper
+      *ngFor="let sleeve of sleeves"
+      @fadeInOut
+      [shopProduct]="sleeve"
+      [withAmount]="false"
+      (purchased)="onPurchase(sleeve)"
+    >
+      <app-card-sleeve
+        [sleeveImgUrl]="sleeve.imgUrl"
+      ></app-card-sleeve>
+    </app-shop-item-wrapper>
+    <span *ngIf="!sleeves.length">There are no more sleeves for you to buy!</span>
+  </div>
+</div>

@@ -10,7 +10,7 @@ import { PlayerService } from '@core/player/player.service';
   styleUrls: ['./packs.component.scss']
 })
 export class PacksComponent implements OnInit {
-  packs: Pack[];
+  packs: Pack[] = [];
 
   constructor(
     private packsSvc: PacksService,
@@ -18,7 +18,7 @@ export class PacksComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.packsSvc.getPacks().subscribe(packs => {
+    this.packsSvc.getPacks({ visibleInShop: true }).subscribe(packs => {
       this.packs = packs;
     })
   }

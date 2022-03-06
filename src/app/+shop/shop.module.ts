@@ -6,13 +6,17 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { PacksComponent } from './pages/packs/packs.component';
 import { ShopRoutingModule } from './shop-routing.module';
 import { ShopItemWrapperComponent } from './components/shop-item-wrapper/shop-item-wrapper.component';
+import { AvatarsComponent } from './pages/avatars/avatars.component';
+import { SleevesComponent } from './pages/sleeves/sleeves.component';
 
 @NgModule({
   declarations: [
     ShopComponent,
     SidebarComponent,
     PacksComponent,
-    ShopItemWrapperComponent
+    ShopItemWrapperComponent,
+    AvatarsComponent,
+    SleevesComponent
   ],
   imports: [
     SharedModule,

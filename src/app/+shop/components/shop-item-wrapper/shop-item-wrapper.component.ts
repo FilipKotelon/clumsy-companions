@@ -10,21 +10,28 @@ import { ShopProduct } from '@core/shop/shop.types';
 })
 export class ShopItemWrapperComponent implements OnInit{
   @Input() shopProduct: ShopProduct;
+  @Input() withAmount = true;
   @Output() purchased = new EventEmitter<number>();
 
   form: FormGroup;
 
   ngOnInit(): void {
-    this.form = new FormGroup({
-      amount: new FormControl(1)
-    });
+    if(this.withAmount){
+      this.form = new FormGroup({
+        amount: new FormControl(1)
+      });
+    }
   }
 
   onPurchase = (): void => {
-    this.purchased.emit(
-      this.form.controls.amount.value
-    );
-
-    this.form.controls.amount.setValue(1);
+    if(this.withAmount){
+      this.purchased.emit(
+        this.form.controls.amount.value
+      );
+  
+      this.form.controls.amount.setValue(1);
+    } else {
+      this.purchased.emit();
+    }
   }
 }

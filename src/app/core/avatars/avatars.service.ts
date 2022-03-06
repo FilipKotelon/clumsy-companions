@@ -6,7 +6,7 @@ import { combineLatest, Observable } from 'rxjs';
 import { FilesService } from '@core/files/files.service';
 import { MessageService } from '@core/message/message.service';
 
-import { Avatar, AvatarMainData } from './avatars.types';
+import { Avatar, AvatarMainData, AvatarQueryParams } from './avatars.types';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
@@ -20,18 +20,24 @@ export class AvatarsService {
     private router: Router
   ) { }
 
-  getAvatars = (ids: string[] = []): Observable<Avatar[]> => {
-    if(ids.length){
-      const docRefs = ids.map(id => this.fireStore.collection<AvatarMainData>('avatars').doc(id).get());
+  getAvatars = (params: AvatarQueryParams = {}): Observable<Avatar[]> => {
+    if(params.ids && params.ids.length){
+      const docRefs = params.ids.map(id => this.fireStore.collection<AvatarMainData>('avatars').doc(id).get());
 
       return combineLatest(docRefs).pipe(
         map(avatarDocs => {
-          return avatarDocs.map(avatarDoc => {
+          let avatars = avatarDocs.map(avatarDoc => {
             return {
               ...avatarDoc.data(),
               id: avatarDoc.id
             }
-          })
+          });
+
+          if(params.visibleInShop){
+            avatars = avatars.filter(avatar => avatar.visibleInShop);
+          }
+
+          return avatars;
         }),
         catchError(error => {
           console.log(error);
@@ -44,12 +50,18 @@ export class AvatarsService {
 
     return this.fireStore.collection<AvatarMainData>('avatars').get().pipe(
       map(avatarDocs => {
-        return avatarDocs.docs.map(avatarDoc => {
+        let avatars = avatarDocs.docs.map(avatarDoc => {
           return {
             ...avatarDoc.data(),
             id: avatarDoc.id
           }
-        })
+        });
+
+        if(params.visibleInShop){
+          avatars = avatars.filter(avatar => avatar.visibleInShop);
+        }
+
+        return avatars;
       }),
       catchError(error => {
         console.log(error);

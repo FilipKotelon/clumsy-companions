@@ -18,6 +18,8 @@ import { Sleeve } from '@core/sleeves/sleeves.types';
 import { SleevesService } from '@core/sleeves/sleeves.service';
 import { DecksService } from '@core/decks/decks.service';
 import { Gift } from '@core/gift/gift.types';
+import { Avatar } from '@core/avatars/avatars.types';
+import { AvatarsService } from '@core/avatars/avatars.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +28,7 @@ export class PlayerService {
   _playerDocRef: AngularFirestoreDocument<DbUser>;
 
   constructor(
+    private avatarsSvc: AvatarsService,
     private authSvc: AuthService,
     private fireStore: AngularFirestore,
     private giftSvc: GiftService,
@@ -123,7 +126,7 @@ export class PlayerService {
           return prev;
         }, {})
 
-        return this.packsSvc.getPacks(Object.keys(uniquePacksIds))
+        return this.packsSvc.getPacks({ ids: Object.keys(uniquePacksIds) })
           .pipe(
             switchMap(packs => {
               return of(
@@ -149,7 +152,31 @@ export class PlayerService {
   getOwnedSleeves = (): Observable<Sleeve[]> => {
     return this.getOwnedSleevesIds().pipe(
       switchMap(sleevesIds => {
-        return this.sleevesSvc.getSleeves(sleevesIds);
+        if(sleevesIds.length){
+          return this.sleevesSvc.getSleeves({ ids: sleevesIds });
+        } else {
+          return [];
+        }
+      })
+    );
+  }
+
+  getOwnedAvatarsIds = (): Observable<string[]> => {
+    return this.getPlayer().pipe(
+      switchMap(player => {
+        return of(player.ownedAvatarsIds);
+      })
+    );
+  }
+
+  getOwnedAvatars = (): Observable<Avatar[]> => {
+    return this.getOwnedAvatarsIds().pipe(
+      switchMap(avatarsIds => {
+        if(avatarsIds.length){
+          return this.avatarsSvc.getAvatars({ ids: avatarsIds });
+        } else {
+          return [];
+        }
       })
     );
   }
@@ -172,6 +199,60 @@ export class PlayerService {
             ownedPacksIds: [...player.ownedPacksIds, ...packsToAdd]
           }).then(() => {
             this.messageSvc.displayInfo(`Pack${packsToAdd.length > 1 ? 's' : ''} purchased successfully!`);
+          }).catch(error => {
+            console.log(error);
+            this.messageSvc.displayError(`Something went wrong! We will try to refund the coins. If you don't get your coins back within a few minutes, please contact us!`);
+
+            this.playerDocRef.update({
+              coins: player.coins
+            }).catch(error => {
+              console.log(error);
+              this.messageSvc.displayError(`Refunding coins failed! We are so sorry, please contact us to get them back!`);
+            })
+          })
+        } else {
+          this.messageSvc.displayError(`You don't have enough coins for this purchase.`);
+        }
+      });
+  }
+
+  purchaseAvatar = (avatar: Avatar): void => {
+    this.getPlayer()
+      .pipe(take(1))
+      .subscribe(player => {
+        if(player.coins >= avatar.price){
+          this.playerDocRef.update({
+            coins: player.coins - avatar.price,
+            ownedAvatarsIds: [...player.ownedAvatarsIds, avatar.id]
+          }).then(() => {
+            this.messageSvc.displayInfo(`Avatar purchased successfully!`);
+          }).catch(error => {
+            console.log(error);
+            this.messageSvc.displayError(`Something went wrong! We will try to refund the coins. If you don't get your coins back within a few minutes, please contact us!`);
+
+            this.playerDocRef.update({
+              coins: player.coins
+            }).catch(error => {
+              console.log(error);
+              this.messageSvc.displayError(`Refunding coins failed! We are so sorry, please contact us to get them back!`);
+            })
+          })
+        } else {
+          this.messageSvc.displayError(`You don't have enough coins for this purchase.`);
+        }
+      });
+  }
+
+  purchaseSleeve = (sleeve: Sleeve): void => {
+    this.getPlayer()
+      .pipe(take(1))
+      .subscribe(player => {
+        if(player.coins >= sleeve.price){
+          this.playerDocRef.update({
+            coins: player.coins - sleeve.price,
+            ownedSleevesIds: [...player.ownedSleevesIds, sleeve.id]
+          }).then(() => {
+            this.messageSvc.displayInfo(`Sleeve purchased successfully!`);
           }).catch(error => {
             console.log(error);
             this.messageSvc.displayError(`Something went wrong! We will try to refund the coins. If you don't get your coins back within a few minutes, please contact us!`);

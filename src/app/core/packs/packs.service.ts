@@ -10,7 +10,7 @@ import { FilesService } from '@core/files/files.service';
 import { Gift } from '@core/gift/gift.types';
 import { MessageService } from '@core/message/message.service';
 
-import { Pack, PackMainData, PACKS_SETTINGS } from './packs.types';
+import { Pack, PackMainData, PackQueryParams, PACKS_SETTINGS } from './packs.types';
 import { SelectControlOption } from '@shared/components/controls/select-control/select-control.types';
 
 @Injectable({
@@ -25,18 +25,24 @@ export class PacksService {
     private router: Router,
   ) { }
 
-  getPacks = (ids: string[] = []): Observable<Pack[]> => {
-    if(ids.length){
-      const docRefs = ids.map(id => this.fireStore.collection<PackMainData>('packs').doc(id).get());
+  getPacks = (params: PackQueryParams = {}): Observable<Pack[]> => {
+    if(params.ids && params.ids.length){
+      const docRefs = params.ids.map(id => this.fireStore.collection<PackMainData>('packs').doc(id).get());
 
       return combineLatest(docRefs).pipe(
         map(packDocs => {
-          return packDocs.map(packDoc => {
+          let packs = packDocs.map(packDoc => {
             return {
               ...packDoc.data(),
               id: packDoc.id
             }
-          })
+          });
+
+          if(params.visibleInShop){
+            packs = packs.filter(pack => pack.visibleInShop);
+          }
+
+          return packs;
         }),
         catchError(error => {
           console.log(error);
@@ -49,12 +55,18 @@ export class PacksService {
 
     return this.fireStore.collection<PackMainData>('packs').get().pipe(
       map(packDocs => {
-        return packDocs.docs.map(packDoc => {
+        let packs = packDocs.docs.map(packDoc => {
           return {
             ...packDoc.data(),
             id: packDoc.id
           }
-        })
+        });
+
+        if(params.visibleInShop){
+          packs = packs.filter(pack => pack.visibleInShop);
+        }
+
+        return packs;
       }),
       catchError(error => {
         console.log(error);

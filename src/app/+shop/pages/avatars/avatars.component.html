@@ -1,0 +1,19 @@
+<div class="shop-page">
+  <div class="shop-info medium-text">
+    Get yourself a new avatar!
+  </div>
+  <div class="shop-grid">
+    <app-shop-item-wrapper
+      *ngFor="let avatar of avatars"
+      @fadeInOut
+      [shopProduct]="avatar"
+      [withAmount]="false"
+      (purchased)="onPurchase(avatar)"
+    >
+      <app-avatar
+        [avatar]="avatar"
+      ></app-avatar>
+    </app-shop-item-wrapper>
+    <span *ngIf="!avatars.length">There are no more avatars for you to buy!</span>
+  </div>
+</div>

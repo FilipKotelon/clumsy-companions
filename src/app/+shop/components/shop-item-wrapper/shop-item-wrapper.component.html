@@ -1,7 +1,4 @@
-<div
-  class="shop-item-wrapper"
-  [formGroup]="form"
->
+<div class="shop-item-wrapper">
   <div class="shop-item-wrapper__product">
     <ng-content></ng-content>
   </div>
@@ -11,7 +8,11 @@
       <img src="assets/img/icons/coin-gold.svg" alt="Coin">
       <span>{{ shopProduct.price | bigNumber }}</span>
     </div>
-    <div class="shop-item-wrapper__amount">
+    <div
+      *ngIf="withAmount"
+      [formGroup]="form"
+      class="shop-item-wrapper__amount"
+    >
       <app-number-step-control
         formControlName="amount"
         [control]="form.controls.amount"

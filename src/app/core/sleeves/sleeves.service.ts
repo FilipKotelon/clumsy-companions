@@ -5,7 +5,7 @@ import { FilesService } from '@core/files/files.service';
 import { MessageService } from '@core/message/message.service';
 import { combineLatest, Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { Sleeve, SleeveMainData } from './sleeves.types';
+import { Sleeve, SleeveMainData, SleeveQueryParams } from './sleeves.types';
 
 @Injectable({
   providedIn: 'root'
@@ -18,18 +18,24 @@ export class SleevesService {
     private router: Router
   ) { }
 
-  getSleeves = (ids: string[] = []): Observable<Sleeve[]> => {
-    if(ids.length){
-      const docRefs = ids.map(id => this.fireStore.collection<SleeveMainData>('sleeves').doc(id).get());
+  getSleeves = (params: SleeveQueryParams = {}): Observable<Sleeve[]> => {
+    if(params.ids && params.ids.length){
+      const docRefs = params.ids.map(id => this.fireStore.collection<SleeveMainData>('sleeves').doc(id).get());
 
       return combineLatest(docRefs).pipe(
         map(sleeveDocs => {
-          return sleeveDocs.map(sleeveDoc => {
+          let sleeves = sleeveDocs.map(sleeveDoc => {
             return {
               ...sleeveDoc.data(),
               id: sleeveDoc.id
             }
-          })
+          });
+
+          if(params.visibleInShop){
+            sleeves = sleeves.filter(sleeve => sleeve.visibleInShop);
+          }
+
+          return sleeves;
         }),
         catchError(error => {
           console.log(error);
@@ -42,12 +48,18 @@ export class SleevesService {
 
     return this.fireStore.collection<SleeveMainData>('sleeves').get().pipe(
       map(sleeveDocs => {
-        return sleeveDocs.docs.map(sleeveDoc => {
+        let sleeves = sleeveDocs.docs.map(sleeveDoc => {
           return {
             ...sleeveDoc.data(),
             id: sleeveDoc.id
           }
-        })
+        });
+
+        if(params.visibleInShop){
+          sleeves = sleeves.filter(sleeve => sleeve.visibleInShop);
+        }
+
+        return sleeves;
       }),
       catchError(error => {
         console.log(error);
