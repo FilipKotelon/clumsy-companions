@@ -6,5 +6,6 @@ export interface Avatar extends ShopProduct {}
 
 export interface AvatarQueryParams {
   ids?: string[];
+  names?: string[];
   visibleInShop?: boolean;
 }

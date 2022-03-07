@@ -183,7 +183,16 @@ export class EditDeckComponent extends EditableOrNew {
       if(this.editMode){
         this.decksSvc.updateDeck(this.id, deck);
       } else {
-        this.decksSvc.createDeck(deck, !this.inAdmin);
+        this.decksSvc.createDeck(
+          deck,
+          !this.inAdmin,
+          (id) => {
+            this.playerSvc.assignDeck(id, () => {
+              this.messageSvc.displayInfo('Deck saved!');
+              this.router.navigate([`/hub/decks/edit/${id}`]);
+            });
+          }
+        );
       }
     }
   }
@@ -330,7 +339,9 @@ export class EditDeckComponent extends EditableOrNew {
     this.decksSvc.deleteDeck(
       this.id,
       this.inAdmin ? '/admin/decks' : 'hub/decks',
-      !this.inAdmin
+      this.inAdmin ? null : (id) => {
+        this.playerSvc.removeDeck(id);
+      }
     );
     this.closeDeletePopup();
   }

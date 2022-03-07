@@ -11,12 +11,15 @@ import { AuthService } from '@core/auth/auth.service';
 
 import { handleAuthSuccess, handleError, getLocalStorageUser } from './auth.helpers';
 import { DbUser, UserRole } from '@core/auth/auth.types';
+import { PlayerService } from '@core/player/player.service';
 
 import * as fromStore from '@core/store/reducer';
 import * as MessageActions from '@core/message/store/message.actions';
 import * as LoadingActions from '@core/loading/store/loading.actions';
 import * as AuthActions from './auth.actions';
 import * as AuthSelectors from './auth.selectors';
+import { GiftService } from '@core/gift/gift.service';
+import { MessageService } from '@core/message/message.service';
 
 @Injectable()
 export class AuthEffects {
@@ -24,10 +27,13 @@ export class AuthEffects {
 
   constructor(
     private actions$: Actions, 
+    private authService: AuthService,
     private fireAuth: AngularFireAuth, 
     private fireStore: AngularFirestore,
+    private giftSvc: GiftService,
+    private messageSvc: MessageService,
+    private playerSvc: PlayerService,
     private router: Router,
-    private authService: AuthService,
     private store: Store<fromStore.AppState>
   ){
     this.usersCollection = this.fireStore.collection<DbUser>('users');
@@ -85,6 +91,7 @@ export class AuthEffects {
                             token: tokenRes.token,
                             role: UserRole.Player,
                             expirationDate: new Date(tokenRes.expirationTime),
+                            receivedWelcomeBundle: false
                           },
                           redirectTo: '/hub'
                         })
@@ -137,6 +144,7 @@ export class AuthEffects {
                   mergeMap(tokenRes => {
                     const theUser = <DbUser>dbUser.docs[0].data();
                     const dbUserRole = dbUser ? theUser.role : UserRole.Player;
+                    const dbUserReceivedWelcomeBundle = dbUser ? theUser.receivedWelcomeBundle : false;
 
                     return handleAuthSuccess({
                       user: {
@@ -146,6 +154,7 @@ export class AuthEffects {
                         token: tokenRes.token,
                         role: dbUserRole,
                         expirationDate: new Date(tokenRes.expirationTime),
+                        receivedWelcomeBundle: dbUserReceivedWelcomeBundle
                       },
                       redirectTo: dbUserRole === UserRole.Admin ? '/admin' : '/hub'
                     })
@@ -185,6 +194,38 @@ export class AuthEffects {
         this.store.dispatch(
           new LoadingActions.AppLoadingRemove('AUTH_PROCESS')
         );
+
+        if(!authSuccessAction.payload.user.receivedWelcomeBundle){
+          const oopsMsg = 'Ummm so you were supposed to get a gift but it didn\'t work... If I happen to fix it in the meantime, you will get it the next time you log in!';
+
+          this.store.dispatch(
+            new LoadingActions.AppLoadingAdd('PLAYER_RECEIVE_GIFT')
+          );
+
+          this.playerSvc.getPlayer().pipe(
+            take(1)
+          ).subscribe(player => {
+            this.giftSvc.prepareWelcomeBundle()
+              .subscribe(bundle => {
+                const bundleCorrectlyLoaded = Object.values(bundle).every(gift => gift.coins || gift.decks?.length || gift.avatar);
+  
+                if(bundleCorrectlyLoaded){
+                  this.playerSvc.receiveWelcomeBundle(bundle, player)
+                    .then(() => {
+                      this.store.dispatch(
+                        new LoadingActions.AppLoadingRemove('PLAYER_RECEIVE_GIFT')
+                      );
+                    })
+                    .catch(e => {
+                      console.log(e);
+                      this.messageSvc.displayError(oopsMsg);
+                    });
+                } else {
+                  this.messageSvc.displayError(oopsMsg);
+                }
+              });
+          })
+        }
       })
     ),
     {
@@ -200,7 +241,6 @@ export class AuthEffects {
           new LoadingActions.AppLoadingAdd('AUTH_PROCESS')
         );
 
-        //TODO: eventually refresh token
         //If the action got a verified user in the payload, don't run the verification twice
         if(autoLoginAction.payload){
           const user = autoLoginAction.payload;
@@ -245,6 +285,7 @@ export class AuthEffects {
               const theUser = <DbUser>dbUser.docs[0].data();
               //Protect from cheeky users editing localStorage to give themselves admin rights
               const dbUserRole = theUser ? theUser.role as UserRole : UserRole.Player;
+              const dbUserReceivedWelcomeBundle = theUser ? theUser.receivedWelcomeBundle : false;
                   
               return handleAuthSuccess({
                 user: {
@@ -254,6 +295,7 @@ export class AuthEffects {
                   token: user.token,
                   role: dbUserRole,
                   expirationDate: new Date(user.tokenExpirationDate),
+                  receivedWelcomeBundle: dbUserReceivedWelcomeBundle
                 },
                 redirectTo: null
               })

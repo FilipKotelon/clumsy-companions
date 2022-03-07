@@ -23,6 +23,7 @@ export interface DbUser {
   coins: number;
   winCount: number;
   lossCount: number;
+  receivedWelcomeBundle: boolean;
 }
 
 export class User {
@@ -33,6 +34,7 @@ export class User {
     public role: UserRole,
     private _token: string,
     private _tokenExpirationDate: Date,
+    public readonly receivedWelcomeBundle: boolean
   ) {}
 
   get token() {

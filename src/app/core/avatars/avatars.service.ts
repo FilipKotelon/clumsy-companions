@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFirestore, CollectionReference, Query } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 
@@ -21,7 +21,7 @@ export class AvatarsService {
   ) { }
 
   getAvatars = (params: AvatarQueryParams = {}): Observable<Avatar[]> => {
-    if(params.ids && params.ids.length){
+    if(params.ids?.length){
       const docRefs = params.ids.map(id => this.fireStore.collection<AvatarMainData>('avatars').doc(id).get());
 
       return combineLatest(docRefs).pipe(
@@ -35,6 +35,10 @@ export class AvatarsService {
 
           if(params.visibleInShop){
             avatars = avatars.filter(avatar => avatar.visibleInShop);
+          }
+
+          if(params.names?.length){
+            avatars = avatars.filter(avatar => params.names.includes(avatar.name));
           }
 
           return avatars;
@@ -59,6 +63,10 @@ export class AvatarsService {
 
         if(params.visibleInShop){
           avatars = avatars.filter(avatar => avatar.visibleInShop);
+        }
+
+        if(params.names?.length){
+          avatars = avatars.filter(avatar => params.names.includes(avatar.name));
         }
 
         return avatars;

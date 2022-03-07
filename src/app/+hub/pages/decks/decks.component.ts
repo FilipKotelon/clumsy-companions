@@ -46,7 +46,10 @@ export class DecksComponent implements OnInit {
   }
 
   deleteDeck = (): void => {
-    this.decksSvc.deleteDeck(this.idToDelete, '/hub/decks', true);
+    this.decksSvc.deleteDeck(this.idToDelete, '/hub/decks', (id) => {
+      this.playerSvc.removeDeck(id);
+    });
+
     this.closeDeletePopup();
   }
 }

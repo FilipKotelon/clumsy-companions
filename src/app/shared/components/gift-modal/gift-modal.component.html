@@ -27,6 +27,24 @@
       </div>
 
       <div
+        *ngFor="let deck of currentGift.decks"
+        class="gift gift--deck"
+      >
+        <app-deck
+          [deck]="deck"
+        ></app-deck>
+      </div>
+
+      <div
+        *ngIf="currentGift.avatar"
+        class="gift gift--avatar"
+      >
+        <app-avatar
+          [avatar]="currentGift.avatar"
+        ></app-avatar>
+      </div>
+
+      <div
         *ngIf="currentGift.coins"
         class="gift gift--coins"
       >

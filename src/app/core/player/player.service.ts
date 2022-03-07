@@ -13,11 +13,9 @@ import { PacksService } from '@core/packs/packs.service';
 import { Player } from './player.types';
 import { GiftService } from '../gift/gift.service';
 import { LoadingService } from '../loading/loading.service';
-import { Deck } from '@core/decks/decks.types';
 import { Sleeve } from '@core/sleeves/sleeves.types';
 import { SleevesService } from '@core/sleeves/sleeves.service';
-import { DecksService } from '@core/decks/decks.service';
-import { Gift } from '@core/gift/gift.types';
+import { Gift, WelcomeBundle } from '@core/gift/gift.types';
 import { Avatar } from '@core/avatars/avatars.types';
 import { AvatarsService } from '@core/avatars/avatars.service';
 
@@ -312,6 +310,7 @@ export class PlayerService {
       .subscribe(player => {
         const receivedGiftData: Partial<DbUser> = {};
 
+        if(gift.avatar) receivedGiftData.ownedAvatarsIds = [...player.ownedAvatarsIds, gift.avatar.id];
         if(gift.cards) receivedGiftData.ownedCardsIds = [...player.ownedCardsIds, ...gift.cards.map(card => card.id)];
         if(gift.coins) receivedGiftData.coins = player.coins + gift.coins;
         if(gift.decks) receivedGiftData.decksIds = [...player.decksIds, ...gift.decks.map(deck => deck.id)];
@@ -329,6 +328,44 @@ export class PlayerService {
             this.loadingSvc.removeLoadingTask('PLAYER_RECEIVE_GIFT');
           });
       });
+  }
+
+  receiveWelcomeBundle = (bundle: WelcomeBundle, playerData: Player): Promise<void> => {
+    const updatedUser: Partial<DbUser> = {};
+    const cardIdsToAdd: string[] = [];
+    const sleevesIdsToAdd: string[] = [];
+
+    bundle.decksGift.decks.forEach(deck => {
+      deck.cardIds.forEach(id => {
+        if(!cardIdsToAdd.includes(id) && !playerData.ownedCardsIds.includes(id)){
+          cardIdsToAdd.push(id);
+        }
+      });
+    });
+
+    updatedUser.coins = playerData.coins + bundle.coinsGift.coins;
+
+    if(!playerData.ownedAvatarsIds.includes(bundle.avatarGift.avatar.id)){
+      updatedUser.ownedAvatarsIds = [...playerData.ownedAvatarsIds, bundle.avatarGift.avatar.id];
+  
+      if(!playerData.currentAvatarId){
+        updatedUser.currentAvatarId = bundle.avatarGift.avatar.id;
+      }
+    }
+
+    updatedUser.decksIds = [...playerData.decksIds, ...bundle.decksGift.decks.map(deck => deck.id)];
+
+    bundle.decksGift.decks.forEach(deck => {
+      if(!playerData.ownedSleevesIds.includes(deck.sleeveId)){
+        sleevesIdsToAdd.push(deck.sleeveId);
+      }
+    });
+
+    updatedUser.ownedSleevesIds = [...playerData.ownedSleevesIds, ...sleevesIdsToAdd];
+    updatedUser.ownedCardsIds = [...playerData.ownedCardsIds, ...cardIdsToAdd];
+    updatedUser.receivedWelcomeBundle = true;
+
+    return this.playerDocRef.update(updatedUser);
   }
 
   assignDeck = (deckId: string, callback?: Function): void => {

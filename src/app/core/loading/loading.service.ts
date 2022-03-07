@@ -12,19 +12,19 @@ import { LoadingTask } from './loading.types';
 export class LoadingService {
   constructor(private store: Store<AppState>) { }
 
-  addLoadingTask = (task: LoadingTask) => {
+  addLoadingTask = (task: LoadingTask): void => {
     this.store.dispatch(
       new LoadingActions.AppLoadingAdd(task)
     );
   }
 
-  removeLoadingTask = (task: LoadingTask) => {
+  removeLoadingTask = (task: LoadingTask): void => {
     this.store.dispatch(
       new LoadingActions.AppLoadingRemove(task)
     );
   }
 
-  clearLoadingTasks = () => {
+  clearLoadingTasks = (): void => {
     this.store.dispatch(
       new LoadingActions.AppLoadingClear()
     );

@@ -59,7 +59,8 @@ export const handleAuthSuccess = (data: AuthSuccessFullData): Action[] => {
     data.user.dbId,
     data.user.role,
     data.user.token,
-    data.user.expirationDate
+    data.user.expirationDate,
+    data.user.receivedWelcomeBundle
   );
 
   const player = new Player(
@@ -100,7 +101,8 @@ export const getLocalStorageUser = (): User => {
     dbId: string,
     role: UserRole,
     _token: string,
-    _tokenExpirationDate: string
+    _tokenExpirationDate: string,
+    receivedWelcomeBundle: boolean
   } = JSON.parse(savedUser);
 
   const user = new User(
@@ -109,8 +111,9 @@ export const getLocalStorageUser = (): User => {
     userData.dbId,
     userData.role,
     userData._token,
-    new Date(userData._tokenExpirationDate)
-  )
+    new Date(userData._tokenExpirationDate),
+    userData.receivedWelcomeBundle
+  );
 
   //Token will return null if the token expired
   if(!user.token){

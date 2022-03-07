@@ -13,6 +13,7 @@ export interface Deck extends DeckMainData {
 
 export interface DeckQueryParams {
   ids?: string[];
+  names?: string[];
   global?: boolean;
 }
 

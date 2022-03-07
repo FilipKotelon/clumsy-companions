@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DecksService } from '@core/decks/decks.service';
 import { Deck } from '@core/decks/decks.types';
+import { PlayerService } from '@core/player/player.service';
 
 @Component({
   selector: 'app-decks',
@@ -14,7 +15,8 @@ export class DecksComponent implements OnInit {
   decks: Deck[];
 
   constructor(
-    private decksSvc: DecksService
+    private decksSvc: DecksService,
+    private playerSvc: PlayerService
   ) { }
 
   ngOnInit(): void {
@@ -34,7 +36,10 @@ export class DecksComponent implements OnInit {
   }
 
   deleteDeck = (): void => {
-    this.decksSvc.deleteDeck(this.idToDelete, '/admin/decks');
+    this.decksSvc.deleteDeck(this.idToDelete, '/admin/decks', (id) => {
+      this.playerSvc.removeDeck(id);
+    });
+
     this.closeDeletePopup();
   }
 }

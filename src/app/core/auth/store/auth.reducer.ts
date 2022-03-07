@@ -31,7 +31,8 @@ export function authReducer ( state = initState, action: AuthActions.AuthActions
         state.user.dbId,
         state.user.role,
         action.payload.token,
-        action.payload.expirationTime
+        action.payload.expirationTime,
+        state.user.receivedWelcomeBundle
       );
 
       return {

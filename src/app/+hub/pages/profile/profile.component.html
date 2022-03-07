@@ -14,4 +14,10 @@
       ></app-avatar>
     </div>
   </app-fade-carousel>
+  <div
+    *ngIf="avatars.length === 1"
+    class="hub-profile-page__oops"
+  >
+    Or... actually don't because you have only one avatar...
+  </div>
 </div>
