@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
-import { filter, take, tap } from 'rxjs/operators';
+import { filter, switchMap, take, tap } from 'rxjs/operators';
 
 import { Card, CardQueryParams, CardType } from '@core/cards/cards.types';
 import { CardsService } from '@core/cards/cards.service';
@@ -17,6 +17,7 @@ import { SelectControlOption } from '@shared/components/controls/select-control/
 import { MessageService } from '@core/message/message.service';
 import { SleevesService } from '@core/sleeves/sleeves.service';
 import { Sleeve } from '@core/sleeves/sleeves.types';
+import { map } from '@firebase/util';
 
 @Component({
   selector: 'app-edit-deck',
@@ -160,18 +161,45 @@ export class EditDeckComponent extends EditableOrNew {
   }
 
   loadDeck = (): Observable<Deck> => {
-    return this.decksSvc.getDeck(this.id)
-      .pipe(
-        tap(deck => {
-          this.thumbnailCardId = deck.thumbnailCardId;
-          this.setId = deck.setId;
-          this.sleeveId = deck.sleeveId;
-
-          this.cardsSvc.getCards({ ids: deck.cardIds }).subscribe(cards => {
-            this.addedCards = cards;
+    if(this.inAdmin){
+      return this.decksSvc.getDeck(this.id)
+        .pipe(
+          tap(deck => {
+            this.thumbnailCardId = deck.thumbnailCardId;
+            this.setId = deck.setId;
+            this.sleeveId = deck.sleeveId;
+  
+            this.cardsSvc.getCards({ ids: deck.cardIds }).subscribe(cards => {
+              this.addedCards = cards;
+            })
           })
-        })
-      );
+        );
+    } else {
+      // Check if user is not trying to edit other decks
+      return this.playerSvc.getDecksIds()
+        .pipe(
+          take(1),
+          switchMap((ids) => {
+            if(!ids.includes(this.id)){
+              this.messageSvc.displayError('This deck does not exist.');
+              this.router.navigate(['/hub/decks']);
+              return null;
+            }
+            return this.decksSvc.getDeck(this.id)
+              .pipe(
+                tap(deck => {
+                  this.thumbnailCardId = deck.thumbnailCardId;
+                  this.setId = deck.setId;
+                  this.sleeveId = deck.sleeveId;
+        
+                  this.cardsSvc.getCards({ ids: deck.cardIds }).subscribe(cards => {
+                    this.addedCards = cards;
+                  })
+                })
+              );
+          })
+        )
+    }
   }
 
   onSubmit = (): void => {
