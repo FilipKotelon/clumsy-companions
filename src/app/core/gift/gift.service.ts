@@ -85,6 +85,7 @@ export class GiftService {
       global: true
     }).pipe(
       map(deck => deck[0]),
+      // Delay the add queries so Firebase can handle it
       delay(timeoutMs),
       switchMap(deck => {
         const { id, global, ...data } = deck;

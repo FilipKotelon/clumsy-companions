@@ -59,7 +59,7 @@ export class AuthEffects {
                   id: userCred.user.uid,
                   username: signUpAction.payload.username,
                   role: UserRole.Player,
-                  currentAvatarId: [],
+                  currentAvatarId: '',
                   currentDeckId: -1,
                   decksIds: [],
                   ownedAvatarsIds: [],

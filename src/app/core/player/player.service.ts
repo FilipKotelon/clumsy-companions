@@ -347,10 +347,11 @@ export class PlayerService {
 
     if(!playerData.ownedAvatarsIds.includes(bundle.avatarGift.avatar.id)){
       updatedUser.ownedAvatarsIds = [...playerData.ownedAvatarsIds, bundle.avatarGift.avatar.id];
-  
-      if(!playerData.currentAvatarId){
-        updatedUser.currentAvatarId = bundle.avatarGift.avatar.id;
-      }
+    }
+
+    console.log(playerData.currentAvatarId, bundle.avatarGift.avatar.id);
+    if(!playerData.currentAvatarId){
+      updatedUser.currentAvatarId = bundle.avatarGift.avatar.id;
     }
 
     updatedUser.decksIds = [...playerData.decksIds, ...bundle.decksGift.decks.map(deck => deck.id)];

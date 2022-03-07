@@ -56,7 +56,8 @@ export class CardEffectComponent implements OnInit {
     return `${type}${additional}`;
   }
 
-  onOpen = (): void => {
+  onOpen = (e: Event): void => {
+    e.stopPropagation();
     this.open = true;
   }
 
