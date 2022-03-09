@@ -15,6 +15,9 @@ export const handleError = (error, store: Store, task: LoadingTask = 'AUTH_PROCE
   console.log(error);
 
   if(!error.code){
+    store.dispatch(
+      new LoadingActions.AppLoadingRemove(task)
+    );
     return of(new MessageActions.Error(msg))
   }
 

@@ -22,7 +22,7 @@ export const BASIC_TUTORIAL_SLIDES: TutorialSlide[] = [
     imgUrl: 'assets/img/tutorials/basic/1.png'
   },
   {
-    title: 'What are looking at?',
+    title: 'What are we looking at?',
     description: 'First let\'s figure out where to look. On the bottom we can see our board. What does our board consist of?<br/>1. Your companions in play. 2. Your energy and food. 3. Your hand. 4. Information about current turn. 5. Your sleepyard and deck. 6. Opponent\'s board.<br/> Okay, that\'s still not too useful, so let\'s go into some details!',
     imgUrl: 'assets/img/tutorials/basic/2.png'
   },
