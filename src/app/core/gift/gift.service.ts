@@ -79,8 +79,7 @@ export class GiftService {
       );
   }
 
-  addWelcomeDeck = (name: string, timeoutMs = 50): Observable<string> => {
-    console.log(name);
+  addWelcomeDeck = (name: string, timeoutMs = 1): Observable<string> => {
     return this.decksSvc.getDecks({
       names: [name],
       global: true
@@ -89,7 +88,6 @@ export class GiftService {
       // Delay the add queries so Firebase can handle it
       delay(timeoutMs),
       switchMap(deck => {
-        console.log(deck);
         const { id, global, ...data } = deck;
         
         return this.decksSvc.addDeckToDatabase({
@@ -107,13 +105,12 @@ export class GiftService {
     return this.addWelcomeDeck('Basic Cat Deck').pipe(
       catchError(e => {
         console.log(e);
+        // For some reason forcing it the second time works, not the best solution, but at the moment I am desperate okay, I will come back to it later.
         return this.addWelcomeDeck('Basic Cat Deck');
       }),
       switchMap(firstDeckId => {
-        console.log(firstDeckId);
-        return this.addWelcomeDeck('Basic Dog Deck', 1000).pipe(
+        return this.addWelcomeDeck('Basic Dog Deck', 300).pipe(
           map(secondDeckId => {
-            console.log(secondDeckId);
             return [firstDeckId, secondDeckId]
           }),
           switchMap((ids) => this.decksSvc.getDecks({ ids }))

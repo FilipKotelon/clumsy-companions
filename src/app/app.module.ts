@@ -21,6 +21,7 @@ import { AppComponent } from './app.component';
 import * as fromStore from '@core/store/reducer';
 import { AuthEffects } from '@core/auth/store/auth.effects';
 import { GameStateEffects } from '@core/game/store/game-state.effects';
+import { APP_BASE_HREF } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,7 @@ import { GameStateEffects } from '@core/game/store/game-state.effects';
       autoPause: true
     }),
   ],
-  providers: [],
+  providers: [{provide: APP_BASE_HREF, useValue: '/'}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

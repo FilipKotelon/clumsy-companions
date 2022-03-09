@@ -338,7 +338,6 @@ export class EditDeckComponent extends EditableOrNew {
 
   onDecreaseCardAmount = (card: Card): void => {
     let cardIndex = this.addedCards.map(addedCard => addedCard.id).indexOf(card.id);
-    console.log(this.addedCards, card, cardIndex);
     
     if(cardIndex >= 0) {
       this.addedCards.splice(cardIndex, 1);

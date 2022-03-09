@@ -25,7 +25,6 @@ export class SleevesComponent implements OnInit, OnDestroy {
       this.sleevesSvc.getSleeves({ visibleInShop: true }),
       this.playerSvc.getOwnedSleevesIds()
     ]).subscribe(([sleeves, ownedIds]) => {
-      console.log(ownedIds);
       this.sleeves = sleeves.filter(sleeve => !ownedIds.includes(sleeve.id));
     });
   }
