@@ -148,8 +148,6 @@ export class AuthService{
       .then(user => {
         user.getIdTokenResult(true)
           .then(tokenRes => {
-            console.log('refresh');
-            
             this.store.dispatch(
               new AuthActions.RefreshToken({
                 token: tokenRes.token,

@@ -103,8 +103,6 @@ export class GameStartModalComponent implements OnInit, OnDestroy {
       this.initDeckIndex = deckIndex > 0
         ? deckIndex
         : 0;
-      
-      console.log(opponents, decks);
 
       this.loadingSvc.removeLoadingTask('LOAD_GAME_START_DATA');
     });

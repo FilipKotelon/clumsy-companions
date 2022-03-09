@@ -356,7 +356,7 @@ export class PlayerService {
     updatedUser.decksIds = [...playerData.decksIds, ...bundle.decksGift.decks.map(deck => deck.id)];
 
     bundle.decksGift.decks.forEach(deck => {
-      if(!playerData.ownedSleevesIds.includes(deck.sleeveId)){
+      if(!playerData.ownedSleevesIds.includes(deck.sleeveId) && !sleevesIdsToAdd.includes(deck.sleeveId)){
         sleevesIdsToAdd.push(deck.sleeveId);
       }
     });
