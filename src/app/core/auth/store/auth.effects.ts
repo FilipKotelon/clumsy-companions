@@ -15,11 +15,11 @@ import { PlayerService } from '@core/player/player.service';
 
 import * as fromStore from '@core/store/reducer';
 import * as MessageActions from '@core/message/store/message.actions';
-import * as LoadingActions from '@core/loading/store/loading.actions';
 import * as AuthActions from './auth.actions';
 import * as AuthSelectors from './auth.selectors';
 import { GiftService } from '@core/gift/gift.service';
 import { MessageService } from '@core/message/message.service';
+import { LoadingService } from '@core/loading/loading.service';
 
 @Injectable()
 export class AuthEffects {
@@ -31,6 +31,7 @@ export class AuthEffects {
     private fireAuth: AngularFireAuth, 
     private fireStore: AngularFirestore,
     private giftSvc: GiftService,
+    private loadingSvc: LoadingService,
     private messageSvc: MessageService,
     private playerSvc: PlayerService,
     private router: Router,
@@ -43,9 +44,7 @@ export class AuthEffects {
     () => this.actions$.pipe(
       ofType(AuthActions.SIGNUP_START),
       switchMap((signUpAction: AuthActions.SignUpStart) => {
-        this.store.dispatch(
-          new LoadingActions.AppLoadingAdd('AUTH_PROCESS')
-        );
+        this.loadingSvc.addLoadingTask('AUTH_PROCESS');
         
         return from(
           this.fireAuth.createUserWithEmailAndPassword(
@@ -120,9 +119,7 @@ export class AuthEffects {
     () => this.actions$.pipe(
       ofType(AuthActions.LOGIN_START),
       switchMap((logInAction: AuthActions.LoginStart) => {
-        this.store.dispatch(
-          new LoadingActions.AppLoadingAdd('AUTH_PROCESS')
-        );
+        this.loadingSvc.addLoadingTask('AUTH_PROCESS');
 
         return from(
           this.fireAuth.signInWithEmailAndPassword(
@@ -191,16 +188,12 @@ export class AuthEffects {
           this.router.navigate([authSuccessAction.payload.redirectTo])
         }
 
-        this.store.dispatch(
-          new LoadingActions.AppLoadingRemove('AUTH_PROCESS')
-        );
+        this.loadingSvc.removeLoadingTask('AUTH_PROCESS');
 
         if(!authSuccessAction.payload.user.receivedWelcomeBundle){
           const oopsMsg = 'Ummm so you were supposed to get a gift but it didn\'t work... If I happen to fix it in the meantime, you will get it the next time you log in!';
 
-          this.store.dispatch(
-            new LoadingActions.AppLoadingAdd('PLAYER_RECEIVE_GIFT')
-          );
+          this.loadingSvc.addLoadingTask('PLAYER_RECEIVE_GIFT');
 
           this.playerSvc.getPlayer().pipe(
             take(1)
@@ -212,9 +205,8 @@ export class AuthEffects {
                 if(bundleCorrectlyLoaded){
                   this.playerSvc.receiveWelcomeBundle(bundle, player)
                     .then(() => {
-                      this.store.dispatch(
-                        new LoadingActions.AppLoadingRemove('PLAYER_RECEIVE_GIFT')
-                      );
+                      this.loadingSvc.removeLoadingTask('PLAYER_RECEIVE_GIFT');
+                      this.messageSvc.displayInfo('Welcome to Clumsy Companions! Once you open your gifts, you can see the tutorial by pressing the question mark in the top right corner!')
                     })
                     .catch(e => {
                       console.log(e);
@@ -237,9 +229,7 @@ export class AuthEffects {
     () => this.actions$.pipe(
       ofType(AuthActions.AUTO_LOGIN),
       switchMap((autoLoginAction: AuthActions.AutoLogin) => {
-        this.store.dispatch(
-          new LoadingActions.AppLoadingAdd('AUTH_PROCESS')
-        );
+        this.loadingSvc.addLoadingTask('AUTH_PROCESS');
 
         //If the action got a verified user in the payload, don't run the verification twice
         if(autoLoginAction.payload){
@@ -264,9 +254,7 @@ export class AuthEffects {
 
         //Don't log in if no user
         if(!user){
-          this.store.dispatch(
-            new LoadingActions.AppLoadingRemove('AUTH_PROCESS')
-          );
+          this.loadingSvc.removeLoadingTask('AUTH_PROCESS');
 
           return new Observable().pipe(
             map(action => {

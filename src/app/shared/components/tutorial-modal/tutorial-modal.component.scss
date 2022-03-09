@@ -42,8 +42,25 @@
     }
 
     &__items{
-      @include d-flex($dir: column, $ai: center);
-      @include m-not-last(3rem, b);
+      @include flex-row-2(3rem);
+      width: 60rem;
+
+      &__button{
+        @include d-flex($center: true);
+        height: 12rem;
+        background-color: $white;
+        border: .1rem solid $main;
+        color: $main;
+        border-radius: .3rem;
+        @include transition;
+        cursor: pointer;
+        font-size: 2.4rem;
+
+        &:hover{
+          background-color: $main;
+          color: $white;
+        }
+      }
     }
   }
 
@@ -80,22 +97,20 @@
       }
 
       &__slide{
-        @include d-flex($dir: column, $ai: center);
+        @include d-flex($dir: column, $center: true);
 
         &__title{
           margin-bottom: 1.6rem;
         }
 
         &__desc{
-          margin-bottom: 1.6rem;
+          margin-bottom: 3rem;
         }
 
         &__img{
           width: 80%;
           height: 45rem;
           object-fit: contain;
-          margin-top: auto;
-          margin-bottom: 3rem;
         }
       }
     }

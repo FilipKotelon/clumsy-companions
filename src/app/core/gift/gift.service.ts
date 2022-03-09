@@ -5,7 +5,7 @@ import { Avatar } from '@core/avatars/avatars.types';
 import { DecksService } from '@core/decks/decks.service';
 import { Deck, DeckMainData } from '@core/decks/decks.types';
 import { combineLatest, Observable, of, Subject } from 'rxjs';
-import { delay, map, mergeMap, switchMap } from 'rxjs/operators';
+import { catchError, delay, map, mergeMap, switchMap } from 'rxjs/operators';
 
 import { Gift, WelcomeBundle } from './gift.types';
 
@@ -80,6 +80,7 @@ export class GiftService {
   }
 
   addWelcomeDeck = (name: string, timeoutMs = 50): Observable<string> => {
+    console.log(name);
     return this.decksSvc.getDecks({
       names: [name],
       global: true
@@ -88,6 +89,7 @@ export class GiftService {
       // Delay the add queries so Firebase can handle it
       delay(timeoutMs),
       switchMap(deck => {
+        console.log(deck);
         const { id, global, ...data } = deck;
         
         return this.decksSvc.addDeckToDatabase({
@@ -95,17 +97,23 @@ export class GiftService {
           global: false
         })
       }),
-      map(cloneDeckDoc => {
-        return cloneDeckDoc.id
+      map(clonedDeckDoc => {
+        return clonedDeckDoc.id
       })
     )
   }
 
   prepareWelcomeDecks = (): Observable<Deck[]> => {
     return this.addWelcomeDeck('Basic Cat Deck').pipe(
+      catchError(e => {
+        console.log(e);
+        return this.addWelcomeDeck('Basic Cat Deck');
+      }),
       switchMap(firstDeckId => {
+        console.log(firstDeckId);
         return this.addWelcomeDeck('Basic Dog Deck', 1000).pipe(
           map(secondDeckId => {
+            console.log(secondDeckId);
             return [firstDeckId, secondDeckId]
           }),
           switchMap((ids) => this.decksSvc.getDecks({ ids }))
