@@ -102,11 +102,15 @@ export class GiftService {
   }
 
   prepareWelcomeDecks = (): Observable<Deck[]> => {
-    return combineLatest([
-      this.addWelcomeDeck('Basic Cat Deck'),
-      this.addWelcomeDeck('Basic Dog Deck', 1000)
-    ]).pipe(
-      switchMap((ids) => this.decksSvc.getDecks({ ids }))
+    return this.addWelcomeDeck('Basic Cat Deck').pipe(
+      switchMap(firstDeckId => {
+        return this.addWelcomeDeck('Basic Dog Deck', 1000).pipe(
+          map(secondDeckId => {
+            return [firstDeckId, secondDeckId]
+          }),
+          switchMap((ids) => this.decksSvc.getDecks({ ids }))
+        )
+      })
     );
   }
 }

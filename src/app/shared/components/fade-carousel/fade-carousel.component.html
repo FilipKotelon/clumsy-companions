@@ -1,6 +1,7 @@
 <div class="fade-carousel{{ ' ' + className || '' }}">
   <div
-    *ngIf="itemsLength > 1"
+    *ngIf="itemsLength > 1 && (loop || (!loop && curIndex > 0))"
+    @fadeInOut
     (click)="prevItem()"
     class="fade-carousel-arrow fade-carousel-arrow--left"
   >
@@ -13,7 +14,8 @@
     <ng-content></ng-content>
   </div>
   <div
-    *ngIf="itemsLength > 1"
+    *ngIf="itemsLength > 1 && (loop || (!loop && curIndex < itemsLength - 1))"
+    @fadeInOut
     (click)="nextItem()"
     class="fade-carousel-arrow fade-carousel-arrow--right"
   >

@@ -349,7 +349,6 @@ export class PlayerService {
       updatedUser.ownedAvatarsIds = [...playerData.ownedAvatarsIds, bundle.avatarGift.avatar.id];
     }
 
-    console.log(playerData.currentAvatarId, bundle.avatarGift.avatar.id);
     if(!playerData.currentAvatarId){
       updatedUser.currentAvatarId = bundle.avatarGift.avatar.id;
     }

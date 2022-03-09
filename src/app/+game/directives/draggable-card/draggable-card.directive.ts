@@ -1,9 +1,9 @@
-import { Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, Output, Renderer2 } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, Output, Renderer2 } from '@angular/core';
 
 @Directive({
   selector: '[appDraggableCard]'
 })
-export class DraggableCardDirective {
+export class DraggableCardDirective implements AfterViewInit {
   @Input() blocked = false;
   @Output() played = new EventEmitter();
 
@@ -13,6 +13,7 @@ export class DraggableCardDirective {
   baseHostHeight: number;
   curTop: number;
   hostEl: HTMLElement;
+  hostElCardEffect: HTMLElement;
   minTopThreshold: number;
   maxTopThreshold: number;
   minLeftThreshold: number;
@@ -44,9 +45,15 @@ export class DraggableCardDirective {
     this.renderer.setStyle(this.hostEl, 'position', 'relative');
   }
 
+  ngAfterViewInit(): void {
+    this.hostElCardEffect = this.hostEl.querySelector('app-card-effect');
+  }
+
   @HostListener('mousedown', ['$event'])
   mouseDown = (event: MouseEvent): void => {
-    if(!this.blocked) {
+    if(!this.blocked
+      && !this.hostElCardEffect?.contains(event.target as Node)
+      && this.hostElCardEffect !== event.target) {
       this.dragging = true;
       this.baseHostLeft = this.hostEl.getBoundingClientRect().left;
       this.baseHostTop = this.hostEl.getBoundingClientRect().top;

@@ -1,0 +1,86 @@
+<div
+  *ngIf="open"
+  @fadeInOut
+  class="tutorial-modal"
+>
+  <div
+    class="tutorial-modal__bg"
+    (click)="closeModal()"
+  ></div>
+  <div class="tutorial-modal__main">
+    <img 
+      src="assets/img/icons/close.svg"
+      alt="Close"
+      class="tutorial-modal__close"
+      hoverMessage="Close"
+      (click)="closeModal()"
+    >
+    <div
+      *ngIf="!currentOpenTutorial"
+      @fadeInOut
+      class="tutorial-modal__options"
+    >
+      <div class="tutorial-modal__options__title medium-title">What would you want to learn?</div>
+      <div class="tutorial-modal__options__items">
+        <button
+          class="page-button"
+          (click)="openTutorial('basic')"
+        >
+          Basics of the game
+        </button>
+        <button
+          class="page-button"
+          (click)="openTutorial('game')"
+        >
+          How to play the game?
+        </button>
+        <button
+          class="page-button"
+          (click)="openTutorial('deck')"
+        >
+          How to build a deck?
+        </button>
+        <button
+          class="page-button"
+          (click)="openTutorial('shop')"
+        >
+          Shopping guide
+        </button>
+      </div>
+    </div>
+    <div
+      *ngIf="currentOpenTutorial"
+      @fadeInOut
+      class="tutorial-modal__tutorial"
+    >
+      <div
+        class="tutorial-modal__tutorial__back color-main"
+        (click)="closeTutorial(currentOpenTutorialKey)"
+      >
+        Go back to tutorials
+      </div>
+      <app-fade-carousel
+        className="tutorial-modal__carousel"
+        [itemsLength]="currentOpenTutorial.slides.length"
+        [loop]="false"
+        (changedItem)="changeSlide($event)"
+      >
+        <div
+          *ngFor="let slide of currentOpenTutorial.slides"
+          class="fade-carousel-item tutorial-modal__carousel__slide"
+        >
+          <div class="tutorial-modal__carousel__slide__title small-title">{{ slide.title }}</div>
+          <div
+            class="tutorial-modal__carousel__slide__desc"
+            [innerHTML]="slide.description"
+          ></div>
+          <img
+            class="tutorial-modal__carousel__slide__img"
+            [src]="slide.imgUrl"
+            [alt]="slide.title"
+          />
+        </div>
+      </app-fade-carousel>
+    </div>
+  </div>
+</div>

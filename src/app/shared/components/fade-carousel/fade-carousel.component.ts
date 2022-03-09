@@ -1,12 +1,15 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { fadeInOut } from '@shared/animations/component-animations';
 
 @Component({
   selector: 'app-fade-carousel',
   templateUrl: './fade-carousel.component.html',
-  styleUrls: ['./fade-carousel.component.scss']
+  styleUrls: ['./fade-carousel.component.scss'],
+  animations: [fadeInOut]
 })
 export class FadeCarouselComponent implements OnInit, OnChanges {
   @Input() className: string;
+  @Input() loop = true;
   @Input() initIndex: number = 0;
   @Input() itemsLength: number;
   

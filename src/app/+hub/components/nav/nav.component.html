@@ -1,7 +1,10 @@
 <nav class="hub-nav">
 
   <div class="hub-nav__group">
-    <button class="hub-nav__play">
+    <button
+      class="hub-nav__play"
+      (click)="openGameStartModal()"
+    >
       <img src="assets/img/icons/paw-green.svg" alt="Play">
       <span>Play</span>
     </button>
@@ -23,7 +26,7 @@
       <img src="assets/img/icons/card-green.svg" alt="Packs" class="hub-nav__icon">
       <span>{{ packsAmount | bigNumber }}</span>
     </a>
-    <img src="assets/img/icons/help.svg" alt="Help" class="hub-nav__icon">
+    <img src="assets/img/icons/help.svg" alt="Help" class="hub-nav__icon" (click)="openTutorialModal()">
     <img src="assets/img/icons/turn-off.svg" alt="Log out" class="hub-nav__icon" (click)="logOut()">
   </div>
 

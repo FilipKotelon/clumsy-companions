@@ -6,6 +6,8 @@ import { PlayerService } from '@core/player/player.service';
 
 import * as fromStore from '@core/store/reducer';
 import * as AuthActions from '@core/auth/store/auth.actions';
+import { GameConnectorService } from '@core/game/game-connector/game-connector.service';
+import { TutorialService } from '@core/tutorial/tutorial.service';
 
 @Component({
   selector: 'app-nav',
@@ -19,8 +21,10 @@ export class NavComponent implements OnInit, OnDestroy {
   packsAmount = 0;
 
   constructor(
+    private gameConnectorSvc: GameConnectorService,
     private playerSvc: PlayerService,
-    private store: Store<fromStore.AppState>
+    private store: Store<fromStore.AppState>,
+    private tutorialSvc: TutorialService
   ) { }
 
   ngOnInit(): void {
@@ -42,5 +46,13 @@ export class NavComponent implements OnInit, OnDestroy {
     this.store.dispatch(
       new AuthActions.Logout()
     )
+  }
+
+  openGameStartModal = (): void => {
+    this.gameConnectorSvc.openGameStartModal();
+  }
+
+  openTutorialModal = (): void => {
+    this.tutorialSvc.openModal();
   }
 }

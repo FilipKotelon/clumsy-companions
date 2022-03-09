@@ -1,0 +1,103 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+@import "utility/mixins/mixins-spacing";
+
+.tutorial-modal{
+  @include fix(0, 0);
+  @include square(100%);
+  @include d-flex($center: true);
+  z-index: 10000;
+
+  &__bg{
+    @include abs(0, 0);
+    @include square(100%);
+    background: $white-dimmed-transparent;
+    z-index: 0;
+    cursor: pointer;
+  }
+
+  &__close{
+    @include abs($r: 1.4rem, $t: 1.4rem);
+    @include square(1.8rem);
+    cursor: pointer;
+  }
+
+  &__main{
+    @include rect(120rem, 80rem);
+    background-color: $white;
+    border-radius: .3rem;
+    padding: 2.4rem 3rem;
+    position: relative;
+  }
+
+  &__options{
+    @include abs-center;
+    @include d-flex($dir: column, $ai: center);
+    text-align: center;
+    width: 100%;
+
+    &__title{
+      margin-bottom: 6rem;
+    }
+
+    &__items{
+      @include d-flex($dir: column, $ai: center);
+      @include m-not-last(3rem, b);
+    }
+  }
+
+  &__tutorial{
+    @include d-flex($dir: column, $ai: center);
+    @include square(100%);
+    text-align: center;
+
+    &__back{
+      margin-bottom: 1.2rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+  }
+}
+
+::ng-deep{
+  .tutorial-modal{
+    & app-fade-carousel, .fade-carousel-items{
+      @include square(100%);
+    }
+
+    & .fade-carousel-arrow{
+      @include square(4rem);
+
+      & img{
+        width: 3rem;
+      }
+    }
+
+    &__carousel{
+      &, &__slide{
+        @include square(100%);
+      }
+
+      &__slide{
+        @include d-flex($dir: column, $ai: center);
+
+        &__title{
+          margin-bottom: 1.6rem;
+        }
+
+        &__desc{
+          margin-bottom: 1.6rem;
+        }
+
+        &__img{
+          width: 80%;
+          height: 45rem;
+          object-fit: contain;
+          margin-top: auto;
+          margin-bottom: 3rem;
+        }
+      }
+    }
+  }
+}
