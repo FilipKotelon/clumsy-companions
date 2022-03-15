@@ -121,9 +121,11 @@ export const gameReducer = createReducer(
     }
   ),
 
+  // Przechwytywanie akcji zagrania karty
   immerOn(
     GameStateActions.gamePlayCard,
     (draft, action) => {
+      // Dodanie karty do kolejki
       draft.cardsQueue.push(
         ...draft[action.playerKey].hand.splice(
           draft[action.playerKey].hand.findIndex(card => card.gameObjectId === action.card.gameObjectId),
@@ -131,32 +133,14 @@ export const gameReducer = createReducer(
         )
       );
 
-      const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, action);
-      cardPlayableCheckPayload.canCounter = getHasPlayableCards(draft[getOtherPlayerKey(action.playerKey)].hand, cardPlayableCheckPayload);
-      draft.continuationApproval = { player: true, opponent: true };
-
+      // Zapłacenie za koszt karty, jeśli nie jest to karta pożywienia (która jest darmowa)
       if(action.card.type !== CardType.Food){
         draft[action.playerKey].currentFood -= action.card.cost;
       }
 
-      // if(action.card.type !== CardType.Food){
-      //   draft[action.playerKey].currentFood -= action.card.cost;
-      //   draft.continuationApproval[action.playerKey] = true;
-      //   draft.continuationApproval[getOtherPlayerKey(action.playerKey)] = !cardPlayableCheckPayload.canCounter;
-
-      //   if(cardPlayableCheckPayload.canCounter){
-      //     draft.counterPlayStatus = {
-      //       playerKey: getOtherPlayerKey(action.playerKey),
-      //       canCounter: cardPlayableCheckPayload.canCounter
-      //     }
-      //   } else {
-      //     draft.counterPlayStatus = getResetCounterPlayStatus();
-      //   }
-      // }
-
-      // if(action.card.type === CardType.Food){
-      //   draft.continuationApproval = { player: true, opponent: true };
-      // }
+      const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, action);
+      cardPlayableCheckPayload.canCounter = getHasPlayableCards(draft[getOtherPlayerKey(action.playerKey)].hand, cardPlayableCheckPayload);
+      draft.continuationApproval = { player: true, opponent: true };
 
       ['player', 'opponent'].forEach(pKey => {
         draft[pKey].hand.forEach(card => {
@@ -289,24 +273,6 @@ export const gameReducer = createReducer(
       }
     }
   ),
-  // immerOn(
-  //   GameStateActions.gameEndTurn,
-  //   GameStateActions.gameGoToNextPhase,
-  //   GameStateActions.gameGoToPhase,
-  //   (draft, action) => {
-  //     const otherPlayerKey = getOtherPlayerKey(draft.currentPlayerKey);
-  //     const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, { playerKey: otherPlayerKey });
-
-  //     draft.continuationApproval[draft.currentPlayerKey] = true;
-  //     draft.continuationApproval[otherPlayerKey] = otherPlayerKey === 'opponent'
-  //       || !getHasPlayableCards(draft[otherPlayerKey].hand, cardPlayableCheckPayload);
-
-  //     if(draft.continuationApproval[otherPlayerKey] === false){
-  //       draft.counterPlayStatus.playerKey = otherPlayerKey;
-  //       draft.counterPlayStatus.canCounter = true;
-  //     }
-  //   }
-  // ),
   immerOn(
     GameStateActions.gameEndTurn,
     (draft, action) => {
@@ -351,28 +317,14 @@ export const gameReducer = createReducer(
       draft.stateActionsQueue.pop();
     }
   ),
+  // Przechwytywanie akcji przejścia do następnej lub wybranej fazy tury w reduktorze stanu
   immerOn(
     GameStateActions.gameGoToNextPhaseResolve,
     GameStateActions.gameGoToPhaseResolve,
     (draft, action) => {
-      // const otherPlayerKey = getOtherPlayerKey(draft.currentPlayerKey);
-
-      // if(draft.turnPhaseIndex === 2){
-      //   const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, { playerKey: otherPlayerKey });
-      //   const canCounter = otherPlayerKey === 'opponent'
-      //     || getHasPlayableCards(draft[otherPlayerKey].hand, cardPlayableCheckPayload);
-
-      //   if(canCounter){
-      //     draft.continuationApproval[draft.currentPlayerKey] = true;
-      //     draft.continuationApproval[otherPlayerKey] = false;
-      //     draft.counterPlayStatus.playerKey = otherPlayerKey;
-      //     draft.counterPlayStatus.canCounter = true;
-      //   }
-      // } else {
-      //   draft.counterPlayStatus = getResetCounterPlayStatus();
-      // }
-
+      // Dla każdego gracza, jego karty w ręce są aktualizowane
       ['player', 'opponent'].forEach(pKey => {
+        // Z obecnego stanu gry pobierane są informacje potrzebne do określenia, czy dana karta może być zagrana
         const cardPlayableCheckPayload = getCardPlayableCheckPayload(draft, { playerKey: pKey as PlayerKey });
 
         draft[pKey as PlayerKey].hand.forEach(card => {
@@ -447,12 +399,15 @@ export const gameReducer = createReducer(
       });
     }
   ),
+  // Przechwycenie akcji z danymi odnośnie wybranych walk podjętych w obronie
   immerOn(
     GameStateActions.gameChooseFightsInDefense,
     (draft, action) => {
       const cardsIds = action.fights.map(fight => fight.defender.gameObjectId);
+      // Przypisanie walk do stanu gry
       draft.fightQueue = action.fights;
 
+      // Nadanie obrońcom statusu
       draft[action.playerKey].cardsInPlay.forEach(card => {
         if(cardsIds.includes(card.gameObjectId)){
           card.defending = true;
@@ -603,13 +558,17 @@ export const gameReducer = createReducer(
       });
     }
   ),
+  // Przechwycenie akcji odpowiadającej efektowi, który zadaje obrażenia wybranemu kompanowi
   immerOn(
     GameEffectActions.gameDamageTarget,
     (draft, action) => {
+      // Znalezienie celu na planszy po jego unikalnym identyfikatorze
       const target = [...draft.player.cardsInPlay, ...draft.opponent.cardsInPlay].find(card => card.gameObjectId === action.targetId);
 
+      // Obniżenie enegii celu
       target.energy -= action.amount;
 
+      // Usunięcie kompana z gry, jeśli jego energia jest mniejsza lub równa zeru
       if(target.energy <= 0){
         draft[target.playerKey].sleepyard.push({
           ...draft[target.playerKey].cardsInPlay.splice(
@@ -845,6 +804,7 @@ export const gameReducer = createReducer(
     }
   ),
 
+  // Przechywcenie wszystkich akcji, które mogą usunąć kompana z gry
   immerOn(
     GameStateActions.gameResolveFightsDamage,
     GameEffectActions.gameAuraDebuffEnemies,
@@ -858,6 +818,7 @@ export const gameReducer = createReducer(
     (draft, action) => {
       const allCardsInPlay = [...draft.player.cardsInPlay, ...draft.opponent.cardsInPlay];
 
+      // Filtrowanie aur, podczas którego usuwane są te, które nie mają odpowiadającego im kompana na planszy
       draft.activeEffects.auras = draft.activeEffects.auras.filter(aura => allCardsInPlay.find(card => card.gameObjectId === aura.originId));
     }
   ),

@@ -1,0 +1,23 @@
+@import "utility/variables";
+@import "utility/mixins/mixins-flex";
+@import "utility/mixins/mixins-other";
+
+.collection-wrapper{
+  position: relative;
+
+  &__overlay{
+    @include cover;
+    @include d-flex($center: true);
+    background: $white-dimmed-transparent;
+    opacity: 0;
+    @include transition;
+  }
+
+  &:hover{
+    & .collection-wrapper{
+      &__overlay{
+        opacity: 1;
+      }
+    }
+  }
+}

@@ -7,4 +7,5 @@ export type LoadingTask =
  | 'LOAD_GAME_START_DATA'
  | 'PLAYER_OPEN_PACK'
  | 'PLAYER_RECEIVE_GIFT'
- | 'END_GAME';
+ | 'END_GAME'
+ | 'LOAD_COLLECTION';

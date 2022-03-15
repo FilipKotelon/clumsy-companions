@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { HubComponent } from './hub.component';
+import { CollectionComponent } from './pages/collection/collection.component';
 import { DecksComponent } from './pages/decks/decks.component';
 import { HomeComponent } from './pages/home/home.component';
 import { PacksComponent } from './pages/packs/packs.component';
@@ -74,6 +75,13 @@ let routes: Routes = [
           animation: '15'
         }
       },
+      {
+        path: 'collection',
+        component: CollectionComponent,
+        data: {
+          animation: '16'
+        }
+      }
     ]
   },
 ];

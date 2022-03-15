@@ -1,0 +1,32 @@
+<div
+  class="card-showcase"
+  @fadeInOut
+  *ngIf="card"
+>
+  <div
+    class="card-showcase__bg"
+    (click)="close()">
+  </div>
+  <div class="card-showcase__main">
+    <div class="card-showcase__card">
+      <app-card-front
+        [card]="card"
+        size="medium"
+      ></app-card-front>
+    </div>
+    <div class="card-showcase__info">
+      <img
+        class="card-showcase__info__close"
+        src="assets/img/icons/close.svg"
+        alt="Close"
+        (click)="close()"
+      >
+      <div class="card-showcase__info__name">
+        {{ card.name }}
+      </div>
+      <div class="card-showcase__info__desc">
+        {{ card.description }}
+      </div>
+    </div>
+  </div>
+</div>

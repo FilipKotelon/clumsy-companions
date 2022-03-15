@@ -16,6 +16,7 @@ let routes: Routes = [
   {
     path: 'admin',
     loadChildren: () => import('@admin/admin.module').then(m => m.AdminModule),
+    // Wyznaczenie strażnika dla ścieżki
     canActivate: [AdminGuard],
     data: {
       anmimation: '2'
@@ -39,6 +40,7 @@ let routes: Routes = [
   },
   {
     path: 'game',
+    // Leniwe ładowanie modułu GameModule po wejściu na ścieżkę z nim związaną
     loadChildren: () => import('@game/game.module').then(m => m.GameModule),
     canActivate: [LoggedInGuard],
     data: {

@@ -40,19 +40,23 @@ export class AuthEffects {
     this.usersCollection = this.fireStore.collection<DbUser>('users');
   }
 
+  // Efekt zadeklarowany w klasie AuthEffects
   authSignUp = createEffect(
     () => this.actions$.pipe(
+      // Wybranie typu akcji, która ma być przechwytywana
       ofType(AuthActions.SIGNUP_START),
       switchMap((signUpAction: AuthActions.SignUpStart) => {
         this.loadingSvc.addLoadingTask('AUTH_PROCESS');
         
         return from(
+          // Wysłanie zapytania do bazy danych w celu stworzenia nowego użytkownika
           this.fireAuth.createUserWithEmailAndPassword(
             signUpAction.payload.email,
             signUpAction.payload.password
           )
         ).pipe(
           switchMap(userCred => {
+            // Dodanie rekordu w bazie z podstawowymi danymi nowego gracza
             return from(this.usersCollection.add(
                 {
                   id: userCred.user.uid,

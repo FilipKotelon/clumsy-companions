@@ -24,6 +24,9 @@ export class CardsComponent implements OnInit {
   ngOnInit(): void {
     this.cardsSvc.getCards().subscribe(cards => {
       this.cards = cards;
+      this.cards.sort((a, b) => {
+        return a.cost - b.cost;
+      });
     })
   }
 

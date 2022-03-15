@@ -9,6 +9,8 @@ import { DecksComponent } from './pages/decks/decks.component';
 import { DeckWrapperComponent } from './components/deck-wrapper/deck-wrapper.component';
 import { HomeComponent } from './pages/home/home.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { CollectionComponent } from './pages/collection/collection.component';
+import { CollectionWrapperComponent } from './components/collection-wrapper/collection-wrapper.component';
 
 
 
@@ -21,7 +23,9 @@ import { ProfileComponent } from './pages/profile/profile.component';
     DecksComponent,
     DeckWrapperComponent,
     HomeComponent,
-    ProfileComponent
+    ProfileComponent,
+    CollectionComponent,
+    CollectionWrapperComponent
   ],
   imports: [
     SharedModule,

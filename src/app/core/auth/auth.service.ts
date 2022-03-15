@@ -42,23 +42,26 @@ export class AuthService{
     }
   }
 
+  // Metoda klasy AuthService, za pomocą której można zarejestrować użytkownika
   signUp = (username: string, email: string, password: string): void => {
     if(username && email && password) {
       this.checkForSameUsername(username).subscribe(canCreate => {
         if(canCreate){
+          // Wysłanie akcji do reduktora stanu
           this.store.dispatch(
+            // Stworzenie nowej akcji z danymi potrzebnymi do autoryzacji
             new AuthActions.SignUpStart({ email, password, username })
-          )
+          );
         } else {
           this.store.dispatch(
             new MessageActions.Error('This username is already in use :c Sorry if u spent an hour making up a cool username.')
-          )
+          );
         }
       });
     } else {
       this.store.dispatch(
         new MessageActions.Error('Email, password, username or all of the above were not provided.')
-      )
+      );
     }
   }
 

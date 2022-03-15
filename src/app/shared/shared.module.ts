@@ -24,6 +24,7 @@ import { GameStartModalComponent } from './components/game-start-modal/game-star
 import { FadeCarouselComponent } from './components/fade-carousel/fade-carousel.component';
 import { CardComponent } from './components/card/card.component';
 import { TutorialModalComponent } from './components/tutorial-modal/tutorial-modal.component';
+import { CardShowcaseComponent } from './components/card-showcase/card-showcase.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { TutorialModalComponent } from './components/tutorial-modal/tutorial-mod
     FadeCarouselComponent,
     CardComponent,
     TutorialModalComponent,
+    CardShowcaseComponent,
   ],
   imports: [
     CommonModule,
@@ -79,6 +81,7 @@ import { TutorialModalComponent } from './components/tutorial-modal/tutorial-mod
     FadeCarouselComponent,
     CardComponent,
     TutorialModalComponent,
+    CardShowcaseComponent,
   ]
 })
 export class SharedModule { }

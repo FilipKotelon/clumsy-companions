@@ -73,35 +73,46 @@ export class DraggableCardDirective implements AfterViewInit {
     }
   }
 
+  // Dekorator przypisujący wykonanie metody mouseMove w momencie poruszania myszką
   @HostListener('mousemove', ['$event'])
   mouseMove = (event: MouseEvent): void => {
     if(!this.blocked){
-      if(event.pageX < this.pageMinLeftThreshold || event.pageX > this.pageMaxLeftThreshold || event.pageY < this.pageMinTopThreshold || event.pageY > this.pageMaxTopThreshold){
+      // Przywrócenie karty do ręki gracza, jeśli przesunął myszką poza okno gry
+      if(event.pageX < this.pageMinLeftThreshold
+        || event.pageX > this.pageMaxLeftThreshold
+        || event.pageY < this.pageMinTopThreshold
+        || event.pageY > this.pageMaxTopThreshold){
         this.resetElement();
         return;
       }
-  
+
+      // Przesunięcie karty do pozycji kursora
       if(this.dragging){
         this.setElement(event);
       }
     }
   }
 
+  // Dekorator przypisujący wykonanie metody mouseUp w momencie puszczenia przycisku myszki
   @HostListener('document:mouseup', ['$event'])
-  mouseUp = (event: MouseEvent): void => {
+  mouseUp = (): void => {
     if(!this.blocked){
+      // Zagranie karty, jeśli znajduje się ona nad planszą
       if(this.willBePlayed){
         this.play();
         return;
       }
   
+      // Zresetowanie pozycji karty, jeśli nie znajduje się w pozycji do zagrania
       if(this.dragging){
         this.resetElement();
       }
     }
   }
 
+  // Metoda wywoływana w celu zagrania karty
   play = (): void => {
+    // Emitowanie wydarzenia dla komponentu przechowującego kartę
     this.played.emit();
     this.blocked = true;
   }
