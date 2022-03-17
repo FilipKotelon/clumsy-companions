@@ -5,7 +5,7 @@ import { AuraTarget, BuffTarget, CardFight, ContinuationApproval, CounterPlaySta
 
 import * as GameEffectActions from './game-effect.actions';
 import * as GameStateActions from '@core/game/store/game-state.actions';
-import { getCardPlayableCheckPayload, getEmptyPlayer, getHasPlayableCards, getIsCardPlayable, getOtherPlayerKey, getResetContinuationApproval, getResetCounterPlayStatus, shuffleCards, pipeCompanion } from '../game.helpers';
+import { getCardPlayableCheckPayload, getEmptyPlayer, getHasPlayableCards, getIsCardPlayable, getOtherPlayerKey, getResetContinuationApproval, getResetCounterPlayStatus, shuffleCards, pipeCompanion, getEffectValues } from '../game.helpers';
 import { CardType } from '@core/cards/cards.types';
 import { TypedAction } from '@ngrx/store/src/models';
 
@@ -425,40 +425,31 @@ export const gameReducer = createReducer(
         .filter(card => card.attacking && !attackerIdsInFights.includes(card.gameObjectId))
 
       draft.fightQueue.forEach(({ attacker, defender }) => {
-        const attackerRef = draft[attacker.playerKey].cardsInPlay.find(card => card.gameObjectId === attacker.gameObjectId);
-        const defenderRef = draft[defender.playerKey].cardsInPlay.find(card => card.gameObjectId === defender.gameObjectId);
-
         if(defender.strength > 0){
-          attackerRef.energy -= defender.strength;
-        }
-
-        if(attacker.strength > 0){
-          defenderRef.energy -= attacker.strength;
-        }
-
-        if(attackerRef.energy <= 0){
-          draft[attacker.playerKey].sleepyard.push({
-            ...draft[attacker.playerKey].cardsInPlay.splice(
-              draft[attacker.playerKey].cardsInPlay.findIndex(card => card.gameObjectId === attacker.gameObjectId),
-              1
-            )[0],
-            turnsLeft: 5
+          draft.activeEffects.buffs.push({
+            positive: false,
+            target: BuffTarget.Target,
+            targetId: attacker.gameObjectId,
+            values: getEffectValues({ energy: defender.strength }),
+            playerKey: attacker.playerKey
           });
         }
 
-        if(defenderRef.energy <= 0){
-          draft[defender.playerKey].sleepyard.push({
-            ...draft[defender.playerKey].cardsInPlay.splice(
-              draft[defender.playerKey].cardsInPlay.findIndex(card => card.gameObjectId === defender.gameObjectId),
-              1
-            )[0],
-            turnsLeft: 5
+        if(attacker.strength > 0){
+          draft.activeEffects.buffs.push({
+            positive: false,
+            target: BuffTarget.Target,
+            targetId: defender.gameObjectId,
+            values: getEffectValues({ energy: attacker.strength }),
+            playerKey: defender.playerKey
           });
         }
       });
 
       unblockedAttackers.forEach(attacker => {
-        draft[getOtherPlayerKey(draft.currentPlayerKey)].energy -= attacker.strength;
+        if(attacker.strength > 0){
+          draft[getOtherPlayerKey(draft.currentPlayerKey)].energy -= attacker.strength;
+        }
       });
     }
   ),
@@ -566,58 +557,44 @@ export const gameReducer = createReducer(
       const target = [...draft.player.cardsInPlay, ...draft.opponent.cardsInPlay].find(card => card.gameObjectId === action.targetId);
 
       // Obniżenie enegii celu
-      target.energy -= action.amount;
-
-      // Usunięcie kompana z gry, jeśli jego energia jest mniejsza lub równa zeru
-      if(target.energy <= 0){
-        draft[target.playerKey].sleepyard.push({
-          ...draft[target.playerKey].cardsInPlay.splice(
-            draft[target.playerKey].cardsInPlay.findIndex(card => card.gameObjectId === target.gameObjectId),
-            1
-          )[0],
-          turnsLeft: 5
-        });
-      }
+      draft.activeEffects.buffs.push({
+        positive: false,
+        target: BuffTarget.Target,
+        targetId: target.gameObjectId,
+        values: getEffectValues({ energy: action.amount }),
+        playerKey: target.playerKey
+      });
     }
   ),
   immerOn(
     GameEffectActions.gameDamageEnemies,
     (draft, action) => {
-      const cardsToSleepyard = [];
       const otherPlayerKey = getOtherPlayerKey(action.playerKey);
 
       draft[otherPlayerKey].cardsInPlay.forEach(card => {
-        card.energy -= action.amount;
-
-        if(card.energy <= 0){
-          cardsToSleepyard.push(card);
-        }
+        draft.activeEffects.buffs.push({
+          positive: false,
+          target: BuffTarget.Target,
+          targetId: card.gameObjectId,
+          values: getEffectValues({ energy: action.amount }),
+          playerKey: card.playerKey
+        });
       });
-
-      if(cardsToSleepyard.length){
-        draft[otherPlayerKey].sleepyard.push(...cardsToSleepyard.map(card => ({ ...card, turnsLeft: 5 })));
-        draft[otherPlayerKey].cardsInPlay = draft[otherPlayerKey].cardsInPlay.filter(card => card.energy > 0);
-      }
     }
   ),
   immerOn(
     GameEffectActions.gameDamageAll,
     (draft, action) => {
       ['player', 'opponent'].forEach((pKey: PlayerKey) => {
-        const cardsToSleepyard = [];
-
         draft[pKey].cardsInPlay.forEach(card => {
-          card.energy -= action.amount;
-
-          if(card.energy <= 0){
-            cardsToSleepyard.push(card);
-          }
+          draft.activeEffects.buffs.push({
+            positive: false,
+            target: BuffTarget.Target,
+            targetId: card.gameObjectId,
+            values: getEffectValues({ energy: action.amount }),
+            playerKey: card.playerKey
+          });
         });
-
-        if(cardsToSleepyard.length){
-          draft[pKey].sleepyard.push(...cardsToSleepyard.map(card => ({ ...card, turnsLeft: 5 })));
-          draft[pKey].cardsInPlay = draft[pKey].cardsInPlay.filter(card => card.energy > 0);
-        }
       });
     }
   ),
@@ -625,22 +602,17 @@ export const gameReducer = createReducer(
     GameEffectActions.gameDamageAllExcept,
     (draft, action) => {
       ['player', 'opponent'].forEach((pKey: PlayerKey) => {
-        const cardsToSleepyard = [];
-
         draft[pKey].cardsInPlay.forEach(card => {
           if(card.gameObjectId !== action.targetId){
-            card.energy -= action.amount;
-  
-            if(card.energy <= 0){
-              cardsToSleepyard.push(card);
-            }
+            draft.activeEffects.buffs.push({
+              positive: false,
+              target: BuffTarget.Target,
+              targetId: card.gameObjectId,
+              values: getEffectValues({ energy: action.amount }),
+              playerKey: card.playerKey
+            });
           }
         });
-
-        if(cardsToSleepyard.length){
-          draft[pKey].sleepyard.push(...cardsToSleepyard.map(card => ({ ...card, turnsLeft: 5 })));
-          draft[pKey].cardsInPlay = draft[pKey].cardsInPlay.filter(card => card.energy > 0);
-        }
       });
     }
   ),
@@ -710,6 +682,11 @@ export const gameReducer = createReducer(
     }
   ),
   immerOn(
+    GameStateActions.gameResolveFightsDamage,
+    GameEffectActions.gameDamageTarget,
+    GameEffectActions.gameDamageEnemies,
+    GameEffectActions.gameDamageAll,
+    GameEffectActions.gameDamageAllExcept,
     GameEffectActions.gameDebuffTarget,
     GameEffectActions.gameDebuffEnemies,
     (draft, action) => {
@@ -813,6 +790,9 @@ export const gameReducer = createReducer(
     GameEffectActions.gameDestroyAll,
     GameEffectActions.gameDestroyAllExcept,
     GameEffectActions.gameDamageTarget,
+    GameEffectActions.gameDamageEnemies,
+    GameEffectActions.gameDamageAll,
+    GameEffectActions.gameDamageAllExcept,
     GameEffectActions.gameDebuffEnemies,
     GameEffectActions.gameDebuffTarget,
     (draft, action) => {
@@ -835,6 +815,9 @@ export const gameReducer = createReducer(
     GameEffectActions.gameDestroyAll,
     GameEffectActions.gameDestroyAllExcept,
     GameEffectActions.gameDamageTarget,
+    GameEffectActions.gameDamageEnemies,
+    GameEffectActions.gameDamageAll,
+    GameEffectActions.gameDamageAllExcept,
     GameEffectActions.gameBuffAllies,
     GameEffectActions.gameBuffTarget,
     GameEffectActions.gameDebuffEnemies,

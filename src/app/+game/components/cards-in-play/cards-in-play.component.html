@@ -1,4 +1,8 @@
-<div class="game-cards-in-play">
+<div
+  class="game-cards-in-play"
+  [class.compact]="cards.length > 7"
+  [class.opponent]="opponent"
+>
   <app-card
     *ngFor="let card of cards"
     [card]="card"

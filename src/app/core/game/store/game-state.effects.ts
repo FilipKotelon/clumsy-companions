@@ -244,7 +244,9 @@ export class GameStateEffects {
     ),
     tap(([action, fights, turnPhaseIndex, playerKey]) => {
       if(turnPhaseIndex === 2){
-        this.gameCanvasSvc.setFightsToDrawBetween(fights);
+        setTimeout(() => {
+          this.gameCanvasSvc.setFightsToDrawBetween(fights);
+        }, 100);
         this.store.dispatch(GameStateActions.gameChooseFightsInDefense({ fights, playerKey: getOtherPlayerKey(playerKey) }));
       }
     })

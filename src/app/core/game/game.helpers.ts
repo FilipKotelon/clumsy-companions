@@ -1,4 +1,4 @@
-import { CardInPlay, CardPlayableCheckFullPayload, CardPlayableCheckPayload, CompanionBaseStats, ContinuationApproval, CounterPlayStatus, EffectBasePayload, GameActiveEffects, HandCard, InGameCard, InGamePlayer, PlayerKey, PlayerKeyAndCardPayload, TURN_PHASES } from './game.types';
+import { CardInPlay, CardPlayableCheckFullPayload, CardPlayableCheckPayload, CompanionBaseStats, ContinuationApproval, CounterPlayStatus, EffectBasePayload, EffectValues, GameActiveEffects, HandCard, InGameCard, InGamePlayer, PlayerKey, PlayerKeyAndCardPayload, TURN_PHASES } from './game.types';
 import * as fromGame from '@core/game/store/game.reducer';
 import { CardType } from '@core/cards/cards.types';
 import { GameEffectActionType } from './store/game-effect.actions';
@@ -77,15 +77,16 @@ export const getIsCardPlayable = (payload: CardPlayableCheckFullPayload): boolea
     return cardTypes.includes(card.type) && !player.playedFoodThisTurn;
   }
 
-  if(card.type === CardType.Trick){
-    const trickRequirements = cardTypes.includes(card.type) && canPayForCost && (canCounter || hasTurn);
+  if(card.type === CardType.Charm || card.type === CardType.Trick){
+    const charmRequirements = card.type === CardType.Charm && cardTypes.includes(card.type) && canPayForCost && hasTurn;
+    const trickRequirements = card.type === CardType.Trick && cardTypes.includes(card.type) && canPayForCost && (canCounter || hasTurn);
 
     if(getEffectNeedsEnemyTarget(card.effects[0].action.type)){
-      return trickRequirements && otherPlayer.cardsInPlay.length > 0;
+      return (charmRequirements || trickRequirements) && otherPlayer.cardsInPlay.length > 0;
     }
 
     if(getEffectNeedsFriendlyTarget(card.effects[0].action.type)){
-      return trickRequirements && player.cardsInPlay.length > 0;
+      return (charmRequirements || trickRequirements) && player.cardsInPlay.length > 0;
     }
   }
 
@@ -215,3 +216,10 @@ export const getEffectNeedsFriendlyTarget = (effectType: GameEffectActionType): 
 export const getEffectNeedsTarget = (effectType: GameEffectActionType): boolean => {
   return getEffectNeedsEnemyTarget(effectType) || getEffectNeedsFriendlyTarget(effectType);
 }
+
+export const getEffectValues = (values: Partial<EffectValues>): EffectValues => ({
+  main: 0,
+  energy: 0,
+  strength: 0,
+  ...values
+});
