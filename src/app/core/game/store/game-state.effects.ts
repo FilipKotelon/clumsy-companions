@@ -57,6 +57,7 @@ export class GameStateEffects {
     })
   ), { dispatch: false })
 
+  // Przechwycenie akcji po działaniach reduktora stanu
   resolveCard$ = createEffect(() => this.actions$.pipe(
     ofType(GameStateActions.gameResolveCard),
     withLatestFrom(
@@ -68,19 +69,22 @@ export class GameStateEffects {
         const nextEffect = effectsQueue[effectsQueue.length - 1];
 
         if(!getEffectNeedsTarget(nextEffect.type)){
+          // Zagranie efektu należącego do karty
           this.store.dispatch(nextEffect.getAction(nextEffect.payload) as Action);
         } else if(
           (getEffectNeedsFriendlyTarget(nextEffect.type) && !players[payload.card.playerKey].cardsInPlay.length)
           || (getEffectNeedsEnemyTarget(nextEffect.type) && !players[getOtherPlayerKey(payload.card.playerKey)].cardsInPlay.length)
         ){
-          //skip the effect if no target is available
+          // Pominięcie efektu, jeśli nie ma dla niego żadnego dostępnego celu
           this.store.dispatch(GameStateActions.gameResolveEffectInQueue());
         }
 
+        // Wyświetlenie wiadomości dla użytkownika, jeśli musi wybrać cel dla efektu karty
         if(getEffectNeedsTarget(nextEffect.type)){
           this.gameMessagesSvc.showMessage('Choose the target for your spell!', true);
         }
       } else {
+        // Usunięcie karty z kolejki, jeśli nie posiada żadnego efektu
         this.store.dispatch(GameStateActions.gameResolveCardInQueue({ card: payload.card }));
       }
     })

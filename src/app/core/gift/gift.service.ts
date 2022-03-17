@@ -79,17 +79,19 @@ export class GiftService {
       );
   }
 
-  addWelcomeDeck = (name: string, timeoutMs = 1): Observable<string> => {
+  // Metoda klasy GiftService tworząca kopię talii przygotowanej przez administratora
+  addWelcomeDeck = (name: string): Observable<string> => {
+    // Pobranie talii po unikalnej nazwie
     return this.decksSvc.getDecks({
       names: [name],
       global: true
     }).pipe(
       map(deck => deck[0]),
-      // Delay the add queries so Firebase can handle it
-      delay(timeoutMs),
       switchMap(deck => {
+        // Usunięcie z danych talii jej unikalnego identyfikatora poprzez destrukturyzację obiektu
         const { id, global, ...data } = deck;
-        
+
+        // Dodanie nowej talii na podstawie otrzymanych danych
         return this.decksSvc.addDeckToDatabase({
           ...data,
           global: false
@@ -109,7 +111,7 @@ export class GiftService {
         return this.addWelcomeDeck('Basic Cat Deck');
       }),
       switchMap(firstDeckId => {
-        return this.addWelcomeDeck('Basic Dog Deck', 300).pipe(
+        return this.addWelcomeDeck('Basic Dog Deck').pipe(
           map(secondDeckId => {
             return [firstDeckId, secondDeckId]
           }),

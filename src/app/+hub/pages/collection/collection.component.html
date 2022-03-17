@@ -1,0 +1,19 @@
+<div class="hub-page">
+  <div class="item-grid">
+    <app-collection-wrapper
+      *ngFor="let card of cards"
+      (opened)="selectCardForShowcase(card)"
+    >
+      <app-card-front
+        [card]="card"
+        size="medium"
+        [permShowName]="true"
+      ></app-card-front>
+    </app-collection-wrapper>
+  </div>
+</div>
+
+<app-card-showcase
+  [card]="cardForShowcase"
+  (closed)="closeShowcase()"
+></app-card-showcase>

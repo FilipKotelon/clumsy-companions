@@ -156,6 +156,7 @@ export class PacksService {
     });
   }
 
+  // Metoda klasy PacksService, za pomocą której otwierana jest paczka z kartami
   openPack = (pack: Pack, ownedCardsIds: string[]): Observable<Gift> => {
     return this.cardsSvc
       .getCards({
@@ -163,13 +164,16 @@ export class PacksService {
         availableInGame: true
       })
       .pipe(
+        // Wybranie unikalnych losowych kart na podstawie informacji o egzemplarzach w posiadaniu gracza
         map(cards => this.getUniqueCardsFromPack(cards, ownedCardsIds)),
         map(cards => {
+          // Przypisanie kart do prezentu, który zostanie przekazany graczowi
           const gift: Gift = {
             title: 'Enjoy your new cards!',
             cards: cards
           };
-  
+
+          // Zwrócenie graczowi kosztów, jeśli ma już wszystkie karty z danej edycji
           if(cards.length < PACKS_SETTINGS.CARDS_IN_PACK){
             if(cards.length === 0) {
               gift.title = 'You already have all the cards available in that pack!';

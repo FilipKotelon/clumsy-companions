@@ -171,6 +171,7 @@ export class EditDeckComponent extends EditableOrNew {
   
             this.cardsSvc.getCards({ ids: deck.cardIds }).subscribe(cards => {
               this.addedCards = cards;
+              this.sortAddedCards();
             })
           })
         );
@@ -194,6 +195,7 @@ export class EditDeckComponent extends EditableOrNew {
         
                   this.cardsSvc.getCards({ ids: deck.cardIds }).subscribe(cards => {
                     this.addedCards = cards;
+                    this.sortAddedCards();
                   })
                 })
               );
@@ -230,6 +232,9 @@ export class EditDeckComponent extends EditableOrNew {
       this.cardsSvc.getCards({ set: this.setId, availableInGame: true })
         .subscribe(cards => {
           this.cardOptions = cards;
+          this.cardOptions.sort((a, b) => {
+            return a.cost - b.cost;
+          });
         });
     } else {
       this.playerSvc.getOwnedCardsIds()
@@ -246,6 +251,9 @@ export class EditDeckComponent extends EditableOrNew {
           this.cardsSvc.getCards(params)
             .subscribe(cards => {
               this.cardOptions = cards;
+              this.cardOptions.sort((a, b) => {
+                return a.cost - b.cost;
+              });
             });
         })
     }
@@ -342,16 +350,25 @@ export class EditDeckComponent extends EditableOrNew {
     if(cardIndex >= 0) {
       this.addedCards.splice(cardIndex, 1);
     }
+    this.sortAddedCards();
   }
 
   onIncreaseCardAmount = (card: Card): void => {
     this.addedCards.push(card);
+    this.sortAddedCards();
   }
 
   onRemoveCard = (card: Card): void => {
     while(this.addedCards.map(addedCard => addedCard.id).indexOf(card.id) >= 0){
       this.addedCards.splice(this.addedCards.map(addedCard => addedCard.id).indexOf(card.id), 1);
     }
+    this.sortAddedCards();
+  }
+
+  sortAddedCards = (): void => {
+    this.addedCards.sort((a, b) => {
+      return a.cost - b.cost;
+    });
   }
 
   onOpenDeletePopup = (): void => {

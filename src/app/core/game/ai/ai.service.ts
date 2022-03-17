@@ -100,27 +100,32 @@ export class AiService {
   }
   //#endregion
 
-  //#region iShould and iMust
+  // Sprawdzenie, czy komputer powinien atakować
   get iShouldAttack(): boolean {
+    // Znalezienie wszystkich kompanów zdolnych do ataku
     const cardsICanAttackWith = this.myCardsInPlay.filter(card =>
       card.strength > 0
       && !card.dizzy && !card.tired
     );
     let lowestStrengthOfThem = 99;
 
+    // Sprawdzenie jaki jest najsłabszy z powyżej wybranych kompanów
     cardsICanAttackWith.forEach(card => {
       if(card.strength < lowestStrengthOfThem){
         lowestStrengthOfThem = card.strength;
       }
     })
 
+    //Komputer zaatakuje, gdy nie musi się bronić za wszelką cenę lub gdy może zakończyć grę swoim atakiem
     return (this.cardsIShouldAttackWith.length > 0
         && !this.iMustDefendMyselfAtAllCost)
       || (cardsICanAttackWith.length > this.playersCardsInPlay.length
         && lowestStrengthOfThem >= this.gameState.player.energy);
   }
 
+  // Sprawdzenie, czy komputer musi się bronić za wszelką cenę
   get iMustDefendMyselfAtAllCost(): boolean {
+    // Obliczenie łącznej siły przeciwnych kompanów
     const totalEnemyCompanionStrength = this.playersCardsInPlay.length
       ? this.playersCardsInPlay.reduce((prev, card) => {
         prev += card.strength;
@@ -128,9 +133,9 @@ export class AiService {
       }, 0)
       : 0;
 
+    // Komputer musi się bronić, jeśli jego energia jest mniejsza niż łączna siła przeciwników
     return this.myCurrentEnergy <= totalEnemyCompanionStrength;
   }
-  //#endregion
 
   get cardsIShouldAttackWith(): CardInPlay[] {
     if(!this.playersCardsInPlay.length){
@@ -216,11 +221,13 @@ export class AiService {
   }
   //#endregion
 
+  // Metoda inicjalizująca sztuczną inteligencję
   init = (): void => {
     this.gameStateSub = this.gameStateSvc.getGameState().subscribe(state => {
       this.gameState = state;
 
       if(this.gameState.gameStarted){
+        // Jeśli gra jest rozpoczęta, po każdej zmianie stanu gry serwis analizuje sytuację i podejmuje odpowiednie decyzje
         this.analyze();
       }
     });
@@ -231,11 +238,13 @@ export class AiService {
     this.gameStateSub.unsubscribe();
   }
 
+  // Główna metoda analizująca stan gry
   analyze = (): void => {
     if(this.iAmWaitingForPhase && this.turnPhaseIndexIAmWaitingFor === this.gameState.turnPhaseIndex){
       this.iAmWaitingForPhase = false;
     }
 
+    // Pominięcie działania, jeśli nie jest ono możliwe
     if(this.iAmPretendingToThink || this.iAmWaiting) return;
 
     if(this.iCanCounter){
@@ -243,10 +252,12 @@ export class AiService {
       return;
     }
 
+    // Sekcja, w której określony jest tok postępowania podczas tury komputera
     if(this.iHaveTurn){
       if(this.itsFirstPreparationPhase || this.itsLastPreparationPhase){
         if(this.iHavePlayableCards){
           if(this.iCanPlayFood){
+            // Komputer odczekuje chwilę między akcjami, aby sprawić wrażenie zastanawiania się
             this.pretendToThink();
             this.playFoodCard();
             return;
